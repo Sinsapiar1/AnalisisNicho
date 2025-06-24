@@ -234,6 +234,183 @@
                         </div>
                     </div>
 
+                <!-- AGREGAR DESPUÉS DE LA EXPERT-SECTION EN EL HTML EXISTENTE -->
+
+                <!-- ===================== GENERADOR DE CONTENIDO VIRAL ===================== -->
+                <div class="viral-content-section">
+                    <h3>🎯 Generador de Contenido Viral</h3>
+                    <p class="section-description">Genera contenido de alta conversión para todos tus canales de marketing</p>
+                    
+                    <div class="content-type-selector">
+                        <div class="content-type-grid">
+                            <div class="content-type-card" data-type="tiktok">
+                                <div class="content-icon">📱</div>
+                                <h4>TikTok/Reels</h4>
+                                <p>Scripts virales de 15-60s</p>
+                            </div>
+                            <div class="content-type-card" data-type="email">
+                                <div class="content-icon">📧</div>
+                                <h4>Email Marketing</h4>
+                                <p>Subject lines que abren</p>
+                            </div>
+                            <div class="content-type-card" data-type="facebook">
+                                <div class="content-icon">📊</div>
+                                <h4>Facebook Ads</h4>
+                                <p>Headlines ganadoras</p>
+                            </div>
+                            <div class="content-type-card" data-type="instagram">
+                                <div class="content-icon">📸</div>
+                                <h4>Instagram</h4>
+                                <p>Posts con engagement</p>
+                            </div>
+                            <div class="content-type-card" data-type="blog">
+                                <div class="content-icon">✍️</div>
+                                <h4>Blog/SEO</h4>
+                                <p>Artículos optimizados</p>
+                            </div>
+                            <div class="content-type-card" data-type="youtube">
+                                <div class="content-icon">🎥</div>
+                                <h4>YouTube</h4>
+                                <p>Títulos y thumbnails</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-config">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>🎯 Ángulo de Venta Principal:</label>
+                                <select id="salesAngle">
+                                    <option value="problema-agitacion">Problema + Agitación</option>
+                                    <option value="antes-despues">Antes vs Después</option>
+                                    <option value="secreto-revelado">Secreto Revelado</option>
+                                    <option value="autoridad-social">Autoridad Social</option>
+                                    <option value="escasez-urgencia">Escasez + Urgencia</option>
+                                    <option value="story-telling">Story Telling</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>😱 Nivel de Controversia:</label>
+                                <select id="controversyLevel">
+                                    <option value="safe">Seguro (Familiar)</option>
+                                    <option value="medium" selected>Medio (Llamativo)</option>
+                                    <option value="high">Alto (Viral)</option>
+                                    <option value="extreme">Extremo (Riesgoso)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>🔥 Palabras de Poder (separadas por comas):</label>
+                            <input type="text" id="powerWords" placeholder="gratis, secreto, exclusivo, limitado, revelado..." 
+                                value="gratis, secreto, exclusivo, limitado, revelado, prohibido, oculto">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-viral" id="generateContentBtn">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">Generar Contenido Viral</span>
+                    </button>
+                </div>
+
+                <!-- ===================== AVATAR ULTRA-ESPECÍFICO ===================== -->
+                <div class="avatar-section">
+                    <h3>🧠 Avatar Ultra-Específico</h3>
+                    <p class="section-description">Crea un perfil psicológico profundo de tu cliente ideal</p>
+                    
+                    <div class="avatar-config">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>👤 Género Principal:</label>
+                                <select id="avatarGender">
+                                    <option value="femenino">Femenino</option>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="mixto" selected>Mixto</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>🎂 Rango de Edad:</label>
+                                <select id="avatarAge">
+                                    <option value="18-25">18-25 (Gen Z)</option>
+                                    <option value="25-35" selected>25-35 (Millennials)</option>
+                                    <option value="35-45">35-45 (Gen X Jóvenes)</option>
+                                    <option value="45-55">45-55 (Gen X)</option>
+                                    <option value="55+">55+ (Boomers)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>💰 Nivel Socioeconómico:</label>
+                                <select id="avatarIncome">
+                                    <option value="bajo">Bajo ($20K-$40K)</option>
+                                    <option value="medio" selected>Medio ($40K-$80K)</option>
+                                    <option value="medio-alto">Medio-Alto ($80K-$150K)</option>
+                                    <option value="alto">Alto ($150K+)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>🏠 Situación Familiar:</label>
+                                <select id="avatarFamily">
+                                    <option value="soltero">Soltero/a</option>
+                                    <option value="pareja">En pareja sin hijos</option>
+                                    <option value="familia" selected>Familia con hijos</option>
+                                    <option value="divorciado">Divorciado/a</option>
+                                    <option value="viudo">Viudo/a</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>🎯 Principal Frustración/Problema:</label>
+                            <textarea id="avatarMainProblem" rows="2" 
+                                    placeholder="Ej: No tiene tiempo para hacer ejercicio por el trabajo y los niños..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>🌟 Máximo Deseo/Aspiración:</label>
+                            <textarea id="avatarMainDesire" rows="2" 
+                                    placeholder="Ej: Verse y sentirse como antes del embarazo, tener energía para jugar con sus hijos..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-avatar" id="generateAvatarBtn">
+                        <span class="btn-icon">🧠</span>
+                        <span class="btn-text">Crear Avatar Completo</span>
+                    </button>
+                </div>
+
+                <!-- ===================== RESULTADOS DE CONTENIDO Y AVATAR ===================== -->
+                <div id="contentResults" class="content-results hidden">
+                    <h2>🎯 Contenido Viral Generado</h2>
+                    <div id="contentTabs" class="content-tabs">
+                        <!-- Tabs dinámicos se generan aquí -->
+                    </div>
+                    <div id="contentDisplay" class="content-display">
+                        <!-- Contenido dinámico se muestra aquí -->
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="btn btn-secondary" id="copyContentBtn">📋 Copiar Todo</button>
+                        <button class="btn btn-secondary" id="downloadContentBtn">📄 Descargar</button>
+                        <button class="btn btn-secondary" id="regenerateContentBtn">🔄 Regenerar</button>
+                    </div>
+                </div>
+
+                <div id="avatarResults" class="avatar-results hidden">
+                    <h2>🧠 Avatar Ultra-Específico</h2>
+                    <div id="avatarDisplay" class="avatar-display">
+                        <!-- Avatar completo se muestra aquí -->
+                    </div>
+                    
+                    <div class="avatar-actions">
+                        <button class="btn btn-secondary" id="copyAvatarBtn">📋 Copiar Avatar</button>
+                        <button class="btn btn-secondary" id="downloadAvatarBtn">📄 Descargar</button>
+                        <button class="btn btn-secondary" id="exportPersonasBtn">👥 Exportar Personas</button>
+                    </div>
+                </div>
+
                     <!-- Estimaciones en tiempo real -->
                     <div id="quickEstimations" class="quick-estimations hidden"></div>
                 </div>
