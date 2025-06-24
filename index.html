@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketInsight Pro AFFILIATE EDITION 🚀</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 MarketInsight Pro AFFILIATE EDITION</h1>
+            <div class="subtitle">Detecta Productos Ganadores para Marketing de Afiliados</div>
+            <div class="features">
+                <span class="feature-badge">🎯 Productos Ganadores</span>
+                <span class="feature-badge">💵 Análisis de Comisiones</span>
+                <span class="feature-badge">📊 Competencia</span>
+                <span class="feature-badge">🔥 Tendencias</span>
+                <span class="feature-badge">🚀 ROI Estimado</span>
+                <span class="feature-badge">🔍 Keywords</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- API Configuration -->
+            <div class="api-section">
+                <h3>🔑 Configuración de Google AI Studio</h3>
+                <p style="color: #a0aec0; margin-bottom: 15px;">Ingresa tu API Key de Google AI Studio:</p>
+                <div class="input-group">
+                    <input type="password" id="apiKey" placeholder="Tu API Key aquí..." />
+                    <button class="btn btn-warning" id="saveBtn">💾 Guardar</button>
+                    <button class="btn btn-secondary" id="testBtn">🧪 Probar</button>
+                </div>
+                <div id="statusDiv"></div>
+            </div>
+
+            <!-- Main Form -->
+            <div class="form-section">
+                <h2>🎯 Configuración de Búsqueda de Productos Ganadores</h2>
+                
+                <!-- Análisis Options - Reorganizados -->
+                <div class="analysis-sections">
+                    <div class="analysis-group">
+                        <h4>📊 Análisis Básicos</h4>
+                        <div class="analysis-options basic-analysis">
+                            <div class="option-card">
+                                <input type="checkbox" id="analyzeCompetition" checked>
+                                <label for="analyzeCompetition">📊 Análisis de Competencia</label>
+                            </div>
+                            <div class="option-card">
+                                <input type="checkbox" id="analyzeTrends" checked>
+                                <label for="analyzeTrends">📈 Análisis de Tendencias</label>
+                            </div>
+                            <div class="option-card">
+                                <input type="checkbox" id="findAffiliates" checked>
+                                <label for="findAffiliates">🤝 Programas de Afiliados</label>
+                            </div>
+                            <div class="option-card">
+                                <input type="checkbox" id="analyzeKeywords" checked>
+                                <label for="analyzeKeywords">🔍 Keywords Rentables</label>
+                            </div>
+                            <div class="option-card">
+                                <input type="checkbox" id="analyzeSeasonality" checked>
+                                <label for="analyzeSeasonality">📅 Estacionalidad</label>
+                            </div>
+                            <div class="option-card">
+                                <input type="checkbox" id="analyzeProfitability" checked>
+                                <label for="analyzeProfitability">💰 Rentabilidad</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-group">
+                        <h4>⭐ Análisis Expertos</h4>
+                        <div class="analysis-options expert-analysis-group">
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeConversion" checked>
+                                <label for="analyzeConversion">🎯 Métricas de Conversión</label>
+                                <small>CVR, EPC, AOV</small>
+                            </div>
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeFinancial" checked>
+                                <label for="analyzeFinancial">💎 Análisis Financiero</label>
+                                <small>ROI, CPA, Profit Margin</small>
+                            </div>
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeCompetitorIntel" checked>
+                                <label for="analyzeCompetitorIntel">🕵️ Inteligencia Competitiva</label>
+                                <small>Ad Spend, Saturación</small>
+                            </div>
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeCustomerJourney" checked>
+                                <label for="analyzeCustomerJourney">🎪 Customer Journey</label>
+                                <small>Touchpoints, Objeciones</small>
+                            </div>
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeTrafficChannels" checked>
+                                <label for="analyzeTrafficChannels">🚀 Canales de Tráfico</label>
+                                <small>CPC, Volumen, Potencial</small>
+                            </div>
+                            <div class="option-card expert-analysis">
+                                <input type="checkbox" id="analyzeFunnels" checked>
+                                <label for="analyzeFunnels">🔄 Funnels y Upsells</label>
+                                <small>Cross-selling, LTV</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Basic Configuration -->
+                <div class="config-section">
+                    <h4>⚙️ Configuración Básica</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>🎯 Nicho de Mercado:</label>
+                            <input type="text" id="nicho" placeholder="Ej: Fitness, Tecnología, Belleza..." value="Fitness y Bienestar">
+                        </div>
+                        <div class="form-group">
+                            <label>👥 Público Objetivo:</label>
+                            <input type="text" id="publico" placeholder="Ej: Mujeres 25-35, Gamers..." value="Personas de 25-45 años">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>💵 Rango de Precio Ideal:</label>
+                            <select id="rangoPrecios">
+                                <option value="bajo">$10 - $50 (Impulso)</option>
+                                <option value="medio" selected>$50 - $200 (Considerado)</option>
+                                <option value="alto">$200 - $500 (Premium)</option>
+                                <option value="muy-alto">$500+ (Lujo)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>📊 Tipo de Producto:</label>
+                            <select id="tipoProducto">
+                                <option value="fisico">Producto Físico</option>
+                                <option value="digital" selected>Producto Digital</option>
+                                <option value="servicio">Servicio/Suscripción</option>
+                                <option value="mixto">Mixto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>🎪 Canal Principal:</label>
+                            <select id="canalPrincipal">
+                                <option value="blog">Blog/SEO</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="tiktok">TikTok</option>
+                                <option value="email">Email Marketing</option>
+                                <option value="paid" selected>Ads Pagados</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>🚀 Experiencia en Afiliados:</label>
+                            <select id="experiencia">
+                                <option value="principiante">Principiante</option>
+                                <option value="intermedio" selected>Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expert Configuration -->
+                <div class="expert-section">
+                    <h3>🎯 Configuración Experta de Afiliado</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>💰 Presupuesto Publicitario Mensual:</label>
+                            <select id="presupuestoAds">
+                                <option value="0">Sin presupuesto (Orgánico)</option>
+                                <option value="500">$500 - $1,000</option>
+                                <option value="1000" selected>$1,000 - $3,000</option>
+                                <option value="3000">$3,000 - $5,000</option>
+                                <option value="5000">$5,000 - $10,000</option>
+                                <option value="10000">$10,000+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>📊 Objetivo de ROI Mínimo:</label>
+                            <select id="roiObjetivo">
+                                <option value="2">200% (2x)</option>
+                                <option value="3" selected>300% (3x)</option>
+                                <option value="4">400% (4x)</option>
+                                <option value="5">500% (5x)</option>
+                                <option value="10">1000% (10x)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>⏱️ Tolerancia de Break-Even:</label>
+                            <select id="breakEvenTime">
+                                <option value="inmediato">Inmediato (Día 1)</option>
+                                <option value="semana">1 Semana</option>
+                                <option value="mes" selected>1 Mes</option>
+                                <option value="trimestre">3 Meses</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>🎯 Tipo de Conversión Preferida:</label>
+                            <select id="tipoConversion">
+                                <option value="inmediata" selected>Venta Inmediata</option>
+                                <option value="lead">Lead Generation</option>
+                                <option value="recurring">Suscripción Recurrente</option>
+                                <option value="alto-ticket">Alto Ticket</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>📱 Dispositivo Principal del Público:</label>
+                            <select id="dispositivoTarget">
+                                <option value="mobile" selected>Móvil (70%+)</option>
+                                <option value="desktop">Desktop (70%+)</option>
+                                <option value="mixto">Mixto 50/50</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>🌍 Mercado Geográfico:</label>
+                            <select id="mercadoGeo">
+                                <option value="latam" selected>Latinoamérica</option>
+                                <option value="usa">Estados Unidos</option>
+                                <option value="europa">Europa</option>
+                                <option value="global">Global</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Estimaciones en tiempo real -->
+                    <div id="quickEstimations" class="quick-estimations hidden"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>📋 Keywords o productos específicos (opcional):</label>
+                    <textarea id="keywords" rows="3" placeholder="Ej: proteína whey, curso de yoga, smartwatch fitness..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" id="generateBtn">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-text">Detectar Productos Ganadores</span>
+                </button>
+            </div>
+
+            <!-- Debug Section -->
+            <div id="debugSection" class="debug-section hidden">
+                <h3>🔧 Información de Debug</h3>
+                <div class="debug-content">
+                    <div class="debug-item">
+                        <strong>Estado API:</strong> <span id="debugApiStatus">No probada</span>
+                    </div>
+                    <div class="debug-item">
+                        <strong>Productos extraídos:</strong> <span id="debugProductCount">0</span>
+                    </div>
+                    <div class="debug-item">
+                        <strong>Última respuesta:</strong>
+                        <pre id="debugResponse">Sin respuesta aún</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading hidden">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>🔍 Analizando el mercado con IA...</h3>
+                    <p>Detectando productos ganadores y oportunidades de afiliación</p>
+                    <div class="loading-steps">
+                        <div class="step active" id="step1">🧠 Procesando análisis psicológico...</div>
+                        <div class="step" id="step2">📊 Calculando métricas financieras...</div>
+                        <div class="step" id="step3">🔍 Evaluando competencia...</div>
+                        <div class="step" id="step4">✨ Generando recomendaciones...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="resultados" class="results hidden">
+                <div class="results-header">
+                    <h2>💰 Productos Ganadores Detectados</h2>
+                    <div id="metricsOverview" class="metrics-overview hidden"></div>
+                </div>
+                
+                <div class="results-content">
+                    <div id="listaProductos"></div>
+                    
+                    <!-- Sección de insights adicionales -->
+                    <div id="additionalInsights" class="additional-insights hidden">
+                        <h3>🎯 Insights Adicionales del Mercado</h3>
+                        <div id="nicheAnalysis" class="insight-section hidden"></div>
+                        <div id="ecosystemAnalysis" class="insight-section hidden"></div>
+                    </div>
+                </div>
+                
+                <div class="export-section">
+                    <h4>📤 Exportar Resultados</h4>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" id="copyBtn">
+                            <span class="btn-icon">📋</span>
+                            Copiar
+                        </button>
+                        <button class="btn btn-secondary" id="downloadBtn">
+                            <span class="btn-icon">📄</span>
+                            Descargar TXT
+                        </button>
+                        <button class="btn btn-secondary" id="downloadExcelBtn">
+                            <span class="btn-icon">📊</span>
+                            Exportar CSV
+                        </button>
+                        <button class="btn btn-secondary" id="toggleDebugBtn">
+                            <span class="btn-icon">🔧</span>
+                            Debug
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
