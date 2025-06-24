@@ -2044,3 +2044,326 @@ body {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     }
 }
+
+/* ===== FIX PARA CHECKBOXES EN MÓVILES ===== */
+/* Agregar DESPUÉS del CSS responsivo existente */
+
+/* FORZAR VISIBILIDAD DE CHECKBOXES EN TODAS LAS ORIENTACIONES */
+@media screen and (max-width: 768px) {
+    
+    /* OPTION CARDS - MEJOR LAYOUT PARA MÓVILES */
+    .option-card {
+        display: flex !important;
+        align-items: center !important;
+        padding: 15px !important;
+        margin-bottom: 12px !important;
+        background: rgba(45, 55, 72, 0.7) !important;
+        border: 2px solid rgba(160, 174, 192, 0.2) !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        min-height: 60px !important; /* Altura mínima para touch */
+    }
+    
+    .option-card:hover,
+    .option-card:focus {
+        border-color: #8a2be2 !important;
+        background: rgba(138, 43, 226, 0.15) !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* CHECKBOXES SIEMPRE VISIBLES */
+    .option-card input[type="checkbox"] {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        width: 20px !important;
+        height: 20px !important;
+        margin-right: 15px !important;
+        margin-left: 0 !important;
+        flex-shrink: 0 !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        border: 2px solid #8a2be2 !important;
+        border-radius: 4px !important;
+        background: transparent !important;
+        cursor: pointer !important;
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+    }
+    
+    /* ESTADO CHECKED - FORZAR VISIBILIDAD */
+    .option-card input[type="checkbox"]:checked {
+        background: #8a2be2 !important;
+        border-color: #8a2be2 !important;
+    }
+    
+    /* CHECKMARK VISIBLE */
+    .option-card input[type="checkbox"]:checked::after {
+        content: "✓" !important;
+        display: block !important;
+        color: white !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        line-height: 16px !important;
+        position: absolute !important;
+        top: -1px !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* LABELS MÁS GRANDES Y LEGIBLES */
+    .option-card label {
+        font-size: 1rem !important;
+        color: #e2e8f0 !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        flex: 1 !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
+        line-height: 1.4 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* ICONOS EN LAS LABELS */
+    .option-card label::before {
+        margin-right: 8px !important;
+        font-size: 1.1rem !important;
+    }
+    
+    /* ESTADO SELECTED DEL CARD COMPLETO */
+    .option-card.selected,
+    .option-card:has(input:checked) {
+        background: rgba(138, 43, 226, 0.25) !important;
+        border-color: #8a2be2 !important;
+        box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3) !important;
+    }
+    
+    /* ANÁLISIS EXPERTOS - CARDS ESPECIALES */
+    .expert-analysis-card {
+        background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(45, 55, 72, 0.8)) !important;
+        border: 2px solid #d4af37 !important;
+    }
+    
+    .expert-analysis-card label {
+        color: #ffd700 !important;
+        font-weight: 600 !important;
+    }
+    
+    .expert-analysis-card input[type="checkbox"] {
+        border-color: #d4af37 !important;
+    }
+    
+    .expert-analysis-card input[type="checkbox"]:checked {
+        background: #d4af37 !important;
+        border-color: #d4af37 !important;
+    }
+    
+    /* ESTRELLA PARA ANÁLISIS EXPERTOS */
+    .expert-analysis-card::after {
+        content: "⭐" !important;
+        position: absolute !important;
+        top: 10px !important;
+        right: 15px !important;
+        font-size: 1.2rem !important;
+    }
+    
+    .expert-analysis-card {
+        position: relative !important;
+    }
+    
+    /* AGRUPACIÓN VISUAL */
+    .analysis-group {
+        margin-bottom: 20px !important;
+    }
+    
+    .analysis-group h4 {
+        color: #8a2be2 !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 15px !important;
+        padding-left: 10px !important;
+        border-left: 3px solid #8a2be2 !important;
+    }
+    
+    /* MEJOR ESPACIADO PARA TOUCH */
+    .option-card + .option-card {
+        margin-top: 10px !important;
+    }
+    
+    /* ESTADO FOCUS PARA ACCESIBILIDAD */
+    .option-card:focus-within {
+        outline: 2px solid #8a2be2 !important;
+        outline-offset: 2px !important;
+    }
+    
+    /* ANIMACIÓN SUAVE */
+    .option-card input[type="checkbox"] {
+        transition: all 0.2s ease !important;
+    }
+    
+    .option-card label {
+        transition: color 0.2s ease !important;
+    }
+}
+
+/* FIX ESPECÍFICO PARA ORIENTACIÓN VERTICAL */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    
+    /* FORZAR LAYOUT ESPECÍFICO PARA VERTICAL */
+    .option-card {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+    
+    .option-card input[type="checkbox"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: static !important;
+        margin-right: 15px !important;
+        z-index: 10 !important;
+    }
+    
+    /* ASEGURAR QUE NO SE OCULTEN */
+    .option-card input {
+        all: revert !important;
+        width: 20px !important;
+        height: 20px !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        border: 2px solid #8a2be2 !important;
+        border-radius: 4px !important;
+        background: transparent !important;
+        cursor: pointer !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-right: 15px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .option-card input:checked {
+        background: #8a2be2 !important;
+        border-color: #8a2be2 !important;
+    }
+    
+    .option-card input:checked::after {
+        content: "✓" !important;
+        display: block !important;
+        color: white !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        line-height: 16px !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* FIX PARA HORIZONTAL (FUNCIONABA BIEN PERO MEJORAMOS) */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+    
+    .option-card {
+        min-height: 50px !important;
+        padding: 12px 15px !important;
+    }
+    
+    .option-card input[type="checkbox"] {
+        width: 18px !important;
+        height: 18px !important;
+        margin-right: 12px !important;
+    }
+    
+    .option-card label {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* OVERRIDE CUALQUIER REGLA QUE PUEDA OCULTAR CHECKBOXES */
+@media screen and (max-width: 768px) {
+    
+    /* FUERZA BRUTAL PARA MOSTRAR CHECKBOXES */
+    input[type="checkbox"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 999 !important;
+    }
+    
+    /* PREVENIR OCULTACIÓN POR CUALQUIER REGLA */
+    .option-card input,
+    .option-card input[type="checkbox"],
+    input[type="checkbox"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+    }
+    
+    /* RESET COMPLETO SI ES NECESARIO */
+    .option-card * {
+        box-sizing: border-box !important;
+    }
+}
+
+/* MEJORAS ADICIONALES PARA UX */
+@media screen and (max-width: 768px) {
+    
+    /* FEEDBACK VISUAL AL TOCAR */
+    .option-card:active {
+        transform: scale(0.98) !important;
+        background: rgba(138, 43, 226, 0.3) !important;
+    }
+    
+    /* MEJOR CONTRASTE */
+    .option-card {
+        border: 2px solid rgba(138, 43, 226, 0.3) !important;
+    }
+    
+    .option-card:hover {
+        border-color: #8a2be2 !important;
+    }
+    
+    /* INDICADOR VISUAL DE QUE ES CLICKEABLE */
+    .option-card::before {
+        content: "" !important;
+        position: absolute !important;
+        top: -2px !important;
+        left: -2px !important;
+        right: -2px !important;
+        bottom: -2px !important;
+        border-radius: 12px !important;
+        background: linear-gradient(45deg, transparent, rgba(138, 43, 226, 0.1), transparent) !important;
+        opacity: 0 !important;
+        transition: opacity 0.3s ease !important;
+        pointer-events: none !important;
+        z-index: -1 !important;
+    }
+    
+    .option-card:hover::before {
+        opacity: 1 !important;
+    }
+}
+
+/* DEBUG TEMPORAL - REMOVER DESPUÉS DE CONFIRMAR QUE FUNCIONA */
+/* 
+@media screen and (max-width: 768px) {
+    .option-card input[type="checkbox"] {
+        border: 3px solid red !important;
+        background: yellow !important;
+    }
+}
+*/
