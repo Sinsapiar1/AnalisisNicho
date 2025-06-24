@@ -1426,3 +1426,621 @@ body {
 .loading-content .spinner {
     border-top-color: #ff1493;
 }
+
+/* ===== MOBILE-FIRST RESPONSIVE CSS PARA MARKETINSIGHT PRO ===== */
+/* Agregar al final del CSS existente o como archivo separado */
+
+/* ===== BASE MOBILE OPTIMIZATIONS ===== */
+@media screen and (max-width: 768px) {
+    
+    /* CONTAINER PRINCIPAL */
+    .container {
+        padding: 10px !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+    
+    .main-content {
+        padding: 15px !important;
+        margin: 0 !important;
+    }
+    
+    /* HEADER MOBILE */
+    .header {
+        padding: 15px !important;
+        text-align: center;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .header p {
+        font-size: 0.9rem !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* CONFIGURACIÓN API MOBILE */
+    .api-config {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .api-config h3 {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .api-input-group {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .api-input-group input {
+        width: 100% !important;
+        margin-bottom: 10px !important;
+        padding: 12px !important;
+        font-size: 16px !important; /* Previene zoom en iOS */
+    }
+    
+    .api-buttons {
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+    
+    .api-buttons .btn {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 1rem !important;
+    }
+    
+    /* FORMULARIO PRINCIPAL MOBILE */
+    .form-section {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .form-group {
+        margin-bottom: 15px !important;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100% !important;
+        padding: 12px !important;
+        font-size: 16px !important; /* Previene zoom */
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* CARDS DE CONTENIDO VIRAL MOBILE */
+    .content-types-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        margin: 15px 0 !important;
+    }
+    
+    .content-type-card {
+        padding: 15px 10px !important;
+        text-align: center !important;
+        min-height: 100px !important;
+        touch-action: manipulation !important; /* Mejor touch */
+    }
+    
+    .content-type-card .card-icon {
+        font-size: 2rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .content-type-card .card-title {
+        font-size: 0.9rem !important;
+        font-weight: bold !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .content-type-card .card-subtitle {
+        font-size: 0.7rem !important;
+        opacity: 0.8 !important;
+    }
+    
+    /* ESTADO SELECTED MOBILE */
+    .content-type-card.selected {
+        border: 2px solid #8a2be2 !important;
+        background: rgba(138, 43, 226, 0.2) !important;
+        transform: scale(0.98) !important;
+    }
+    
+    /* CONFIGURACIONES AVANZADAS MOBILE */
+    .advanced-configs {
+        padding: 15px !important;
+    }
+    
+    .config-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .config-item {
+        padding: 15px !important;
+    }
+    
+    .config-item h4 {
+        font-size: 1rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* AVATAR CONFIGURACIÓN MOBILE */
+    .avatar-config {
+        padding: 15px !important;
+    }
+    
+    .avatar-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    /* BOTONES PRINCIPALES MOBILE */
+    .generate-btn,
+    .btn-primary {
+        width: 100% !important;
+        padding: 15px 20px !important;
+        font-size: 1.1rem !important;
+        margin: 10px 0 !important;
+        touch-action: manipulation !important;
+    }
+    
+    .btn-icon {
+        font-size: 1.2rem !important;
+        margin-right: 8px !important;
+    }
+    
+    /* LOADING MOBILE */
+    .loading-content {
+        padding: 20px 15px !important;
+        text-align: center !important;
+    }
+    
+    .loading-steps {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    .step {
+        padding: 15px !important;
+        text-align: center !important;
+    }
+    
+    .step-icon {
+        font-size: 2rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* RESULTADOS MOBILE */
+    .product-opportunity {
+        margin-bottom: 20px !important;
+        padding: 15px !important;
+    }
+    
+    .product-title {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    .product-name {
+        font-size: 1.1rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .product-scores {
+        flex-direction: column !important;
+        gap: 5px !important;
+        align-items: flex-start !important;
+    }
+    
+    .opportunity-score {
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* SECCIONES DE PRODUCTO MOBILE */
+    .product-section {
+        margin-bottom: 15px !important;
+        padding: 12px !important;
+    }
+    
+    .section-title {
+        font-size: 1rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .section-content {
+        font-size: 0.9rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* MÉTRICAS MOBILE */
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .metric-item {
+        padding: 10px !important;
+        text-align: center !important;
+    }
+    
+    .metric-value {
+        font-size: 1rem !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .metric-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .metric-description {
+        font-size: 0.6rem !important;
+        margin-top: 2px !important;
+    }
+    
+    /* OVERVIEW METRICS MOBILE */
+    .metrics-overview {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .metric-card {
+        padding: 15px 10px !important;
+        text-align: center !important;
+    }
+    
+    .metric-card .metric-value {
+        font-size: 1.5rem !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .metric-card .metric-label {
+        font-size: 0.8rem !important;
+    }
+    
+    /* CONTENIDO VIRAL RESULTS MOBILE */
+    .content-results {
+        padding: 15px !important;
+        margin: 15px 0 !important;
+    }
+    
+    .content-tabs {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 5px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .content-tab {
+        flex: 1 1 auto !important;
+        min-width: 80px !important;
+        padding: 8px 12px !important;
+        font-size: 0.8rem !important;
+        text-align: center !important;
+        border-radius: 20px !important;
+        background: rgba(45, 55, 72, 0.7) !important;
+        color: #a0aec0 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .content-tab.active {
+        background: #8a2be2 !important;
+        color: white !important;
+    }
+    
+    .content-item {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .content-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .content-text {
+        margin-bottom: 12px !important;
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .content-metrics {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+    
+    .content-metric {
+        padding: 8px !important;
+        text-align: center !important;
+        background: rgba(0,0,0,0.2) !important;
+        border-radius: 6px !important;
+    }
+    
+    /* AVATAR RESULTS MOBILE */
+    .avatar-results {
+        padding: 15px !important;
+        margin: 15px 0 !important;
+    }
+    
+    .avatar-section-item {
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+    }
+    
+    .avatar-section-title {
+        font-size: 1rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .avatar-section-content {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* MÚLTIPLES AVATARES MOBILE */
+    .avatars-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .avatar-card {
+        padding: 15px !important;
+    }
+    
+    .avatar-header h3 {
+        font-size: 1rem !important;
+    }
+    
+    .avatar-content {
+        max-height: 150px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .avatar-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .btn-small {
+        width: 100% !important;
+        padding: 10px !important;
+    }
+    
+    /* EXPORT BUTTONS MOBILE */
+    .export-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin: 20px 0 !important;
+    }
+    
+    .export-buttons .btn {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 1rem !important;
+    }
+    
+    /* DEBUG SECTION MOBILE */
+    .debug-section {
+        padding: 15px !important;
+        margin-top: 20px !important;
+    }
+    
+    .debug-info {
+        font-size: 0.8rem !important;
+        padding: 10px !important;
+    }
+    
+    #debugResponse {
+        max-height: 200px !important;
+        font-size: 0.75rem !important;
+        padding: 10px !important;
+    }
+    
+    /* OPTION CARDS MOBILE */
+    .option-card {
+        padding: 12px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .option-card label {
+        font-size: 0.9rem !important;
+        padding-left: 25px !important;
+    }
+    
+    .option-card input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    /* FIXES ESPECÍFICOS PARA iOS */
+    input, select, textarea {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        border-radius: 8px !important;
+    }
+    
+    button {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        border-radius: 8px !important;
+    }
+    
+    /* PREVENIR ZOOM EN INPUTS */
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        select, textarea, input[type="text"], input[type="password"], 
+        input[type="datetime"], input[type="datetime-local"], 
+        input[type="date"], input[type="month"], input[type="time"], 
+        input[type="week"], input[type="number"], input[type="email"], 
+        input[type="url"], input[type="search"], input[type="tel"], 
+        input[type="color"] {
+            font-size: 16px !important;
+        }
+    }
+    
+    /* SCROLL SUAVE */
+    html {
+        scroll-behavior: smooth !important;
+    }
+    
+    /* OPTIMIZACIÓN TOUCH */
+    .btn, .content-type-card, .content-tab, .avatar-card {
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* ESPACIADO GENERAL */
+    .section {
+        margin-bottom: 20px !important;
+    }
+    
+    .hidden {
+        display: none !important;
+    }
+}
+
+/* ===== TABLETS (768px - 1024px) ===== */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .content-types-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .metrics-overview {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .avatars-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ===== MEJORAS GENERALES DE USABILIDAD ===== */
+@media screen and (max-width: 768px) {
+    /* MEJOR CONTRASTE PARA MÓVILES */
+    .content-type-card {
+        border: 2px solid rgba(160, 174, 192, 0.3) !important;
+    }
+    
+    .content-type-card:hover,
+    .content-type-card:focus {
+        border-color: #8a2be2 !important;
+        background: rgba(138, 43, 226, 0.1) !important;
+    }
+    
+    /* BOTONES MÁS GRANDES PARA TOUCH */
+    .btn {
+        min-height: 44px !important; /* Estándar iOS */
+        min-width: 44px !important;
+    }
+    
+    /* MEJOR SPACING PARA DEDOS */
+    .clickable {
+        margin: 8px 0 !important;
+    }
+    
+    /* STATUS MESSAGES MOBILE */
+    .status {
+        padding: 12px 15px !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+        margin: 10px 0 !important;
+    }
+    
+    /* LOADING ANIMATION MOBILE */
+    .spinner {
+        width: 40px !important;
+        height: 40px !important;
+    }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+    .header h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    .form-section {
+        padding: 10px !important;
+    }
+    
+    .loading-steps {
+        flex-direction: row !important;
+        justify-content: space-around !important;
+    }
+    
+    .step {
+        flex: 1 !important;
+        padding: 10px 5px !important;
+    }
+}
+
+/* ===== ULTRA WIDE MOBILE (Galaxy Fold, etc.) ===== */
+@media screen and (max-width: 480px) {
+    .content-types-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .metrics-overview {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .content-tab {
+        font-size: 0.7rem !important;
+        padding: 6px 8px !important;
+    }
+}
+
+/* ===== DARK MODE MOBILE OPTIMIZATIONS ===== */
+@media screen and (max-width: 768px) and (prefers-color-scheme: dark) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        background: rgba(45, 55, 72, 0.8) !important;
+        color: white !important;
+        border: 1px solid rgba(160, 174, 192, 0.3) !important;
+    }
+    
+    .content-type-card {
+        background: rgba(26, 32, 44, 0.9) !important;
+    }
+    
+    .btn {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+}
