@@ -411,6 +411,251 @@
                     </div>
                 </div>
 
+                    <!-- ===== BUSCAR EN TU index.html DESPUÉS de los resultados de avatares múltiples ===== -->
+                    <!-- ===== Y AGREGAR EXACTAMENTE ESTAS 5 LÍNEAS ===== -->
+
+                    <!-- LÍNEA 1: El botón -->
+                    <button onclick="exportToFunnelArchitect()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #1a202c; padding: 15px 30px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 20px auto; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);">🏗️ Crear Funnels con estos datos</button>
+
+                    <!-- LÍNEAS 2-5: El script -->
+                    <script>
+                   // FUNCIÓN EXPORTACIÓN MEJORADA - Captura TODO el contexto
+            function exportToFunnelArchitect() {
+                console.log('🚀 Iniciando exportación con contexto completo...');
+                
+                // 1. DATOS BÁSICOS DEL ANÁLISIS PRINCIPAL
+                const contextoCompleto = {
+                    // Datos básicos del nicho
+                    nicho: document.getElementById('nicho')?.value?.trim() || '',
+                    publico: document.getElementById('publico')?.value?.trim() || '',
+                    keywords: document.getElementById('keywords')?.value?.trim() || '',
+                    
+                    // Configuración del producto/mercado
+                    rangoPrecios: document.getElementById('rangoPrecios')?.value || 'medio',
+                    tipoProducto: document.getElementById('tipoProducto')?.value || 'digital',
+                    canalPrincipal: document.getElementById('canalPrincipal')?.value || 'paid',
+                    experiencia: document.getElementById('experiencia')?.value || 'intermedio',
+                    
+                    // Configuración experta de afiliado
+                    presupuestoAds: document.getElementById('presupuestoAds')?.value || '1000',
+                    roiObjetivo: document.getElementById('roiObjetivo')?.value || '3',
+                    breakEvenTime: document.getElementById('breakEvenTime')?.value || 'mes',
+                    tipoConversion: document.getElementById('tipoConversion')?.value || 'inmediata',
+                    dispositivoTarget: document.getElementById('dispositivoTarget')?.value || 'mobile',
+                    mercadoGeo: document.getElementById('mercadoGeo')?.value || 'latam',
+                    
+                    // Configuración de contenido viral (si existe)
+                    salesAngle: document.getElementById('salesAngle')?.value || 'problema-agitacion',
+                    controversyLevel: document.getElementById('controversyLevel')?.value || 'medium',
+                    powerWords: document.getElementById('powerWords')?.value || '',
+                    
+                    // Configuración de avatar (si existe)
+                    avatarGender: document.getElementById('avatarGender')?.value || '',
+                    avatarAge: document.getElementById('avatarAge')?.value || '',
+                    avatarIncome: document.getElementById('avatarIncome')?.value || '',
+                    avatarFamily: document.getElementById('avatarFamily')?.value || '',
+                    avatarMainProblem: document.getElementById('avatarMainProblem')?.value || '',
+                    avatarMainDesire: document.getElementById('avatarMainDesire')?.value || '',
+                    
+                    // Timestamp de la exportación
+                    fechaExportacion: new Date().toISOString(),
+                    version: 'v1.2-contexto-completo'
+                };
+                
+                // 2. ANÁLISIS SELECCIONADOS (todos los checkboxes)
+                const analisisActivos = {
+                    // Análisis básicos
+                    analyzeCompetition: document.getElementById('analyzeCompetition')?.checked || false,
+                    analyzeTrends: document.getElementById('analyzeTrends')?.checked || false,
+                    findAffiliates: document.getElementById('findAffiliates')?.checked || false,
+                    analyzeKeywords: document.getElementById('analyzeKeywords')?.checked || false,
+                    analyzeSeasonality: document.getElementById('analyzeSeasonality')?.checked || false,
+                    analyzeProfitability: document.getElementById('analyzeProfitability')?.checked || false,
+                    
+                    // Análisis expertos
+                    analyzeConversion: document.getElementById('analyzeConversion')?.checked || false,
+                    analyzeFinancial: document.getElementById('analyzeFinancial')?.checked || false,
+                    analyzeCompetitorIntel: document.getElementById('analyzeCompetitorIntel')?.checked || false,
+                    analyzeCustomerJourney: document.getElementById('analyzeCustomerJourney')?.checked || false,
+                    analyzeTrafficChannels: document.getElementById('analyzeTrafficChannels')?.checked || false,
+                    analyzeFunnels: document.getElementById('analyzeFunnels')?.checked || false
+                };
+                
+                // 3. AVATARES (mejorado)
+                const avatarsAutomaticos = window.processedAvatars || [];
+                const avatarUltraEspecifico = window.lastAvatarGenerated ? [{
+                    titulo: "Avatar Ultra-Específico Personalizado",
+                    contenido: window.lastAvatarGenerated,
+                    tipo: "ultra-especifico",
+                    personalizado: true,
+                    configuracion: {
+                        gender: contextoCompleto.avatarGender,
+                        age: contextoCompleto.avatarAge,
+                        income: contextoCompleto.avatarIncome,
+                        family: contextoCompleto.avatarFamily,
+                        mainProblem: contextoCompleto.avatarMainProblem,
+                        mainDesire: contextoCompleto.avatarMainDesire
+                    }
+                }] : [];
+                
+                const todosLosAvatares = [
+                    ...avatarUltraEspecifico, // Primero el personalizado
+                    ...avatarsAutomaticos     // Luego los automáticos
+                ];
+                
+                // 4. PRODUCTOS ANALIZADOS (mejorado)
+                const productos = (AppState.productosDetectados || []).map(producto => ({
+                    ...producto,
+                    contextoAnalisis: {
+                        nicho: contextoCompleto.nicho,
+                        rangoPrecios: contextoCompleto.rangoPrecios,
+                        tipoProducto: contextoCompleto.tipoProducto,
+                        analisisUsados: analisisActivos
+                    }
+                }));
+                
+                // 5. CONTENIDO VIRAL GENERADO (si existe)
+                const contenidoViral = {
+                    ultimoGenerado: window.lastContentGenerated || null,
+                    tiposSeleccionados: window.selectedContentTypes ? Array.from(window.selectedContentTypes) : [],
+                    configuracion: {
+                        salesAngle: contextoCompleto.salesAngle,
+                        controversyLevel: contextoCompleto.controversyLevel,
+                        powerWords: contextoCompleto.powerWords
+                    }
+                };
+                
+                // 6. VALIDACIONES PRE-EXPORTACIÓN
+                const validaciones = {
+                    tieneAvatares: todosLosAvatares.length > 0,
+                    tieneProductos: productos.length > 0,
+                    tieneContextoBasico: !!(contextoCompleto.nicho && contextoCompleto.publico),
+                    tieneConfiguracionExperta: !!(contextoCompleto.presupuestoAds && contextoCompleto.roiObjetivo)
+                };
+                
+                // 7. PREPARAR DATOS PARA EXPORTACIÓN
+                const datosExportacion = {
+                    contexto: contextoCompleto,
+                    analisis: analisisActivos,
+                    avatares: todosLosAvatares,
+                    productos: productos,
+                    contenidoViral: contenidoViral,
+                    validaciones: validaciones,
+                    metadatos: {
+                        totalAvatares: todosLosAvatares.length,
+                        totalProductos: productos.length,
+                        tieneUltraEspecifico: avatarUltraEspecifico.length > 0,
+                        completitud: calcularCompletitud(validaciones),
+                        timestamp: Date.now()
+                    }
+                };
+                
+                // 8. EXPORTAR A LOCALSTORAGE
+                try {
+                    // Exportación por categorías (mantiene compatibilidad)
+                    localStorage.setItem('funnel_avatars', JSON.stringify(todosLosAvatares));
+                    localStorage.setItem('funnel_products', JSON.stringify(productos));
+                    
+                    // Nueva exportación de contexto completo
+                    localStorage.setItem('funnel_context_complete', JSON.stringify(contextoCompleto));
+                    localStorage.setItem('funnel_analysis_config', JSON.stringify(analisisActivos));
+                    localStorage.setItem('funnel_content_viral', JSON.stringify(contenidoViral));
+                    
+                    // Datos consolidados para el nuevo sistema
+                    localStorage.setItem('marketinsight_export_v2', JSON.stringify(datosExportacion));
+                    
+                    console.log('✅ Exportación completa realizada:', datosExportacion.metadatos);
+                    
+                    // 9. FEEDBACK AL USUARIO
+                    const { totalAvatares, totalProductos, tieneUltraEspecifico, completitud } = datosExportacion.metadatos;
+                    
+                    if (typeof Utils !== 'undefined' && Utils.showStatus) {
+                        const completitudTexto = completitud >= 80 ? 'Contexto Completo' : 
+                                            completitud >= 60 ? 'Contexto Bueno' : 
+                                            'Contexto Básico';
+                        
+                        Utils.showStatus(
+                            `✅ Exportado: ${totalAvatares} avatares${tieneUltraEspecifico ? ' (incluye ultra-específico)' : ''} + ${totalProductos} productos + ${completitudTexto} (${completitud}%)`, 
+                            'success'
+                        );
+                    }
+                    
+                    // 10. ABRIR FUNNEL ARCHITECT
+                    window.open('funnel-architect-standalone.html', '_blank');
+                    
+                } catch (error) {
+                    console.error('❌ Error en exportación:', error);
+                    if (typeof Utils !== 'undefined' && Utils.showStatus) {
+                        Utils.showStatus('❌ Error al exportar datos. Inténtalo de nuevo.', 'error');
+                    } else {
+                        alert('Error al exportar datos. Inténtalo de nuevo.');
+                    }
+                }
+            }
+
+            // FUNCIÓN AUXILIAR: Calcular completitud del contexto
+            function calcularCompletitud(validaciones) {
+                const checks = [
+                    validaciones.tieneAvatares,
+                    validaciones.tieneProductos,
+                    validaciones.tieneContextoBasico,
+                    validaciones.tieneConfiguracionExperta
+                ];
+                
+                const completados = checks.filter(check => check).length;
+                return Math.round((completados / checks.length) * 100);
+            }
+
+            // FUNCIÓN AUXILIAR: Actualizar botón con información contextual
+            function updateFunnelExportButton() {
+                const btn = document.querySelector('[onclick="exportToFunnelArchitect()"]');
+                if (!btn) return;
+                
+                const avatarsAutomaticos = window.processedAvatars?.length || 0;
+                const tieneUltraEspecifico = window.lastAvatarGenerated ? 1 : 0;
+                const totalAvatares = avatarsAutomaticos + tieneUltraEspecifico;
+                const productos = (typeof AppState !== 'undefined' && AppState.productosDetectados) ? AppState.productosDetectados.length : 0;
+                
+                // Calcular completitud básica
+                const tieneNicho = document.getElementById('nicho')?.value?.trim();
+                const tienePublico = document.getElementById('publico')?.value?.trim();
+                const tieneConfiguracion = !!(tieneNicho && tienePublico);
+                
+                if (totalAvatares === 0 && productos === 0) {
+                    btn.innerHTML = '🏗️ Crear Funnels (Genera avatares y productos primero)';
+                    btn.style.opacity = '0.6';
+                    btn.disabled = true;
+                } else if (!tieneConfiguracion) {
+                    btn.innerHTML = '🏗️ Crear Funnels (Completa nicho y público primero)';
+                    btn.style.opacity = '0.7';
+                    btn.disabled = false;
+                } else {
+                    const contextStatus = tieneConfiguracion ? '+ Contexto Completo' : '+ Contexto Básico';
+                    btn.innerHTML = `🏗️ Crear Funnels (${totalAvatares} avatares + ${productos} productos ${contextStatus})`;
+                    btn.style.opacity = '1';
+                    btn.disabled = false;
+                }
+            }
+
+            // AUTO-ACTUALIZAR EL BOTÓN cuando cambien los datos
+            document.addEventListener('DOMContentLoaded', function() {
+                // Actualizar cuando cambien los campos principales
+                ['nicho', 'publico', 'rangoPrecios', 'presupuestoAds'].forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('change', updateFunnelExportButton);
+                        field.addEventListener('input', updateFunnelExportButton);
+                    }
+                });
+                
+                // Actualizar inicialmente
+                setTimeout(updateFunnelExportButton, 1000);
+            });
+                    </script>
+
+                
+
+
                     <!-- Estimaciones en tiempo real -->
                     <div id="quickEstimations" class="quick-estimations hidden"></div>
                 </div>

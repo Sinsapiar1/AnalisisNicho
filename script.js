@@ -2777,3 +2777,99 @@ if (document.readyState === 'loading') {
 }
 
 setTimeout(initMultipleAvatarsGenerator, 1000);
+
+
+// ===================== FIX VARIABLES GLOBALES =====================
+// Agregar al FINAL del script.js
+
+// INTERCEPTAR Y GUARDAR DATOS CUANDO SE GENEREN
+const originalMostrarResultadosAvatar = window.mostrarResultadosAvatar || function(){};
+const originalMostrarResultados = UIManager.displayResults || function(){};
+
+// Override para avatares
+window.mostrarResultadosAvatar = function(respuesta) {
+    // Guardar en variable global
+    window.lastAvatarGenerated = respuesta;
+    
+    // Llamar función original
+    if (typeof originalMostrarResultadosAvatar === 'function') {
+        originalMostrarResultadosAvatar(respuesta);
+    }
+    
+    // Actualizar botón
+    setTimeout(updateFunnelExportButton, 500);
+    console.log('✅ Avatar guardado globalmente');
+};
+
+// Override para productos
+if (typeof UIManager !== 'undefined' && UIManager.displayResults) {
+    const originalDisplayResults = UIManager.displayResults;
+    UIManager.displayResults = function(analysisData) {
+        // Guardar productos globalmente
+        if (analysisData && analysisData.productos) {
+            if (typeof AppState === 'undefined') {
+                window.AppState = {};
+            }
+            AppState.productosDetectados = analysisData.productos;
+            console.log('✅ Productos guardados globalmente:', analysisData.productos.length);
+        }
+        
+        // Llamar función original
+        originalDisplayResults.call(this, analysisData);
+        
+        // Actualizar botón
+        setTimeout(updateFunnelExportButton, 500);
+    };
+}
+
+// VERIFICAR Y ACTUALIZAR BOTÓN PERIÓDICAMENTE
+setInterval(function() {
+    const avatarExists = !!window.lastAvatarGenerated;
+    const productExists = !!(typeof AppState !== 'undefined' && AppState.productosDetectados && AppState.productosDetectados.length > 0);
+    
+    if ((avatarExists || productExists) && updateFunnelExportButton) {
+        updateFunnelExportButton();
+    }
+}, 2000);
+
+// AUTODETECTAR DATOS EXISTENTES AL CARGAR
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        // Verificar si hay datos ya mostrados en pantalla
+        const avatarResults = document.getElementById('avatarResults');
+        const productResults = document.getElementById('resultados');
+        
+        if (avatarResults && !avatarResults.classList.contains('hidden')) {
+            console.log('🔍 Avatar detectado en pantalla, buscando datos...');
+            // Intentar extraer datos del DOM
+            const avatarContent = avatarResults.querySelector('.avatar-content, .avatar-display');
+            if (avatarContent && avatarContent.textContent) {
+                window.lastAvatarGenerated = avatarContent.textContent;
+                console.log('✅ Avatar recuperado del DOM');
+            }
+        }
+        
+        if (productResults && !productResults.classList.contains('hidden')) {
+            console.log('🔍 Productos detectados en pantalla, simulando datos...');
+            // Simular al menos un producto si no existe AppState
+            if (typeof AppState === 'undefined') {
+                window.AppState = {};
+            }
+            if (!AppState.productosDetectados) {
+                AppState.productosDetectados = [{
+                    nombre: "Producto detectado",
+                    precio: "$50-200",
+                    descripcion: "Producto de fitness y bienestar"
+                }];
+                console.log('✅ Productos simulados');
+            }
+        }
+        
+        // Forzar actualización final
+        if (updateFunnelExportButton) {
+            updateFunnelExportButton();
+        }
+    }, 1000);
+});
+
+console.log('🔧 Fix de variables globales cargado');
