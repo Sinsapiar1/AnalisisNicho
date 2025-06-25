@@ -2873,3 +2873,296 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('🔧 Fix de variables globales cargado');
+
+
+// ===================== TREND PREDICTOR INTEGRATION =====================
+// AGREGAR AL FINAL DE TU script.js EXISTENTE
+
+const TrendPredictorIntegration = {
+    // Abrir Trend Predictor con datos actuales
+    openTrendPredictor: () => {
+        console.log('🔮 Abriendo Trend Predictor...');
+        
+        // Recopilar datos actuales del formulario
+        const currentConfig = {
+            nicho: document.getElementById('nicho')?.value?.trim() || '',
+            mercado: document.getElementById('mercadoGeo')?.value || 'LATAM',
+            tipoProducto: document.getElementById('tipoProducto')?.value || 'digital',
+            canalPrincipal: document.getElementById('canalPrincipal')?.value || 'paid',
+            presupuestoAds: document.getElementById('presupuestoAds')?.value || '1000',
+            experiencia: document.getElementById('experiencia')?.value || 'intermedio'
+        };
+        
+        // Validar que tenga nicho
+        if (!currentConfig.nicho) {
+            alert('⚠️ Ingresa un nicho primero');
+            return;
+        }
+        
+        // Guardar configuración en localStorage para que Trend Predictor lo use
+        localStorage.setItem('main_nicho', currentConfig.nicho);
+        localStorage.setItem('main_mercado', currentConfig.mercado);
+        localStorage.setItem('main_config', JSON.stringify(currentConfig));
+        
+        // Construir URL con parámetros
+        const params = new URLSearchParams({
+            nicho: currentConfig.nicho,
+            mercado: currentConfig.mercado,
+            source: 'marketinsight-pro'
+        });
+        
+        // Abrir Trend Predictor en nueva ventana/tab
+        const url = `trend-predictor.html?${params.toString()}`;
+        const newWindow = window.open(url, '_blank', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        
+        // Verificar si se abrió correctamente
+        if (newWindow) {
+            console.log('✅ Trend Predictor abierto exitosamente');
+        } else {
+            alert('⚠️ Permitir pop-ups para abrir Trend Predictor');
+        }
+        
+        // Mostrar feedback al usuario
+        if (typeof Utils !== 'undefined' && Utils.showStatus) {
+            Utils.showStatus(`🔮 Trend Predictor abierto para: ${currentConfig.nicho}`, 'success');
+        }
+        
+        console.log('🔮 Configuración enviada:', currentConfig);
+    },
+    
+    // Verificar si se puede usar Trend Predictor
+    canUseTrendPredictor: () => {
+        const apiKey = localStorage.getItem('gemini_api_key');
+        const nicho = document.getElementById('nicho')?.value?.trim();
+        
+        return !!(apiKey && nicho);
+    },
+    
+    // Actualizar estado del botón dinámicamente
+    updateTrendButton: () => {
+        const btn = document.getElementById('openTrendPredictorBtn');
+        if (!btn) return;
+        
+        const canUse = TrendPredictorIntegration.canUseTrendPredictor();
+        const nicho = document.getElementById('nicho')?.value?.trim() || '';
+        const apiKey = localStorage.getItem('gemini_api_key');
+        
+        if (!apiKey) {
+            btn.style.opacity = '0.6';
+            btn.disabled = true;
+            btn.innerHTML = '🔮 Trend Predictor (Configura API Key primero)';
+        } else if (!nicho) {
+            btn.style.opacity = '0.6';
+            btn.disabled = true;
+            btn.innerHTML = '🔮 Trend Predictor (Ingresa nicho primero)';
+        } else {
+            btn.style.opacity = '1';
+            btn.disabled = false;
+            btn.innerHTML = `🔮 Predecir Tendencias: ${nicho}`;
+        }
+    }
+};
+
+// AGREGAR BOTÓN AL HTML PRINCIPAL
+function addTrendPredictorButton() {
+    // Buscar dónde insertar el botón (después del botón principal de generar)
+    const generateBtn = document.getElementById('generateBtn');
+    if (!generateBtn) {
+        // Si no encuentra el botón, reintentar en 1 segundo
+        setTimeout(addTrendPredictorButton, 1000);
+        return;
+    }
+    
+    // Verificar si ya existe el botón para no duplicarlo
+    if (document.getElementById('openTrendPredictorBtn')) {
+        return;
+    }
+    
+    console.log('📋 Agregando botón Trend Predictor...');
+    
+    // Crear botón de Trend Predictor
+    const trendBtn = document.createElement('button');
+    trendBtn.id = 'openTrendPredictorBtn';
+    trendBtn.className = 'btn btn-primary'; // Usar las mismas clases que tu botón principal
+    
+    // Estilos específicos para diferenciarlo
+    trendBtn.style.cssText = `
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+        color: white !important;
+        padding: 15px 30px !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin: 15px auto !important;
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3) !important;
+        max-width: 400px !important;
+        width: 100% !important;
+    `;
+    
+    // Texto inicial del botón
+    trendBtn.innerHTML = '🔮 Trend Predictor (Configura nicho primero)';
+    
+    // Evento click
+    trendBtn.onclick = TrendPredictorIntegration.openTrendPredictor;
+    
+    // Insertar botón después del botón principal
+    generateBtn.parentNode.insertBefore(trendBtn, generateBtn.nextSibling);
+    
+    // Actualizar estado inicial del botón
+    TrendPredictorIntegration.updateTrendButton();
+    
+    console.log('✅ Botón Trend Predictor agregado exitosamente');
+}
+
+// CONFIGURAR LISTENERS PARA AUTO-ACTUALIZAR EL BOTÓN
+function setupTrendPredictorListeners() {
+    // Campos que afectan el estado del botón
+    const fieldsToWatch = ['nicho', 'mercadoGeo'];
+    
+    fieldsToWatch.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            // Escuchar cambios en tiempo real
+            field.addEventListener('input', TrendPredictorIntegration.updateTrendButton);
+            field.addEventListener('change', TrendPredictorIntegration.updateTrendButton);
+            field.addEventListener('keyup', TrendPredictorIntegration.updateTrendButton);
+        }
+    });
+    
+    // También actualizar periódicamente por si cambia la API key
+    setInterval(TrendPredictorIntegration.updateTrendButton, 3000);
+    
+    console.log('👂 Listeners configurados para Trend Predictor');
+}
+
+// AGREGAR ESTILOS CSS PARA EL BOTÓN
+function addTrendPredictorStyles() {
+    // Verificar si ya existen los estilos
+    if (document.getElementById('trendPredictorStyles')) {
+        return;
+    }
+    
+    const styles = `
+        #openTrendPredictorBtn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ee5a52 0%, #dc2626 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4) !important;
+        }
+
+        #openTrendPredictorBtn:disabled {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.2) !important;
+        }
+
+        @media (max-width: 768px) {
+            #openTrendPredictorBtn {
+                font-size: 1rem !important;
+                padding: 12px 20px !important;
+                margin: 10px auto !important;
+            }
+        }
+
+        /* Animación de aparición */
+        #openTrendPredictorBtn {
+            animation: trendButtonAppear 0.5s ease-out;
+        }
+
+        @keyframes trendButtonAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.id = 'trendPredictorStyles';
+    styleSheet.textContent = styles;
+    document.head.appendChild(styleSheet);
+    
+    console.log('🎨 Estilos Trend Predictor agregados');
+}
+
+// INICIALIZACIÓN PRINCIPAL
+function initTrendPredictorIntegration() {
+    console.log('🔮 Inicializando integración Trend Predictor...');
+    
+    // Agregar estilos CSS
+    addTrendPredictorStyles();
+    
+    // Agregar botón (con delay para asegurar que el DOM esté listo)
+    setTimeout(addTrendPredictorButton, 1000);
+    
+    // Configurar listeners (con delay mayor para asegurar que todo esté cargado)
+    setTimeout(setupTrendPredictorListeners, 1500);
+    
+    // Verificar si hay datos que vienen del Trend Predictor
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('from') === 'trend-predictor') {
+        console.log('🔄 Usuario regresando desde Trend Predictor');
+        // Aquí podrías mostrar un mensaje o hacer algo específico
+        if (typeof Utils !== 'undefined' && Utils.showStatus) {
+            Utils.showStatus('🔮 Datos de tendencias disponibles para análisis', 'info');
+        }
+    }
+    
+    console.log('✅ Integración Trend Predictor inicializada completamente');
+}
+
+// EJECUCIÓN DE LA INICIALIZACIÓN
+// Múltiples métodos para asegurar que se ejecute
+
+// Método 1: Si el DOM está cargando
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTrendPredictorIntegration);
+} else {
+    // Método 2: Si el DOM ya está cargado
+    initTrendPredictorIntegration();
+}
+
+// Método 3: Timeout de respaldo para asegurar ejecución
+setTimeout(initTrendPredictorIntegration, 2000);
+
+// Método 4: Respaldo adicional
+setTimeout(() => {
+    // Solo ejecutar si no se ha agregado el botón aún
+    if (!document.getElementById('openTrendPredictorBtn')) {
+        console.log('🔄 Ejecutando respaldo de inicialización...');
+        initTrendPredictorIntegration();
+    }
+}, 4000);
+
+// FUNCIÓN PARA DEBUG/TROUBLESHOOTING
+function debugTrendPredictor() {
+    console.log('🔧 DEBUG TREND PREDICTOR:');
+    console.log('- API Key:', !!localStorage.getItem('gemini_api_key'));
+    console.log('- Nicho campo:', document.getElementById('nicho')?.value || 'NO ENCONTRADO');
+    console.log('- Botón existe:', !!document.getElementById('openTrendPredictorBtn'));
+    console.log('- Estilos cargados:', !!document.getElementById('trendPredictorStyles'));
+    
+    const btn = document.getElementById('openTrendPredictorBtn');
+    if (btn) {
+        console.log('- Botón habilitado:', !btn.disabled);
+        console.log('- Texto del botón:', btn.textContent);
+    }
+}
+
+// Exponer función de debug globalmente para troubleshooting
+window.debugTrendPredictor = debugTrendPredictor;
+
+console.log('🔮 Trend Predictor Integration cargado. Usa debugTrendPredictor() para troubleshooting.');
+
+// ===================== FIN TREND PREDICTOR INTEGRATION =====================
