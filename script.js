@@ -3166,3 +3166,741 @@ window.debugTrendPredictor = debugTrendPredictor;
 console.log('🔮 Trend Predictor Integration cargado. Usa debugTrendPredictor() para troubleshooting.');
 
 // ===================== FIN TREND PREDICTOR INTEGRATION =====================
+
+// ===================== OFFER VALIDATOR CON IA =====================
+const OfferValidator = {
+    // Validar ofertas usando inteligencia de Gemini
+    validateOffer: async (producto, nicho) => {
+        if (!AppState.apiKey) {
+            alert('⚠️ Configura tu API Key primero');
+            return;
+        }
+
+        const prompt = `Actúa como SUPER AFILIADO con acceso a TODAS las redes de afiliados.
+
+MISIÓN: Validar la oferta "${producto}" en el nicho "${nicho}" como si tuvieras acceso real a ClickBank, ShareASale, CJ, MaxBounty.
+
+PRODUCTO A VALIDAR: ${producto}
+
+Basándote en tu conocimiento del mercado actual y patrones históricos, proporciona:
+
+=== VALIDACIÓN DE OFERTA ===
+NOMBRE_REAL: [Nombre exacto en networks]
+EXISTE_EN_NETWORKS: [SI/NO]
+NETWORKS_DISPONIBLES: [Lista de networks donde está]
+
+CLICKBANK_METRICS:
+- Gravity Score: [1-500 realista]
+- Avg $/sale: [$XX.XX]
+- Initial $/sale: [$XX.XX]
+- Recurring: [SI/NO]
+- Refund Rate: [X-XX%]
+- Vendor Reputation: [1-10]
+
+PERFORMANCE_DATA:
+- EPC Promedio: [$X.XX]
+- Conversion Rate: [X.X%]
+- Cookie Duration: [XX días]
+- Mobile Optimized: [SI/NO]
+- Países Top: [Lista de 5]
+
+COMPETITION_ANALYSIS:
+- Saturación: [BAJA/MEDIA/ALTA]
+- Afiliados Activos: [Estimado]
+- Ad Spend Promedio: [$XXX-$XXXX/día]
+- Creativos Ganadores: [3 ángulos principales]
+
+AFFILIATE_REQUIREMENTS:
+- Approval: [INSTANT/MANUAL/STRICT]
+- Restricciones Geo: [Lista países]
+- Restricciones Tráfico: [Tipos prohibidos]
+- Minimum Sales: [Si aplica]
+
+PROFIT_CALCULATOR:
+Con $1000 de presupuesto:
+- CPC Estimado: [$X.XX]
+- Clicks Esperados: [XXX]
+- Conversiones Est: [XX]
+- Revenue Est: [$XXXX]
+- Profit Est: [$XXX]
+- ROI: [XX%]
+
+VERDICT: [WINNER/PROMETEDOR/SATURADO/EVITAR]
+RAZÓN: [Explicación breve]
+
+TIPS_SECRETOS:
+[3 tips que solo sabrían super afiliados sobre esta oferta]
+=== FIN VALIDACIÓN ===
+
+IMPORTANTE: Usa datos REALISTAS basados en el mercado actual 2024-2025.`;
+
+        try {
+            const response = await APIManager.callGemini(prompt);
+            return OfferValidator.parseValidationResponse(response);
+        } catch (error) {
+            console.error('Error validando oferta:', error);
+            return null;
+        }
+    },
+
+    // Busca la función parseValidationResponse en tu script.js
+// Y reemplázala con esta versión mejorada:
+
+parseValidationResponse: (response) => {
+    // Extraer datos de la respuesta
+    const validation = {
+        exists: response.includes('EXISTE_EN_NETWORKS: SI'),
+        gravity: response.match(/Gravity Score: \[?(\d+)\]?/i)?.[1] || '0',
+        epc: response.match(/EPC Promedio: \[\$?([\d.]+)\]/i)?.[1] || '0',
+        conversionRate: response.match(/Conversion Rate: \[?([\d.]+)%?\]/i)?.[1] || '0',
+        // FIX: Mejorar la extracción del veredicto
+        verdict: response.match(/VERDICT:\s*\[?(\w+)\]?/i)?.[1] || 
+                response.match(/VEREDICTO:\s*\[?(\w+)\]?/i)?.[1] || 
+                response.includes('WINNER') ? 'WINNER' :
+                response.includes('PROMETEDOR') ? 'PROMETEDOR' :
+                response.includes('SATURADO') ? 'SATURADO' :
+                response.includes('EVITAR') ? 'EVITAR' : 'UNKNOWN',
+        competitionLevel: response.match(/Saturación:\s*\[?(\w+)\]?/i)?.[1] || 'MEDIO',
+        networks: response.match(/NETWORKS_DISPONIBLES:\s*\[([^\]]+)\]/i)?.[1] || '',
+        profitEstimate: response.match(/Profit Est:\s*\[\$?([\d,]+)\]/i)?.[1] || '0',
+        tips: response.match(/TIPS_SECRETOS:\s*\n([^=]+)/i)?.[1] || ''
+    };
+    
+    return validation;
+},
+
+// También actualiza el CSS del veredicto en displayValidation:
+displayValidation: (validation, productName, productCard) => {
+    // Verificar si ya existe una validación para este producto
+    const existingValidation = productCard.querySelector('.offer-validation');
+    if (existingValidation) {
+        existingValidation.remove();
+    }
+    
+    // Mapear colores para cada veredicto
+    const verdictClass = {
+        'WINNER': 'winner',
+        'PROMETEDOR': 'prometedor',
+        'SATURADO': 'saturado',
+        'EVITAR': 'evitar',
+        'UNKNOWN': 'unknown'
+    }[validation.verdict] || 'unknown';
+    
+    const validationHtml = `
+        <div class="offer-validation ${validation.verdict.toLowerCase()}">
+            <h3>🔍 Validación: ${productName}</h3>
+            <div class="validation-grid">
+                <div class="metric">
+                    <span class="label">Gravity:</span>
+                    <span class="value ${validation.gravity > 50 ? 'good' : validation.gravity > 20 ? 'medium' : 'bad'}">${validation.gravity}</span>
+                </div>
+                <div class="metric">
+                    <span class="label">EPC:</span>
+                    <span class="value ${validation.epc > 2 ? 'good' : validation.epc > 1 ? 'medium' : 'bad'}">$${validation.epc}</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CR:</span>
+                    <span class="value ${validation.conversionRate > 3 ? 'good' : validation.conversionRate > 1 ? 'medium' : 'bad'}">${validation.conversionRate}%</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Profit Est:</span>
+                    <span class="value">$${validation.profitEstimate}</span>
+                </div>
+            </div>
+            <div class="verdict ${verdictClass}">
+                Veredicto: ${validation.verdict}
+                ${validation.verdict === 'WINNER' ? ' 🏆' : ''}
+                ${validation.verdict === 'EVITAR' ? ' ⚠️' : ''}
+            </div>
+            ${validation.tips ? `
+            <div class="tips">
+                <h4>💡 Tips Secretos:</h4>
+                <div class="tips-content">
+                    ${validation.tips.split('\n').filter(tip => tip.trim()).map(tip => 
+                        `<div class="tip-item">${tip.trim()}</div>`
+                    ).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    // Insertar DENTRO del producto, NO arriba de todo
+    const validationDiv = document.createElement('div');
+    validationDiv.innerHTML = validationHtml;
+    productCard.appendChild(validationDiv);
+
+    // Scroll suave hacia la validación
+    setTimeout(() => {
+        validationDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+    
+    
+    }
+};
+
+// Agregar botón de validación a cada producto
+function addValidationButtons() {
+    document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+        if (!card.querySelector('.validate-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-secondary validate-btn';
+            btn.innerHTML = '🔍 Validar Oferta';
+            btn.onclick = async () => {
+                const producto = AppState.productosDetectados[index];
+                btn.disabled = true;
+                btn.innerHTML = '🔄 Validando...';
+                
+                const validation = await OfferValidator.validateOffer(
+                    producto.nombre, 
+                    document.getElementById('nicho').value
+                );
+                
+                if (validation) {
+                    // IMPORTANTE: ahora pasamos card como tercer parámetro
+                    OfferValidator.displayValidation(validation, producto.nombre, card);
+                }
+                
+                btn.disabled = false;
+                btn.innerHTML = '🔍 Validar Oferta';
+            };
+            
+            card.appendChild(btn);
+        }
+    });
+}
+
+// Auto-ejecutar después de generar productos
+const originalDisplayResults = UIManager.displayResults;
+UIManager.displayResults = function(analysisData) {
+    originalDisplayResults.call(this, analysisData);
+    setTimeout(addValidationButtons, 500);
+};
+
+// ===================== CREATIVE SPY CON IA =====================
+// Agregar DESPUÉS del OfferValidator en script.js
+
+const CreativeSpy = {
+    // Estado para controlar qué productos ya tienen spy
+    spiedProducts: new Set(),
+    
+    // Analizar creativos ganadores sin herramientas pagas
+    spyWinningAds: async (producto, nicho, index) => {
+        if (!AppState.apiKey) {
+            alert('⚠️ Configura tu API Key primero');
+            return;
+        }
+
+        const prompt = `Actúa como EXPERTO EN FACEBOOK ADS LIBRARY y TIKTOK CREATIVE CENTER con acceso completo a todas las campañas activas.
+
+MISIÓN: Revelar los creativos GANADORES actuales para "${producto}" en el nicho "${nicho}".
+
+Basándote en patrones de ads virales y ganadores de 2024-2025, proporciona:
+
+=== WINNING CREATIVES ANALYSIS ===
+
+TOP 3 HOOKS GANADORES:
+Hook #1: [Hook exacto que está convirtiendo ahora]
+Hook #2: [Segundo mejor hook con alto CTR]
+Hook #3: [Tercer hook para split testing]
+
+ÁNGULOS QUE CONVIERTEN:
+Ángulo #1: [Nombre del ángulo]
+- Descripción: [Cómo funciona]
+- Por qué convierte: [Psicología detrás]
+- CTR esperado: [X.X%]
+- Best for: [Tipo de audiencia]
+
+Ángulo #2: [Nombre del ángulo]
+- Descripción: [Cómo funciona]
+- Por qué convierte: [Psicología detrás]
+- CTR esperado: [X.X%]
+- Best for: [Tipo de audiencia]
+
+FORMATO DE CREATIVOS TOP:
+VIDEO (Si aplica):
+- Duración ideal: [XX segundos]
+- Estructura: [0-3s hook, 3-10s problema, etc.]
+- Estilo visual: [UGC, profesional, animado]
+
+IMAGEN:
+- Estilo: [Lifestyle, before/after, testimonial]
+- Elementos clave: [Qué debe incluir]
+- Colores dominantes: [Colores que convierten]
+
+COPY FRAMEWORK GANADOR:
+[HEADLINE]
+Primera línea que detiene el scroll
+
+[BODY]
+Estructura del copy principal (150 palabras max)
+- Pain point
+- Agitación
+- Solución
+- Beneficios
+- Social proof
+
+[CTA]
+Call to action específico que convierte
+
+AD METRICS PROMEDIO DEL NICHO:
+- CTR: [X.X]% (benchmark actual)
+- CPC: $[X.XX] (rango típico)
+- CPM: $[XX.XX] (costo por mil)
+- Conversion Rate: [X.X]%
+- ROAS esperado: [X.X]x
+
+AUDIENCIAS GANADORAS:
+Intereses TOP 5:
+1. [Interés específico + tamaño audiencia]
+2. [Interés específico + tamaño audiencia]
+3. [Interés específico + tamaño audiencia]
+4. [Interés específico + tamaño audiencia]
+5. [Interés específico + tamaño audiencia]
+
+Comportamientos clave:
+- [Comportamiento 1]
+- [Comportamiento 2]
+
+ELEMENTOS VISUALES CLAVE:
+- Colores que convierten: [Lista]
+- Fonts recomendadas: [Lista]
+- Elementos gráficos: [Iconos, badges, etc.]
+
+HORARIOS ÓPTIMOS:
+- Mejores días: [Días específicos]
+- Mejores horas: [Rangos horarios]
+- Timezone: [Para el mercado target]
+
+=== FIN ANALYSIS ===`;
+
+        try {
+            const response = await APIManager.callGemini(prompt);
+            return CreativeSpy.parseSpyResponse(response);
+        } catch (error) {
+            console.error('Error en spy creatives:', error);
+            return null;
+        }
+    },
+
+    // Parsear respuesta del spy
+    parseSpyResponse: (response) => {
+        const spyData = {
+            hooks: [],
+            angles: [],
+            copyFramework: '',
+            metrics: {},
+            audiences: [],
+            visualElements: '',
+            schedule: ''
+        };
+
+        // Extraer hooks
+        const hooksMatch = response.match(/Hook #\d+: ([^\n]+)/gi);
+        if (hooksMatch) {
+            spyData.hooks = hooksMatch.map(h => h.replace(/Hook #\d+: /i, ''));
+        }
+
+        // Extraer ángulos completos
+        const anglesSection = response.match(/ÁNGULOS QUE CONVIERTEN:([\s\S]*?)FORMATO DE CREATIVOS/i);
+        if (anglesSection) {
+            spyData.angles = anglesSection[1].trim();
+        }
+
+        // Extraer copy framework
+        const copyMatch = response.match(/COPY FRAMEWORK GANADOR:([\s\S]*?)AD METRICS/i);
+        if (copyMatch) {
+            spyData.copyFramework = copyMatch[1].trim();
+        }
+
+        // Extraer métricas
+        spyData.metrics = {
+            ctr: response.match(/CTR:\s*\[?([\d.]+)\]?%/i)?.[1] || '2.5',
+            cpc: response.match(/CPC:\s*\$\[?([\d.]+)\]/i)?.[1] || '0.75',
+            cpm: response.match(/CPM:\s*\$\[?([\d.]+)\]/i)?.[1] || '15.00',
+            cvr: response.match(/Conversion Rate:\s*\[?([\d.]+)\]?%/i)?.[1] || '2.0',
+            roas: response.match(/ROAS esperado:\s*\[?([\d.]+)\]?x/i)?.[1] || '3.0'
+        };
+
+        // Extraer audiencias
+        const audiencesMatch = response.match(/\d+\.\s*\[([^\]]+)\]/g);
+        if (audiencesMatch) {
+            spyData.audiences = audiencesMatch.map(a => a.replace(/\d+\.\s*\[|\]/g, ''));
+        }
+
+        // MEJORADO: Extraer audiencias de múltiples formatos posibles
+    const audiencesSection = response.match(/(?:AUDIENCIAS GANADORAS|Intereses TOP):([\s\S]*?)(?=ELEMENTOS VISUALES|HORARIOS|$)/i);
+    if (audiencesSection) {
+        const audienceText = audiencesSection[1];
+        // Buscar diferentes patrones
+        const patterns = [
+            /\d+\.\s*\[([^\]]+)\]/g,  // 1. [Interés]
+            /\d+\.\s*([^[\n]+)/g,      // 1. Interés
+            /- ([^[\n]+)/g,            // - Interés
+            /• ([^[\n]+)/g             // • Interés
+        ];
+        
+        for (const pattern of patterns) {
+            const matches = audienceText.matchAll(pattern);
+            for (const match of matches) {
+                const audience = match[1].trim();
+                if (audience && !audience.includes('[') && audience.length > 3) {
+                    spyData.audiences.push(audience);
+                }
+            }
+        }
+        
+        // Si no encontramos nada, intentar líneas simples
+        if (spyData.audiences.length === 0) {
+            const lines = audienceText.split('\n');
+            lines.forEach(line => {
+                const cleaned = line.trim().replace(/^[-•*]\s*/, '');
+                if (cleaned && cleaned.length > 3 && !cleaned.includes(':')) {
+                    spyData.audiences.push(cleaned);
+                }
+            });
+        }
+    }
+
+        return spyData;
+    },
+
+    // Mostrar resultados del spy
+    displaySpyResults: (spyData, productName, productCard) => {
+        // Crear sección de resultados spy
+        const spyHtml = `
+            <div class="spy-results" id="spy-${productName.replace(/\s+/g, '-')}">
+                <h3>🕵️ Creative Intelligence: ${productName}</h3>
+                
+                <div class="spy-section">
+                    <h4>🎯 Top 3 Hooks Ganadores:</h4>
+                <div class="hooks-list">
+                  ${spyData.hooks.map((hook, i) => `
+                    <div class="hook-item">
+                        <span class="hook-number">#${i+1}</span>
+                        <span class="hook-text">${hook}</span>
+                        <button class="btn-small copy-hook" onclick="copySpyText('${hook.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">📋</button>
+                    </div>
+                `).join('')}
+            </div>
+
+                <div class="spy-section">
+                    <h4>📐 Ángulos que Convierten:</h4>
+                    <div class="angles-content">
+                        <pre>${spyData.angles}</pre>
+                    </div>
+                </div>
+
+                <div class="spy-section">
+                    <h4>📝 Copy Framework Ganador:</h4>
+                    <div class="copy-framework">
+                        <pre>${spyData.copyFramework}</pre>
+                        <button class="btn btn-secondary" onclick="copySpyText(\`${spyData.copyFramework.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)">
+                        📋 Copiar Framework Completo
+                         </button>
+                    </div>
+                </div>
+
+                <div class="spy-section">
+                    <h4>📊 Métricas Esperadas del Nicho:</h4>
+                    <div class="metrics-grid spy-metrics">
+                        <div class="metric">
+                            <span class="label">CTR:</span>
+                            <span class="value good">${spyData.metrics.ctr}%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">CPC:</span>
+                            <span class="value">$${spyData.metrics.cpc}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">CPM:</span>
+                            <span class="value">$${spyData.metrics.cpm}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">CVR:</span>
+                            <span class="value good">${spyData.metrics.cvr}%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">ROAS:</span>
+                            <span class="value good">${spyData.metrics.roas}x</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+            <div class="spy-section">
+                <h4>🎯 Audiencias Ganadoras:</h4>
+                <div class="audiences-list">
+                    ${spyData.audiences.length > 0 ? 
+                        spyData.audiences.map(aud => `
+                            <div class="audience-item">
+                                <span class="audience-icon">🎯</span>
+                                <span class="audience-text">${aud}</span>
+                                <button class="btn-small copy-audience" onclick="copySpyText('${aud.replace(/'/g, "\\'")}')">📋</button>
+                            </div>
+                        `).join('') :
+                        '<div class="no-data">No se encontraron audiencias específicas. Intenta con un producto más específico.</div>'
+                    }
+                </div>
+            </div>
+        `;
+        
+        // Insertar después del producto
+        const spyDiv = document.createElement('div');
+        spyDiv.innerHTML = spyHtml;
+        spyDiv.className = 'spy-container';
+        productCard.appendChild(spyDiv);
+
+        // Animar entrada
+        setTimeout(() => {
+            spyDiv.querySelector('.spy-results').classList.add('show');
+        }, 100);
+    },
+
+   // Fix para copyText - mejorar función de copiar
+copyText: (text) => {
+    // Limpiar el texto antes de copiar
+    const cleanText = text.replace(/\\'/g, "'").replace(/\\`/g, "`").replace(/\\n/g, "\n");
+    
+    navigator.clipboard.writeText(cleanText).then(() => {
+        // Mostrar notificación temporal
+        const notification = document.createElement('div');
+        notification.className = 'copy-notification';
+        notification.innerHTML = '✅ ¡Copiado al portapapeles!';
+        document.body.appendChild(notification);
+        
+        // Posicionar cerca del mouse
+        notification.style.position = 'fixed';
+        notification.style.top = '50%';
+        notification.style.left = '50%';
+        notification.style.transform = 'translate(-50%, -50%)';
+        notification.style.zIndex = '10000';
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+        alert('Error al copiar. Intenta seleccionar y copiar manualmente.');
+    });
+},
+
+
+
+    // Generar variantes de ads
+    generateVariants: async (productName) => {
+        alert('🎨 Función "Generar 10 Variantes" próximamente...\n\nPor ahora, usa los hooks y ángulos proporcionados para crear tus propias variantes.');
+    },
+
+    // Exportar template
+    exportAdTemplate: (productName) => {
+        const spyElement = document.getElementById(`spy-${productName.replace(/\s+/g, '-')}`);
+        if (spyElement) {
+            const content = spyElement.innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ad-template-${productName.replace(/\s+/g, '-')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    }
+};
+
+// Función global para hacerla accesible
+window.copySpyText = function(text) {
+    CreativeSpy.copyText(text);
+};
+// REEMPLAZA addSpyButtons con esto:
+function addSpyButtons() {
+    document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+        // Solo agregar si no existe
+        if (!card.querySelector('.spy-btn')) {
+            const actionsDiv = card.querySelector('.validate-btn')?.parentElement || card;
+            
+            const spyBtn = document.createElement('button');
+            spyBtn.className = 'btn btn-secondary spy-btn';
+            spyBtn.innerHTML = '🕵️ Spy Creativos';
+            spyBtn.style.marginTop = '10px';
+            spyBtn.style.marginLeft = '10px';
+            
+            spyBtn.onclick = async () => {
+                const producto = AppState.productosDetectados[index];
+                
+                // Verificar si ya se hizo spy
+                if (CreativeSpy.spiedProducts.has(index)) {
+                    // Toggle mostrar/ocultar
+                    const spyResults = card.querySelector('.spy-results');
+                    if (spyResults) {
+                        spyResults.style.display = spyResults.style.display === 'none' ? 'block' : 'none';
+                    }
+                    return;
+                }
+                
+                spyBtn.disabled = true;
+                spyBtn.innerHTML = '🔄 Analizando creativos...';
+                
+                const spyData = await CreativeSpy.spyWinningAds(
+                    producto.nombre, 
+                    document.getElementById('nicho').value,
+                    index
+                );
+                
+                if (spyData) {
+                    // IMPORTANTE: pasar card como tercer parámetro
+                    CreativeSpy.displaySpyResults(spyData, producto.nombre, card);
+                    CreativeSpy.spiedProducts.add(index);
+                }
+                
+                spyBtn.disabled = false;
+                spyBtn.innerHTML = '🕵️ Spy Creativos';
+            };
+            
+            // Insertar después del botón de validar
+            if (card.querySelector('.validate-btn')) {
+                card.querySelector('.validate-btn').after(spyBtn);
+            } else {
+                actionsDiv.appendChild(spyBtn);
+            }
+        }
+    });
+}
+
+// Modificar la función existente para agregar spy buttons
+const originalAddValidationButtons = addValidationButtons;
+addValidationButtons = function() {
+    originalAddValidationButtons();
+    setTimeout(addSpyButtons, 100);
+};
+// ===================== PROFIT CALCULATOR AVANZADO =====================
+const ProfitCalculator = {
+    // Calcular profit con datos "reales" de mercado
+    calculateScenarios: async (producto, config) => {
+        const prompt = `Actúa como MEDIA BUYER EXPERTO con 10+ años comprando tráfico.
+
+Calcula escenarios de profit REALISTAS para:
+- Producto: ${producto.nombre}
+- Precio: ${producto.precio}
+- Comisión: ${producto.comision}
+- Presupuesto: $${config.presupuesto}
+- Canal: ${config.canal}
+
+Proporciona 3 ESCENARIOS:
+
+=== ESCENARIO CONSERVADOR ===
+CPC: $[basado en competencia alta]
+CTR: [%]
+CR: [% pesimista pero real]
+Profit: $[cantidad]
+ROI: [%]
+Días para breakeven: [#]
+
+=== ESCENARIO REALISTA ===
+[Mismas métricas con números promedio]
+
+=== ESCENARIO OPTIMISTA ===
+[Mismas métricas con optimización]
+
+SCALING PROJECTION:
+- Mes 1: $[profit]
+- Mes 2: $[profit escalado]
+- Mes 3: $[profit máximo]
+
+RECOMENDACIONES:
+[3 tips específicos para maximizar ROI]
+===`;
+
+        const response = await APIManager.callGemini(prompt);
+        return ProfitCalculator.parseCalculations(response);
+    },
+
+    // Crear calculadora interactiva
+    createInteractiveCalculator: (producto) => {
+        const calculatorHtml = `
+            <div class="profit-calculator">
+                <h3>💰 Calculadora de Profit</h3>
+                <div class="calculator-inputs">
+                    <input type="number" id="budget" placeholder="Presupuesto $" value="1000">
+                    <input type="number" id="cpc" placeholder="CPC estimado $" value="0.50">
+                    <input type="number" id="cr" placeholder="CR %" value="2">
+                </div>
+                <button onclick="ProfitCalculator.calculate()">Calcular</button>
+                <div id="profit-results"></div>
+            </div>
+        `;
+        return calculatorHtml;
+    }
+};
+// ===================== CAMPAIGN BUILDER =====================
+const CampaignBuilder = {
+    // Generar estructura de campaña lista para copiar/pegar
+    buildCampaign: async (producto, avatar, config) => {
+        const prompt = `Actúa como FACEBOOK ADS EXPERT CERTIFICADO.
+
+Crea estructura de campaña COMPLETA para:
+${JSON.stringify({producto, avatar, config})}
+
+INCLUIR:
+
+=== FACEBOOK ADS STRUCTURE ===
+CAMPAÑA:
+- Nombre: [Nomenclatura pro]
+- Objetivo: [Conversiones/Tráfico/etc]
+- Budget: [CBO o ABO]
+
+AD SETS (Crear 5):
+Para cada ad set:
+- Nombre: [Testing angle]
+- Audiencia: [Detallada con intereses]
+- Placement: [Optimizado para producto]
+- Budget: $[XX]
+- Schedule: [Horario óptimo]
+
+ADS (3 por ad set):
+- Copy variante 1: [Completo]
+- Copy variante 2: [Completo]
+- Copy variante 3: [Completo]
+- Creative specs: [Dimensiones, formato]
+
+=== GOOGLE ADS STRUCTURE ===
+[Similar pero para Google]
+
+=== EMAIL SEQUENCE ===
+[7 emails listos para copiar]
+===`;
+
+        const response = await APIManager.callGemini(prompt);
+        return this.formatCampaignStructure(response);
+    },
+
+    // Exportar a formato importable
+    exportCampaign: (campaignData) => {
+        // Generar CSV/JSON para Facebook Ads Manager
+        const csvData = CampaignBuilder.convertToCSV(campaignData);
+        
+        // Descargar archivo
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `campaign-${Date.now()}.csv`;
+        a.click();
+    }
+};
+
+// ===================== ACTIVACIÓN DE MEJORAS =====================
+// Auto-activar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Activando mejoras premium...');
+    
+    // Verificar cada 2 segundos si hay productos para agregar botones
+    setInterval(() => {
+        const productos = document.querySelectorAll('.product-opportunity');
+        if (productos.length > 0 && !document.querySelector('.validate-btn')) {
+            addValidationButtons();
+            console.log('✅ Botones de validación agregados');
+        }
+    }, 2000);
+});
