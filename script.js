@@ -3575,13 +3575,26 @@ HORARIOS ÓPTIMOS:
                 <div class="spy-section">
                     <h4>🎯 Top 3 Hooks Ganadores:</h4>
                 <div class="hooks-list">
-                  ${spyData.hooks.map((hook, i) => `
-                    <div class="hook-item">
-                        <span class="hook-number">#${i+1}</span>
-                        <span class="hook-text">${hook}</span>
-                        <button class="btn-small copy-hook" onclick="copySpyText('${hook.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">📋</button>
-                    </div>
-                `).join('')}
+                ${spyData.hooks.length > 0 ? 
+                    spyData.hooks.map((hook, i) => {
+                        // Escapar las comillas correctamente
+                        const escapedHook = hook
+                            .replace(/\\/g, '\\\\')  // Escapar backslashes primero
+                            .replace(/'/g, "\\'")    // Escapar comillas simples
+                            .replace(/"/g, '\\"')    // Escapar comillas dobles
+                            .replace(/`/g, '\\`')    // Escapar backticks
+                            .replace(/\n/g, '\\n');  // Escapar saltos de línea
+                        
+                        return `
+                            <div class="hook-item">
+                                <span class="hook-number">#${i+1}</span>
+                                <span class="hook-text">${hook}</span>
+                                <button class="btn-small copy-hook" onclick="copySpyText('${escapedHook}')">📋</button>
+                            </div>
+                        `;
+                    }).join('') :
+                    '<div class="no-data">No se encontraron hooks específicos. Intenta con otro producto.</div>'
+                }
             </div>
 
                 <div class="spy-section">
@@ -3595,9 +3608,14 @@ HORARIOS ÓPTIMOS:
                     <h4>📝 Copy Framework Ganador:</h4>
                     <div class="copy-framework">
                         <pre>${spyData.copyFramework}</pre>
-                        <button class="btn btn-secondary" onclick="copySpyText(\`${spyData.copyFramework.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)">
-                        📋 Copiar Framework Completo
-                         </button>
+                        <button class="btn btn-secondary" onclick="copySpyText(\`${spyData.copyFramework
+                            .replace(/\\/g, '\\\\')
+                            .replace(/`/g, '\\`')
+                            .replace(/'/g, "\\'")
+                            .replace(/"/g, '\\"')
+                            .replace(/\$/g, '\\$')}\`)">
+                            📋 Copiar Framework Completo
+                        </button>
                     </div>
                 </div>
 
@@ -3631,17 +3649,34 @@ HORARIOS ÓPTIMOS:
             <div class="spy-section">
                 <h4>🎯 Audiencias Ganadoras:</h4>
                 <div class="audiences-list">
-                    ${spyData.audiences.length > 0 ? 
-                        spyData.audiences.map(aud => `
+                ${spyData.audiences.length > 0 ? 
+                    spyData.audiences.map(aud => {
+                        // Escapar las comillas correctamente
+                        const escapedAud = aud
+                            .replace(/\\/g, '\\\\')
+                            .replace(/'/g, "\\'")
+                            .replace(/"/g, '\\"')
+                            .replace(/`/g, '\\`')
+                            .replace(/\n/g, '\\n');
+                            
+                        return `
                             <div class="audience-item">
                                 <span class="audience-icon">🎯</span>
                                 <span class="audience-text">${aud}</span>
-                                <button class="btn-small copy-audience" onclick="copySpyText('${aud.replace(/'/g, "\\'")}')">📋</button>
+                                <button class="btn-small copy-audience" onclick="copySpyText('${escapedAud}')">📋</button>
                             </div>
-                        `).join('') :
-                        '<div class="no-data">No se encontraron audiencias específicas. Intenta con un producto más específico.</div>'
-                    }
-                </div>
+                        `;
+                    }).join('') :
+                    '<div class="no-data">No se encontraron audiencias específicas. Intenta con un producto más específico.</div>'
+                }
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="CreativeSpy.generateVariants('${productName.replace(/'/g, "\\'")}')">
+                    🎨 Generar 10 Variantes de Ads
+                </button>
+                <button class="btn btn-secondary" onclick="CreativeSpy.exportAdTemplate('${productName.replace(/'/g, "\\'")}')">
+                    📥 Descargar Template de Ads
+                </button>
             </div>
         `;
         
