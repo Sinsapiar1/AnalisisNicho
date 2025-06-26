@@ -3287,7 +3287,7 @@ displayValidation: (validation, productName, productCard) => {
     }[validation.verdict] || 'unknown';
     
     const validationHtml = `
-        <div class="offer-validation ${validation.verdict.toLowerCase()}">
+        <div class="offer-validation ${verdictClass}">
             <h3>🔍 Validación: ${productName}</h3>
             <div class="validation-grid">
                 <div class="metric">
@@ -3316,67 +3316,81 @@ displayValidation: (validation, productName, productCard) => {
             <div class="tips">
                 <h4>💡 Tips Secretos:</h4>
                 <div class="tips-content">
-                    ${validation.tips.split('\n').filter(tip => tip.trim()).map(tip => 
-                        `<div class="tip-item">${tip.trim()}</div>`
-                    ).join('')}
+                    ${validation.tips.split(/\d+\.\s*/).filter(tip => tip.trim()).map((tip, index) => `
+                        <div class="tip-item">
+                            <span class="tip-number">${index + 1}</span>
+                            <span class="tip-text">${tip.trim()}</span>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
             ` : ''}
         </div>
     `;
-
-    // Insertar DENTRO del producto, NO arriba de todo
+    // Crear elemento y agregarlo AL PRODUCTO, no al body
     const validationDiv = document.createElement('div');
     validationDiv.innerHTML = validationHtml;
-    productCard.appendChild(validationDiv);
+    
+    // Buscar dónde insertar (después de productos complementarios o al final)
+    const complementariosSection = productCard.querySelector('.product-section:last-child');
+    if (complementariosSection) {
+        complementariosSection.after(validationDiv.firstElementChild);
+    } else {
+        productCard.appendChild(validationDiv.firstElementChild);
+    }
 
     // Scroll suave hacia la validación
     setTimeout(() => {
         validationDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
-    
-    
-    }
-};
+}}
 
-// Agregar botón de validación a cada producto
+// Busca addValidationButtons y actualízala:
 function addValidationButtons() {
     document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+        // Solo agregar si no existe
         if (!card.querySelector('.validate-btn')) {
+            // Buscar el contenedor de botones o crear uno
+            let buttonsContainer = card.querySelector('.product-actions');
+            if (!buttonsContainer) {
+                buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'product-actions';
+                card.appendChild(buttonsContainer);
+            }
+            
             const btn = document.createElement('button');
             btn.className = 'btn btn-secondary validate-btn';
             btn.innerHTML = '🔍 Validar Oferta';
-            btn.onclick = async () => {
-                const producto = AppState.productosDetectados[index];
-                btn.disabled = true;
-                btn.innerHTML = '🔄 Validando...';
+            btn.dataset.productIndex = index;
+            
+            btn.onclick = async function() {
+                const producto = AppState.productosDetectados[this.dataset.productIndex];
+                this.disabled = true;
+                this.innerHTML = '🔄 Validando...';
                 
-                const validation = await OfferValidator.validateOffer(
-                    producto.nombre, 
-                    document.getElementById('nicho').value
-                );
-                
-                if (validation) {
-                    // IMPORTANTE: ahora pasamos card como tercer parámetro
-                    OfferValidator.displayValidation(validation, producto.nombre, card);
+                try {
+                    const validation = await OfferValidator.validateOffer(
+                        producto.nombre, 
+                        document.getElementById('nicho').value
+                    );
+                    
+                    if (validation) {
+                        // Pasar el card correcto como tercer parámetro
+                        OfferValidator.displayValidation(validation, producto.nombre, card);
+                    }
+                } catch (error) {
+                    console.error('Error validando:', error);
+                    alert('Error al validar. Intenta de nuevo.');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = '🔍 Validar Oferta';
                 }
-                
-                btn.disabled = false;
-                btn.innerHTML = '🔍 Validar Oferta';
             };
             
-            card.appendChild(btn);
+            buttonsContainer.appendChild(btn);
         }
     });
 }
-
-// Auto-ejecutar después de generar productos
-const originalDisplayResults = UIManager.displayResults;
-UIManager.displayResults = function(analysisData) {
-    originalDisplayResults.call(this, analysisData);
-    setTimeout(addValidationButtons, 500);
-};
-
 // ===================== CREATIVE SPY CON IA =====================
 // Agregar DESPUÉS del OfferValidator en script.js
 
@@ -3527,201 +3541,162 @@ HORARIOS ÓPTIMOS:
         if (audiencesMatch) {
             spyData.audiences = audiencesMatch.map(a => a.replace(/\d+\.\s*\[|\]/g, ''));
         }
-
         // MEJORADO: Extraer audiencias de múltiples formatos posibles
-    const audiencesSection = response.match(/(?:AUDIENCIAS GANADORAS|Intereses TOP):([\s\S]*?)(?=ELEMENTOS VISUALES|HORARIOS|$)/i);
-    if (audiencesSection) {
-        const audienceText = audiencesSection[1];
-        // Buscar diferentes patrones
-        const patterns = [
-            /\d+\.\s*\[([^\]]+)\]/g,  // 1. [Interés]
-            /\d+\.\s*([^[\n]+)/g,      // 1. Interés
-            /- ([^[\n]+)/g,            // - Interés
-            /• ([^[\n]+)/g             // • Interés
-        ];
-        
-        for (const pattern of patterns) {
-            const matches = audienceText.matchAll(pattern);
-            for (const match of matches) {
-                const audience = match[1].trim();
-                if (audience && !audience.includes('[') && audience.length > 3) {
-                    spyData.audiences.push(audience);
+            const audiencesSection = response.match(/(?:AUDIENCIAS GANADORAS|Intereses TOP):([\s\S]*?)(?=ELEMENTOS VISUALES|HORARIOS|$)/i);
+            if (audiencesSection) {
+                const audienceText = audiencesSection[1];
+                // Buscar diferentes patrones
+                const patterns = [
+                    /\d+\.\s*\[([^\]]+)\]/g,  // 1. [Interés]
+                    /\d+\.\s*([^[\n]+)/g,      // 1. Interés
+                    /- ([^[\n]+)/g,            // - Interés
+                    /• ([^[\n]+)/g             // • Interés
+                ];
+                
+                for (const pattern of patterns) {
+                    const matches = audienceText.matchAll(pattern);
+                    for (const match of matches) {
+                        const audience = match[1].trim();
+                        if (audience && !audience.includes('[') && audience.length > 3) {
+                            spyData.audiences.push(audience);
+                        }
+                    }
+                }
+                
+                // Si no encontramos nada, intentar líneas simples
+                if (spyData.audiences.length === 0) {
+                    const lines = audienceText.split('\n');
+                    lines.forEach(line => {
+                        const cleaned = line.trim().replace(/^[-•*]\s*/, '');
+                        if (cleaned && cleaned.length > 3 && !cleaned.includes(':')) {
+                            spyData.audiences.push(cleaned);
+                        }
+                    });
                 }
             }
-        }
-        
-        // Si no encontramos nada, intentar líneas simples
-        if (spyData.audiences.length === 0) {
-            const lines = audienceText.split('\n');
-            lines.forEach(line => {
-                const cleaned = line.trim().replace(/^[-•*]\s*/, '');
-                if (cleaned && cleaned.length > 3 && !cleaned.includes(':')) {
-                    spyData.audiences.push(cleaned);
-                }
-            });
-        }
-    }
-
         return spyData;
     },
 
-    // Mostrar resultados del spy
-    displaySpyResults: (spyData, productName, productCard) => {
-        // Crear sección de resultados spy
-        const spyHtml = `
-            <div class="spy-results" id="spy-${productName.replace(/\s+/g, '-')}">
-                <h3>🕵️ Creative Intelligence: ${productName}</h3>
-                
-                <div class="spy-section">
-                    <h4>🎯 Top 3 Hooks Ganadores:</h4>
-                <div class="hooks-list">
-                ${spyData.hooks.length > 0 ? 
-                    spyData.hooks.map((hook, i) => {
-                        // Escapar las comillas correctamente
-                        const escapedHook = hook
-                            .replace(/\\/g, '\\\\')  // Escapar backslashes primero
-                            .replace(/'/g, "\\'")    // Escapar comillas simples
-                            .replace(/"/g, '\\"')    // Escapar comillas dobles
-                            .replace(/`/g, '\\`')    // Escapar backticks
-                            .replace(/\n/g, '\\n');  // Escapar saltos de línea
-                        
-                        return `
-                            <div class="hook-item">
-                                <span class="hook-number">#${i+1}</span>
-                                <span class="hook-text">${hook}</span>
-                                <button class="btn-small copy-hook" onclick="copySpyText('${escapedHook}')">📋</button>
-                            </div>
-                        `;
-                    }).join('') :
-                    '<div class="no-data">No se encontraron hooks específicos. Intenta con otro producto.</div>'
-                }
-            </div>
-
-                <div class="spy-section">
-                    <h4>📐 Ángulos que Convierten:</h4>
-                    <div class="angles-content">
-                        <pre>${spyData.angles}</pre>
+    // Busca esta función y REEMPLÁZALA completamente
+        displaySpyResults: (spyData, productName, productCard) => {
+            // Crear sección de resultados spy
+            const spyHtml = `
+                <div class="spy-results" id="spy-${productName.replace(/\s+/g, '-')}">
+                    <h3>🕵️ Creative Intelligence: ${productName}</h3>
+                    
+                    <div class="spy-section">
+                        <h4>🎯 Top 3 Hooks Ganadores:</h4>
+                        <div class="hooks-list">
+                        ${spyData.hooks.length > 0 ? 
+                            spyData.hooks.map((hook, i) => `
+                                <div class="hook-item" data-hook-index="${i}">
+                                    <span class="hook-number">#${i+1}</span>
+                                    <span class="hook-text">${hook}</span>
+                                    <button class="btn-small copy-hook" data-text-to-copy="${encodeURIComponent(hook)}">📋</button>
+                                </div>
+                            `).join('') :
+                            '<div class="no-data">No se encontraron hooks específicos. Intenta con otro producto.</div>'
+                        }
+                        </div>
                     </div>
-                </div>
 
-                <div class="spy-section">
-                    <h4>📝 Copy Framework Ganador:</h4>
-                    <div class="copy-framework">
-                        <pre>${spyData.copyFramework}</pre>
-                        <button class="btn btn-secondary" onclick="copySpyText(\`${spyData.copyFramework
-                            .replace(/\\/g, '\\\\')
-                            .replace(/`/g, '\\`')
-                            .replace(/'/g, "\\'")
-                            .replace(/"/g, '\\"')
-                            .replace(/\$/g, '\\$')}\`)">
-                            📋 Copiar Framework Completo
+                    <div class="spy-section">
+                        <h4>📐 Ángulos que Convierten:</h4>
+                        <div class="angles-content">
+                            <pre>${spyData.angles}</pre>
+                        </div>
+                    </div>
+
+                    <div class="spy-section">
+                        <h4>📝 Copy Framework Ganador:</h4>
+                        <div class="copy-framework">
+                            <pre>${spyData.copyFramework}</pre>
+                            <button class="btn btn-secondary copy-framework-btn" data-text-to-copy="${encodeURIComponent(spyData.copyFramework)}">
+                                📋 Copiar Framework Completo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="spy-section">
+                        <h4>📊 Métricas Esperadas del Nicho:</h4>
+                        <div class="metrics-grid spy-metrics">
+                            <div class="metric">
+                                <span class="label">CTR:</span>
+                                <span class="value good">${spyData.metrics.ctr}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">CPC:</span>
+                                <span class="value">$${spyData.metrics.cpc}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">CPM:</span>
+                                <span class="value">$${spyData.metrics.cpm}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">CVR:</span>
+                                <span class="value good">${spyData.metrics.cvr}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">ROAS:</span>
+                                <span class="value good">${spyData.metrics.roas}x</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spy-section">
+                        <h4>🎯 Audiencias Ganadoras:</h4>
+                        <div class="audiences-list">
+                        ${spyData.audiences.length > 0 ? 
+                            spyData.audiences.map(aud => `
+                                <div class="audience-item">
+                                    <span class="audience-icon">🎯</span>
+                                    <span class="audience-text">${aud}</span>
+                                    <button class="btn-small copy-audience" data-text-to-copy="${encodeURIComponent(aud)}">📋</button>
+                                </div>
+                            `).join('') :
+                            '<div class="no-data">No se encontraron audiencias específicas.</div>'
+                        }
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary generate-variants-btn" data-product-name="${encodeURIComponent(productName)}">
+                            🎨 Generar 10 Variantes de Ads
+                        </button>
+                        <button class="btn btn-secondary download-template-btn" data-product-name="${encodeURIComponent(productName)}" data-spy-id="spy-${productName.replace(/\s+/g, '-')}">
+                            📥 Descargar Template de Ads
                         </button>
                     </div>
                 </div>
+            `;
+            
+            // Insertar después del producto
+            const spyDiv = document.createElement('div');
+            spyDiv.innerHTML = spyHtml;
+            spyDiv.className = 'spy-container';
+            productCard.appendChild(spyDiv);
 
-                <div class="spy-section">
-                    <h4>📊 Métricas Esperadas del Nicho:</h4>
-                    <div class="metrics-grid spy-metrics">
-                        <div class="metric">
-                            <span class="label">CTR:</span>
-                            <span class="value good">${spyData.metrics.ctr}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">CPC:</span>
-                            <span class="value">$${spyData.metrics.cpc}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">CPM:</span>
-                            <span class="value">$${spyData.metrics.cpm}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">CVR:</span>
-                            <span class="value good">${spyData.metrics.cvr}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">ROAS:</span>
-                            <span class="value good">${spyData.metrics.roas}x</span>
-                        </div>
-                    </div>
-                </div>
+            // Animar entrada
+            setTimeout(() => {
+                spyDiv.querySelector('.spy-results').classList.add('show');
+            }, 100);
 
-                
-            <div class="spy-section">
-                <h4>🎯 Audiencias Ganadoras:</h4>
-                <div class="audiences-list">
-                ${spyData.audiences.length > 0 ? 
-                    spyData.audiences.map(aud => {
-                        // Escapar las comillas correctamente
-                        const escapedAud = aud
-                            .replace(/\\/g, '\\\\')
-                            .replace(/'/g, "\\'")
-                            .replace(/"/g, '\\"')
-                            .replace(/`/g, '\\`')
-                            .replace(/\n/g, '\\n');
-                            
-                        return `
-                            <div class="audience-item">
-                                <span class="audience-icon">🎯</span>
-                                <span class="audience-text">${aud}</span>
-                                <button class="btn-small copy-audience" onclick="copySpyText('${escapedAud}')">📋</button>
-                            </div>
-                        `;
-                    }).join('') :
-                    '<div class="no-data">No se encontraron audiencias específicas. Intenta con un producto más específico.</div>'
-                }
-            </div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="CreativeSpy.generateVariants('${productName.replace(/'/g, "\\'")}')">
-                    🎨 Generar 10 Variantes de Ads
-                </button>
-                <button class="btn btn-secondary" onclick="CreativeSpy.exportAdTemplate('${productName.replace(/'/g, "\\'")}')">
-                    📥 Descargar Template de Ads
-                </button>
-            </div>
-        `;
-        
-        // Insertar después del producto
-        const spyDiv = document.createElement('div');
-        spyDiv.innerHTML = spyHtml;
-        spyDiv.className = 'spy-container';
-        productCard.appendChild(spyDiv);
-
-        // Animar entrada
-        setTimeout(() => {
-            spyDiv.querySelector('.spy-results').classList.add('show');
-        }, 100);
     },
 
-   // Fix para copyText - mejorar función de copiar
-copyText: (text) => {
-    // Limpiar el texto antes de copiar
-    const cleanText = text.replace(/\\'/g, "'").replace(/\\`/g, "`").replace(/\\n/g, "\n");
-    
-    navigator.clipboard.writeText(cleanText).then(() => {
-        // Mostrar notificación temporal
-        const notification = document.createElement('div');
-        notification.className = 'copy-notification';
-        notification.innerHTML = '✅ ¡Copiado al portapapeles!';
-        document.body.appendChild(notification);
-        
-        // Posicionar cerca del mouse
-        notification.style.position = 'fixed';
-        notification.style.top = '50%';
-        notification.style.left = '50%';
-        notification.style.transform = 'translate(-50%, -50%)';
-        notification.style.zIndex = '10000';
-        
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-        alert('Error al copiar. Intenta seleccionar y copiar manualmente.');
-    });
-},
-
-
+    // Función para copiar texto
+    copyText: (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            // Mostrar notificación temporal
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = '✅ Copiado!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        });
+    },
 
     // Generar variantes de ads
     generateVariants: async (productName) => {
@@ -3744,11 +3719,7 @@ copyText: (text) => {
     }
 };
 
-// Función global para hacerla accesible
-window.copySpyText = function(text) {
-    CreativeSpy.copyText(text);
-};
-// REEMPLAZA addSpyButtons con esto:
+// Agregar botón de spy a cada producto
 function addSpyButtons() {
     document.querySelectorAll('.product-opportunity').forEach((card, index) => {
         // Solo agregar si no existe
@@ -3784,7 +3755,6 @@ function addSpyButtons() {
                 );
                 
                 if (spyData) {
-                    // IMPORTANTE: pasar card como tercer parámetro
                     CreativeSpy.displaySpyResults(spyData, producto.nombre, card);
                     CreativeSpy.spiedProducts.add(index);
                 }
@@ -3939,3 +3909,80 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 2000);
 });
+
+// ===================== EVENT DELEGATION PARA SPY BUTTONS =====================
+document.addEventListener('click', function(e) {
+    // Copiar hooks, audiencias y framework
+    if (e.target.matches('.copy-hook, .copy-audience, .copy-framework-btn')) {
+        e.preventDefault();
+        const textToCopy = decodeURIComponent(e.target.dataset.textToCopy || '');
+        
+        if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Mostrar notificación
+                const notification = document.createElement('div');
+                notification.className = 'copy-notification';
+                notification.innerHTML = '✅ ¡Copiado al portapapeles!';
+                document.body.appendChild(notification);
+                
+                // Posicionar cerca del botón
+                const rect = e.target.getBoundingClientRect();
+                notification.style.position = 'fixed';
+                notification.style.top = (rect.top - 50) + 'px';
+                notification.style.left = (rect.left - 50) + 'px';
+                notification.style.zIndex = '10000';
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar:', err);
+                alert('Error al copiar. Intenta seleccionar y copiar manualmente.');
+            });
+        }
+    }
+    
+    // Generar variantes
+    if (e.target.matches('.generate-variants-btn')) {
+        e.preventDefault();
+        const productName = decodeURIComponent(e.target.dataset.productName || '');
+        alert('🎨 Función "Generar 10 Variantes" próximamente...\n\nPor ahora, usa los hooks y ángulos proporcionados para crear tus propias variantes.');
+    }
+    
+    // Descargar template
+    if (e.target.matches('.download-template-btn')) {
+        e.preventDefault();
+        const spyId = e.target.dataset.spyId;
+        const spyElement = document.getElementById(spyId);
+        
+        if (spyElement) {
+            const content = spyElement.innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ad-template-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Notificación
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.innerHTML = '✅ ¡Template descargado!';
+            document.body.appendChild(notification);
+            
+            notification.style.position = 'fixed';
+            notification.style.top = '50%';
+            notification.style.left = '50%';
+            notification.style.transform = 'translate(-50%, -50%)';
+            notification.style.zIndex = '10000';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+    }
+});
+// ===================== TREND PREDICTOR INTEGRATION =====================
