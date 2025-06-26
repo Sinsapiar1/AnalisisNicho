@@ -2832,9 +2832,44 @@ body {
 
 /* ===================== FIN CREATIVE SPY STYLES ===================== */
 
-/* AGREGAR o REEMPLAZAR en styles.css */
+/* Hover effect para botones de copiar */
+.copy-hook:hover,
+.copy-audience:hover,
+.copy-framework-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 
-/* Tips responsivos mejorados */
+/* Notificación mejorada */
+.copy-notification {
+    animation: slideInBounce 0.3s ease-out;
+}
+
+@keyframes slideInBounce {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Validación dentro del producto */
+.product-opportunity .offer-validation {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    background: rgba(45, 55, 72, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 5px solid #48bb78;
+}
+
+/* Tips responsivos */
 .tips {
     margin-top: 15px;
     background: rgba(0, 0, 0, 0.2);
@@ -2844,173 +2879,87 @@ body {
 
 .tips h4 {
     color: #f59e0b;
-    margin-bottom: 10px;
-    font-size: 1rem;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
 }
 
 .tips-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .tip-item {
+    display: flex;
+    gap: 10px;
     background: rgba(0, 0, 0, 0.3);
-    padding: 10px 12px;
+    padding: 12px;
     border-radius: 6px;
-    color: #e2e8f0;
-    font-size: 0.9rem;
-    line-height: 1.4;
     border-left: 3px solid #f59e0b;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    align-items: flex-start;
 }
 
-/* Hacer que la validación se quede dentro del producto */
-.product-opportunity .offer-validation {
+.tip-number {
+    background: #f59e0b;
+    color: #1a202c;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.tip-text {
+    flex: 1;
+    color: #e2e8f0;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+/* Botones de acciones del producto */
+.product-actions {
+    display: flex;
+    gap: 10px;
     margin-top: 15px;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
-/* Evitar que el pre se desborde */
-.tips pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-width: 100%;
-    margin: 0;
-    font-family: inherit;
-}
-
-/* Responsive para móviles */
+/* Mobile responsive */
 @media (max-width: 768px) {
+    .product-opportunity .offer-validation {
+        padding: 15px;
+        margin: 15px -5px;
+    }
+    
     .tips {
-        padding: 10px;
+        padding: 12px;
     }
     
     .tip-item {
-        font-size: 0.85rem;
-        padding: 8px 10px;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .tip-number {
+        width: 20px;
+        height: 20px;
+        font-size: 0.8rem;
     }
     
     .validation-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-}
-/* AGREGAR a styles.css */
-
-/* Mejorar lista de audiencias */
-.audience-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 6px;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-}
-
-.audience-item:hover {
-    background: rgba(255, 107, 107, 0.1);
-    transform: translateX(5px);
-}
-
-.audience-icon {
-    font-size: 1.2rem;
-}
-
-.audience-text {
-    flex: 1;
-    color: #e2e8f0;
-}
-
-.copy-audience {
-    background: rgba(255, 107, 107, 0.2);
-    color: #ff6b6b;
-    border: 1px solid #ff6b6b;
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8rem;
-}
-
-.copy-audience:hover {
-    background: #ff6b6b;
-    color: white;
-}
-
-/* Mensaje cuando no hay datos */
-.no-data {
-    text-align: center;
-    color: #a0aec0;
-    font-style: italic;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-}
-
-/* Mejorar notificación de copiado */
-.copy-notification {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #48bb78;
-    color: white;
-    padding: 20px 30px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    z-index: 10000;
-    box-shadow: 0 8px 30px rgba(72, 187, 120, 0.5);
-    animation: popIn 0.3s ease-out;
-    transition: opacity 0.3s ease;
-}
-
-@keyframes popIn {
-    from {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
-    }
-    to {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
-}
-
-/* Asegurar que los botones pequeños sean clickeables */
-.btn-small {
-    min-width: 35px;
-    min-height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    padding: 4px 8px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-/* Mejorar spacing entre secciones */
-.spy-section + .spy-section {
-    margin-top: 20px;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .audience-item {
-        flex-wrap: wrap;
+        gap: 8px;
     }
     
-    .audience-text {
-        flex: 1 1 100%;
-        margin-bottom: 8px;
+    .product-actions {
+        flex-direction: column;
     }
     
-    .copy-notification {
-        font-size: 1rem;
-        padding: 15px 25px;
+    .product-actions .btn {
+        width: 100%;
     }
 }
