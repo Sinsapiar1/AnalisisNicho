@@ -2367,3 +2367,650 @@ body {
     }
 }
 */
+
+/* ===================== MEJORAS PREMIUM v2.0 ===================== */
+/* Agregado: [FECHA DE HOY] */
+
+/* OFFER VALIDATOR STYLES */
+.offer-validation {
+    background: rgba(45, 55, 72, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid #48bb78;
+    animation: slideIn 0.5s ease-out;
+}
+
+.validation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.metric {
+    text-align: center;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.metric .label {
+    display: block;
+    color: #a0aec0;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.metric .value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.metric .value.good { color: #48bb78; }
+.metric .value.bad { color: #f56565; }
+
+.verdict {
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin: 15px 0;
+    font-size: 1.1rem;
+}
+
+.verdict.winner { 
+    background: rgba(72, 187, 120, 0.3); 
+    color: #48bb78;
+    border: 2px solid #48bb78;
+}
+
+.verdict.prometedor { 
+    background: rgba(245, 158, 11, 0.3); 
+    color: #f59e0b;
+    border: 2px solid #f59e0b;
+}
+
+.verdict.evitar { 
+    background: rgba(245, 101, 101, 0.3); 
+    color: #f56565;
+    border: 2px solid #f56565;
+}
+
+.validate-btn {
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* SPY RESULTS STYLES */
+.spy-results {
+    background: rgba(255, 107, 107, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 2px solid #ff6b6b;
+}
+
+.winning-hooks {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.winning-hooks ol {
+    margin-left: 20px;
+}
+
+.winning-hooks li {
+    margin: 10px 0;
+    color: #e2e8f0;
+}
+
+/* CALCULATOR STYLES */
+.profit-calculator {
+    background: rgba(245, 158, 11, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 2px solid #f59e0b;
+}
+
+.calculator-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.calculator-inputs input {
+    padding: 10px;
+    border: 2px solid #f59e0b;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.3);
+    color: #e2e8f0;
+}
+
+/* ANIMATIONS */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .validation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .calculator-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===================== FIN MEJORAS PREMIUM ===================== */
+
+/* Agregar estos estilos adicionales a styles.css */
+
+/* Colores para valores de métricas */
+.metric .value.good { 
+    color: #48bb78; 
+    font-weight: bold;
+}
+
+.metric .value.medium { 
+    color: #f59e0b; 
+    font-weight: bold;
+}
+
+.metric .value.bad { 
+    color: #f56565; 
+    font-weight: bold;
+}
+
+/* Estilos mejorados para veredictos */
+.verdict.winner { 
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.3) 0%, rgba(56, 161, 105, 0.3) 100%);
+    color: #48bb78;
+    border: 2px solid #48bb78;
+    animation: pulse 2s infinite;
+}
+
+.verdict.prometedor { 
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.3) 100%);
+    color: #f59e0b;
+    border: 2px solid #f59e0b;
+}
+
+.verdict.saturado { 
+    background: rgba(107, 114, 128, 0.3);
+    color: #a0aec0;
+    border: 2px solid #718096;
+}
+
+.verdict.evitar { 
+    background: linear-gradient(135deg, rgba(245, 101, 101, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%);
+    color: #f56565;
+    border: 2px solid #f56565;
+    animation: shake 0.5s;
+}
+
+.verdict.unknown { 
+    background: rgba(74, 85, 104, 0.3);
+    color: #a0aec0;
+    border: 2px dashed #4a5568;
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ===================== CREATIVE SPY STYLES ===================== */
+
+/* Contenedor principal del spy */
+.spy-container {
+    margin-top: 20px;
+}
+
+.spy-results {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 82, 0.05) 100%);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 2px solid #ff6b6b;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.spy-results.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.spy-results h3 {
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Secciones del spy */
+.spy-section {
+    background: rgba(26, 32, 44, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #ff6b6b;
+}
+
+.spy-section h4 {
+    color: #ff9999;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+/* Lista de hooks */
+.hooks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hook-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.hook-item:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: translateX(5px);
+}
+
+.hook-number {
+    background: #ff6b6b;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.hook-text {
+    flex: 1;
+    color: #e2e8f0;
+    font-size: 1.05rem;
+    line-height: 1.4;
+}
+
+.copy-hook {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-hook:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Contenido de ángulos */
+.angles-content {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.angles-content pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Copy framework */
+.copy-framework {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.copy-framework pre {
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin: 0 0 15px 0;
+    font-size: 0.95rem;
+}
+
+/* Métricas del spy */
+.spy-metrics {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.spy-metrics .metric {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* Lista de audiencias */
+.audiences-list {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.audience-item {
+    color: #e2e8f0;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 107, 107, 0.2);
+    font-size: 0.95rem;
+}
+
+.audience-item:last-child {
+    border-bottom: none;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.spy-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    border: none;
+}
+
+.spy-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ee5a52 0%, #dc2626 100%);
+    transform: translateY(-2px);
+}
+
+/* Notificación de copiado */
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #48bb78;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .spy-results {
+        padding: 15px;
+    }
+    
+    .spy-section {
+        padding: 15px;
+    }
+    
+    .hook-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .copy-hook {
+        align-self: flex-end;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+
+/* Estados de hover adicionales */
+.spy-results:hover {
+    border-color: #ff4444;
+    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.2);
+}
+
+.btn-small {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+}
+
+/* ===================== FIN CREATIVE SPY STYLES ===================== */
+
+/* AGREGAR o REEMPLAZAR en styles.css */
+
+/* Tips responsivos mejorados */
+.tips {
+    margin-top: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.tips h4 {
+    color: #f59e0b;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.tips-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tip-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    border-left: 3px solid #f59e0b;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Hacer que la validación se quede dentro del producto */
+.product-opportunity .offer-validation {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Evitar que el pre se desborde */
+.tips pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
+    margin: 0;
+    font-family: inherit;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .tips {
+        padding: 10px;
+    }
+    
+    .tip-item {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+    }
+    
+    .validation-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+/* AGREGAR a styles.css */
+
+/* Mejorar lista de audiencias */
+.audience-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.audience-item:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: translateX(5px);
+}
+
+.audience-icon {
+    font-size: 1.2rem;
+}
+
+.audience-text {
+    flex: 1;
+    color: #e2e8f0;
+}
+
+.copy-audience {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.copy-audience:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Mensaje cuando no hay datos */
+.no-data {
+    text-align: center;
+    color: #a0aec0;
+    font-style: italic;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+/* Mejorar notificación de copiado */
+.copy-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #48bb78;
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    z-index: 10000;
+    box-shadow: 0 8px 30px rgba(72, 187, 120, 0.5);
+    animation: popIn 0.3s ease-out;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes popIn {
+    from {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Asegurar que los botones pequeños sean clickeables */
+.btn-small {
+    min-width: 35px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Mejorar spacing entre secciones */
+.spy-section + .spy-section {
+    margin-top: 20px;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .audience-item {
+        flex-wrap: wrap;
+    }
+    
+    .audience-text {
+        flex: 1 1 100%;
+        margin-bottom: 8px;
+    }
+    
+    .copy-notification {
+        font-size: 1rem;
+        padding: 15px 25px;
+    }
+}
