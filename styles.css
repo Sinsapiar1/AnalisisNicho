@@ -2963,3 +2963,223 @@ body {
         width: 100%;
     }
 }
+/* ===================== BOTONES UNIFICADOS DE COPIAR ===================== */
+/* Estilo unificado para TODOS los botones pequeños de copiar */
+.btn-small {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    min-width: 35px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.btn-small:hover {
+    background: #ff6b6b;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.btn-small:active {
+    transform: scale(0.95);
+}
+
+/* Específicos para hooks */
+.copy-hook {
+    margin-left: auto;
+}
+
+/* Específicos para audiencias */
+.copy-audience {
+    margin-left: auto;
+}
+
+/* Ajustes para el contenedor de audiencias */
+.audience-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.audience-item:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: translateX(5px);
+}
+
+.audience-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.audience-text {
+    flex: 1;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+/* Asegurar que hooks y audiencias tengan el mismo layout */
+.hook-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.hook-item:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: translateX(5px);
+}
+
+.hook-number {
+    background: #ff6b6b;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.hook-text {
+    flex: 1;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Mobile responsive para botones */
+@media (max-width: 768px) {
+    .btn-small {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+        min-width: 32px;
+        height: 26px;
+    }
+    
+    .hook-item,
+    .audience-item {
+        padding: 8px;
+        gap: 8px;
+    }
+    
+    .hook-text,
+    .audience-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animación consistente para todos los botones de copiar */
+@keyframes copyPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.btn-small.copied {
+    animation: copyPulse 0.3s ease;
+    background: #48bb78;
+    border-color: #48bb78;
+    color: white;
+}
+
+/* ===================== COPY TEMPLATES SYSTEM v2.2 ===================== */
+.template-buttons {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid #3b82f6;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.template-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-template {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+}
+
+.btn-template:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.btn-template:active {
+    transform: translateY(0);
+}
+
+.btn-template.facebook {
+    background: linear-gradient(135deg, #1877f2 0%, #0e5fc0 100%);
+}
+
+.btn-template.google {
+    background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
+}
+
+.btn-template.email {
+    background: linear-gradient(135deg, #ea4335 0%, #d33b27 100%);
+}
+
+/* Notificación de copiado */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .template-buttons-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-template {
+        width: 100%;
+        padding: 12px;
+    }
+}
