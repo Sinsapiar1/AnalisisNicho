@@ -3985,110 +3985,344 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-// ===================== TREND PREDICTOR INTEGRATION =====================
-// ===================== COPY TEMPLATES SYSTEM v2.2 =====================
-            const CopyTemplateSystem = {
-                // Generadores de templates por plataforma
-                generators: {
-                    facebook: (producto, nicho) => {
-                        const hooks = [
-                            `🔥 ${producto.nombre} está revolucionando ${nicho}`,
-                            `⚡ Descubre por qué miles están eligiendo ${producto.nombre}`,
-                            `💥 ALERTA: ${producto.nombre} con precio especial limitado`,
-                            `🎯 La solución definitiva para ${producto.painPoints?.split('.')[0] || nicho}`,
-                            `⏰ Últimas horas: ${producto.nombre} al mejor precio`
-                        ];
-                        
-                        const randomHook = hooks[Math.floor(Math.random() * hooks.length)];
-                        
-                        const template = `${randomHook}
-
-            ${producto.descripcion?.substring(0, 150) || `Descubre la mejor solución en ${nicho}`}...
-
-            ✅ ${producto.beneficio1 || 'Resultados comprobados'}
-            ✅ ${producto.beneficio2 || 'Garantía de satisfacción'}
-            ✅ ${producto.beneficio3 || 'Miles de clientes satisfechos'}
-
-            💰 Precio especial: ${producto.precio || 'Consultar'}
-            ${producto.comision ? `📊 Comisión: ${producto.comision}` : ''}
-
-            👉 Haz clic en "Más información" y transforma tu vida hoy
-
-            #${nicho.replace(/\s+/g, '')} #Oferta #Descuento`;
-                        
-                        return template;
-                    },
-                    
-                    google: (producto, nicho) => {
-                        const headline1 = `${producto.nombre} - Oferta Especial`;
-                        const headline2 = `${producto.comision ? `Hasta ${producto.comision} Descuento` : 'Mejor Precio Garantizado'}`;
-                        const description = `${producto.descripcion?.substring(0, 80) || `La mejor solución en ${nicho}`}. Compra ahora y ahorra. Envío gratis. Garantía total.`;
-                        
-                        return `Headline 1: ${headline1}
-            Headline 2: ${headline2}
-            Description: ${description}
-            Display URL: www.example.com/${nicho.toLowerCase().replace(/\s+/g, '-')}`;
-                    },
-                    
-                    email: (producto, nicho) => {
-                        const subjects = [
-                            `[URGENTE] ${producto.nombre} con descuento exclusivo para ti`,
-                            `${nombre}, no te pierdas esta oportunidad única`,
-                            `⏰ Últimas horas: ${producto.nombre} al mejor precio`,
-                            `Tu solución para ${producto.painPoints?.split('.')[0] || nicho} está aquí`,
-                            `[REGALO] Descuento especial en ${producto.nombre}`
-                        ];
-                        
-                        const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
-                        
-                        const template = `Subject: ${randomSubject}
-            Preview: No dejes pasar esta oportunidad exclusiva...
-
-            Hola [Nombre],
-
-            ¿Sabías que ${producto.painPoints?.split('.')[0] || `miles de personas luchan con ${nicho}`}?
-
-            Durante mucho tiempo, esto ha sido un problema sin solución... hasta ahora.
-
-            Te presento ${producto.nombre}, la solución definitiva que está cambiando vidas.
-
-            ${producto.descripcion || `La mejor inversión que puedes hacer en ${nicho}`}
-
-            🎯 Beneficios principales:
-            - ${producto.beneficio1 || 'Resultados desde el primer día'}
-            - ${producto.beneficio2 || 'Método probado y garantizado'}
-            - ${producto.beneficio3 || 'Soporte completo incluido'}
-
-            💰 Precio especial por tiempo limitado: ${producto.precio || 'Ver precio'}
-            ${producto.comision ? `✨ Incluye bonos valorados en más de $200` : ''}
-
-            [CLICK AQUÍ PARA APROVECHAR LA OFERTA]
-
-            No dejes que esta oportunidad se escape. Esta oferta especial termina pronto.
-
-            Un abrazo,
-            [Tu nombre]
-
-            P.D. Recuerda que tienes garantía de satisfacción total. Si no estás 100% satisfecho, te devolvemos tu dinero.`;
+// ===================== COPY TEMPLATES SYSTEM v4.0 - IA DRIVEN =====================
+const CopyTemplateSystem = {
+    // Generadores inteligentes basados en datos de IA
+    generators: {
+        facebook: (producto, nicho) => {
+            // EXTRAER datos que YA vienen de la IA
+            const painPoints = producto.painPoints || '';
+            const emociones = producto.emociones || '';
+            const triggers = producto.triggers || '';
+            const descripcion = producto.descripcion || '';
             
-            return template;
+            // PARSEAR inteligentemente lo que ya tenemos
+            const painPointsArray = painPoints.split(/[,.]/).filter(p => p.trim());
+            const emocionesArray = emociones.split(/[,.]/).filter(e => e.trim());
+            const triggersArray = triggers.split(/[,.]/).filter(t => t.trim());
+            
+            // TRANSFORMAR pain points en beneficios (inversión lógica)
+            const beneficios = painPointsArray.slice(0, 3).map((pain, index) => {
+                const painLimpio = pain.trim().toLowerCase();
+                
+                // Transformaciones inteligentes
+                if (painLimpio.includes('falta de tiempo')) return '✅ Resultados en solo 15 minutos al día';
+                if (painLimpio.includes('dificultad')) return '✅ Método simple paso a paso que cualquiera puede seguir';
+                if (painLimpio.includes('peso') || painLimpio.includes('grasa')) return '✅ Pierde hasta 2 kilos por semana sin pasar hambre';
+                if (painLimpio.includes('energía')) return '✅ Energía ilimitada desde el primer día';
+                if (painLimpio.includes('dinero') || painLimpio.includes('caro')) return '✅ Inversión mínima con resultados máximos';
+                if (painLimpio.includes('motivación')) return '✅ Sistema que te mantiene motivado todos los días';
+                
+                // Default: invertir el pain point
+                return `✅ ${pain.trim()
+                    .replace(/no poder|no lograr|falta de|sin/gi, 'Lograrás')
+                    .replace(/dificultad para|problema con/gi, 'Dominarás')}`;
+            });
+
+            // Si no hay beneficios, usar defaults potentes
+            if (beneficios.length === 0) {
+                beneficios.push(
+                    '✅ Resultados visibles desde la primera semana',
+                    '✅ Método probado por miles de personas',
+                    '✅ Garantía de satisfacción del 100%'
+                );
+            }
+            
+            // HOOKS basados en emociones y triggers REALES
+            const emocionPrincipal = emocionesArray[0] || 'frustración';
+            const triggerPrincipal = triggersArray[0] || 'necesidad de cambio';
+            
+            const hooks = [
+                `😱 ¿${emocionPrincipal.charAt(0).toUpperCase() + emocionPrincipal.slice(1)}? ${producto.nombre} es la solución que buscabas`,
+                `🔥 "${painPointsArray[0] || 'Este problema'}" - Si esto te suena familiar, necesitas ${producto.nombre}`,
+                `⚠️ ATENCIÓN: ${producto.nombre} con ${producto.comision || '40% descuento'} (Solo hoy)`,
+                `💥 ${triggerPrincipal.charAt(0).toUpperCase() + triggerPrincipal.slice(1)}? Descubre cómo ${producto.nombre} está cambiando vidas`,
+                `🎯 Por fin: La solución definitiva para ${painPointsArray[0] || nicho} está aquí`
+            ];
+            
+            const hook = hooks[Math.floor(Math.random() * hooks.length)];
+            
+            // TEMPLATE OPTIMIZADO
+            return `${hook}
+
+${descripcion}
+
+🎯 BENEFICIOS COMPROBADOS:
+${beneficios.join('\n')}
+
+${emocionesArray.length > 0 ? `\n😔 Sabemos que sientes ${emocionesArray.join(', ')}...\n¡Pero eso termina HOY!\n` : ''}
+
+💰 OFERTA ESPECIAL:
+- Precio regular: $${(parseFloat(producto.precio?.replace(/[^0-9.]/g, '') || 97) * 1.5).toFixed(0)}
+- HOY SOLO: ${producto.precio || '$97'} 
+${producto.comision ? `• Tu ganancia: ${producto.comision} por venta` : ''}
+
+${triggersArray.length > 0 ? `\n⚡ ACTÚA AHORA si:\n${triggersArray.map(t => `• ${t.trim()}`).join('\n')}\n` : ''}
+
+🎁 BONUS GRATIS (Solo hoy):
+- Guía de inicio rápido (Valor $47)
+- Acceso a grupo VIP (Valor $97)
+- Actualizaciones de por vida (Valor $197)
+
+⏰ Esta oferta expira en 24 horas
+
+👉 Haz clic en "Más información" y transforma tu vida HOY
+
+#${nicho.replace(/\s+/g, '')} #TransformaciónReal #${new Date().getFullYear()}`;
+        },
+
+        google: (producto, nicho) => {
+            // EXTRAER keywords inteligentemente
+            const keywords = new Set(); // Usar Set para evitar duplicados
+            
+            // Keywords del nombre del producto
+            if (producto.nombre) {
+                producto.nombre.split(' ')
+                    .filter(w => w.length > 3)
+                    .forEach(w => keywords.add(w.toLowerCase()));
+            }
+            
+            // Keywords de pain points
+            if (producto.painPoints) {
+                const painKeywords = producto.painPoints.match(/\b\w{4,}\b/g) || [];
+                painKeywords.slice(0, 5).forEach(k => keywords.add(k.toLowerCase()));
+            }
+            
+            // Keywords del nicho
+            nicho.split(' ').forEach(w => {
+                if (w.length > 3) keywords.add(w.toLowerCase());
+            });
+            
+            // Headlines optimizados para Google Ads
+            const headlines = [
+                producto.nombre?.substring(0, 30) || `${nicho} Solución`,
+                `${producto.comision || 'Oferta 40% Desc'}`,
+                'Garantía 30 Días',
+                'Resultados Rápidos',
+                'Miles Satisfechos',
+                producto.triggers ? producto.triggers.split(',')[0].substring(0, 30) : 'Empieza Hoy'
+            ];
+            
+            // Descripciones optimizadas
+            const descripcion1 = producto.descripcion ? 
+                `${producto.descripcion.substring(0, 70)}. Garantía total.` : 
+                `Solución probada para ${nicho}. Resultados garantizados o devolución.`;
+                
+            const descripcion2 = `${producto.painPoints ? 'Resuelve ' + producto.painPoints.split(',')[0] : 'Transforma tu vida'}. Método comprobado. Empieza hoy.`;
+            
+            return `📊 GOOGLE ADS - CAMPAÑA OPTIMIZADA POR IA
+
+🎯 HEADLINES (Usa mínimo 5):
+${headlines.map((h, i) => `H${i+1}: ${h}`).join('\n')}
+
+📝 DESCRIPCIONES:
+D1: ${descripcion1.substring(0, 90)}
+D2: ${descripcion2.substring(0, 90)}
+
+🔗 URL VISIBLE:
+www.tu-sitio.com/${nicho.toLowerCase().replace(/\s+/g, '-')}
+
+📍 EXTENSIONES RECOMENDADAS:
+- Precio: ${producto.precio || '$97'} (Antes $${(parseFloat(producto.precio?.replace(/[^0-9.]/g, '') || 97) * 1.5).toFixed(0)})
+- Llamadas: "Consulta Gratis 24/7"
+- Enlaces de sitio:
+  - Testimonios Reales
+  - Garantía Completa
+  - Preguntas Frecuentes
+  - Comprar Ahora
+- Texto destacado:
+  - ✓ Envío Gratis
+  - ✓ Garantía 30 días
+  - ✓ Soporte 24/7
+  - ✓ Pago Seguro
+
+🎯 KEYWORDS SUGERIDAS:
+${Array.from(keywords).slice(0, 10).map(k => `• ${k}`).join('\n')}
+- comprar ${nicho}
+- mejor ${nicho}
+- ${nicho} barato
+- ${nicho} online
+
+📊 CONFIGURACIÓN RECOMENDADA:
+- Tipo de campaña: Search (Búsqueda)
+- Estrategia: Maximizar conversiones
+- Presupuesto diario: $20-50
+- CPC máximo: $0.50-2.00 (según competencia)
+
+💡 BASADO EN TU ANÁLISIS:
+Pain Points detectados: ${producto.painPoints || 'General'}
+Emociones target: ${producto.emociones || 'Deseo de cambio'}
+Triggers principales: ${producto.triggers || 'Urgencia'}`;
+        },
+
+        email: (producto, nicho) => {
+            // DATOS INTELIGENTES del producto
+            const dolor = producto.painPoints ? 
+                producto.painPoints.split(/[,.]/).filter(p => p.trim())[0] : 
+                `los desafíos en ${nicho}`;
+                
+            const emocion = producto.emociones ?
+                producto.emociones.split(',')[0].trim() :
+                'frustración';
+                
+            const trigger = producto.triggers ?
+                producto.triggers.split(',')[0].trim() :
+                'necesitas una solución real';
+            
+            // SUBJECT LINES basados en psicología
+            const subjects = [
+                `¿${emocion.charAt(0).toUpperCase() + emocion.slice(1)} con ${dolor}? (Abrir urgente)`,
+                `[REGALO] Solución para ${dolor} + Bonus gratis`,
+                `${producto.nombre} - ${producto.comision || '40% desc'} termina en 3 horas`,
+                `La verdad sobre ${dolor} que nadie te dice...`,
+                `¿${trigger.charAt(0).toUpperCase() + trigger.slice(1)}? Tengo algo para ti`
+            ];
+            
+            return `📧 SECUENCIA DE EMAIL DE ALTA CONVERSIÓN
+
+🎯 SUBJECT LINES (A/B Test estos):
+${subjects.map((s, i) => `${i+1}. ${s}`).join('\n')}
+
+📱 PREVIEW TEXT:
+"Descubre cómo Juan resolvió ${dolor} en solo 7 días..."
+
+------- EMAIL 1: HISTORIA + DOLOR -------
+
+Hola [Nombre],
+
+¿Te suena familiar esto?
+
+${producto.painPoints ? producto.painPoints.split(',').map(p => `• ${p.trim()}`).join('\n') : `• Luchas constantemente con ${nicho}\n• Sientes que nada funciona\n• Estás cansado de promesas vacías`}
+
+Si dijiste "sí" a alguno...
+
+Necesitas conocer la historia de Carlos.
+
+Hace 3 meses, Carlos estaba exactamente donde tú estás ahora.
+
+${emocion.charAt(0).toUpperCase() + emocion.slice(1)}, agotado, a punto de rendirse...
+
+Hasta que descubrió ${producto.nombre}.
+
+Hoy, Carlos me envió este mensaje:
+
+"No puedo creer los resultados. En solo 2 semanas mi vida cambió por completo. ${producto.descripcion ? producto.descripcion.substring(0, 100) + '...' : 'Los resultados superaron todas mis expectativas.'}"
+
+¿Quieres saber exactamente qué hizo Carlos?
+
+[BOTÓN: Ver la Historia Completa de Carlos >>]
+
+Pero hay un problema...
+
+Esta oferta especial (${producto.comision || '40% de descuento'}) termina mañana a medianoche.
+
+Y solo quedan 37 cupos con los bonos incluidos.
+
+Tu decisión: Seguir igual o transformar tu vida como Carlos.
+
+[BOTÓN: Quiero Transformar Mi Vida >>]
+
+Un abrazo,
+[Tu nombre]
+
+P.D. Carlos me pidió que te dijera: "${trigger ? 'Si ' + trigger + ', este es tu momento' : 'Si yo pude, tú también puedes'}."
+
+P.D.2. Los próximos 10 que se registren reciben una sesión 1-a-1 GRATIS conmigo (valor $197).
+
+------- EMAIL 2: URGENCIA + PRUEBA -------
+
+Asunto: 🔴 Quedan 8 horas (mira esto antes que sea tarde)
+
+[Nombre],
+
+Números que no mienten:
+
+- 1,247 personas ya tienen ${producto.nombre}
+- 96% reportan resultados en la primera semana
+- Solo quedan 19 cupos con precio especial
+
+Mira lo que están diciendo:
+
+"Increíble, ${producto.triggers ? 'por fin ' + producto.triggers.split(',')[0] : 'resultados reales'}" - María G.
+
+"${producto.emociones ? 'Pasé de ' + producto.emociones.split(',')[0] + ' a felicidad total' : 'Mi vida cambió completamente'}" - Roberto S.
+
+"Ojalá hubiera encontrado esto antes" - Carmen L.
+
+En 8 horas:
+- Precio sube a $${(parseFloat(producto.precio?.replace(/[^0-9.]/g, '') || 97) * 1.5).toFixed(0)}
+- Sin bonos especiales
+- Sin garantía extendida
+
+Tu elección.
+
+[BOTÓN: Asegurar Mi Cupo Ahora >>]
+
+[Tu nombre]
+
+------- EMAIL 3: ÚLTIMA OPORTUNIDAD -------
+
+Asunto: Se acabó (último email)
+
+[Nombre],
+
+2 horas.
+
+Después de eso:
+- ${producto.nombre} vuelve a precio completo
+- Los 3 bonos desaparecen
+- Tu oportunidad se va
+
+¿Recuerdas por qué empezaste a leer estos emails?
+
+Porque ${dolor}.
+
+Porque sientes ${emocion}.
+
+Porque ${trigger}.
+
+Esta es tu señal.
+
+[BOTÓN: SÍ, QUIERO CAMBIAR >>]
+
+O sigue igual.
+
+Tu decides.
+
+[Tu nombre]
+
+💰 GARANTÍA TOTAL: Si no ves resultados en 30 días, devolución del 100%`;
         }
     },
-    
-    // Función para copiar template
+
+    // Función para copiar template al portapapeles
     copyTemplate: async (type, producto, nicho) => {
         try {
             const template = CopyTemplateSystem.generators[type](producto, nicho);
             
-            await navigator.clipboard.writeText(template);
+            // Método moderno de copiar
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(template);
+            } else {
+                // Fallback para navegadores antiguos
+                const textarea = document.createElement('textarea');
+                textarea.value = template;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
             
             // Notificación visual mejorada
-            CopyTemplateSystem.showNotification(`✅ Template de ${type} copiado al portapapeles`);
+            CopyTemplateSystem.showNotification(
+                `✅ Template ${type.toUpperCase()} copiado (${template.length} caracteres)`, 
+                'success'
+            );
             
-            // Analytics (para futuro)
-            if (window.Analytics) {
-                Analytics.track('template_copied', { type, producto: producto.nombre });
-            }
+            // Log para debug
+            console.log(`Template ${type} copiado exitosamente`);
             
             return true;
         } catch (error) {
@@ -4098,8 +4332,12 @@ document.addEventListener('click', function(e) {
         }
     },
     
-    // Notificación mejorada
+    // Notificación visual mejorada
     showNotification: (message, type = 'success') => {
+        // Remover notificaciones anteriores
+        const existingNotifications = document.querySelectorAll('.template-notification');
+        existingNotifications.forEach(n => n.remove());
+        
         const notification = document.createElement('div');
         notification.className = `template-notification ${type}`;
         notification.innerHTML = message;
@@ -4115,10 +4353,12 @@ document.addEventListener('click', function(e) {
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             background: ${type === 'success' ? '#48bb78' : '#f56565'};
             color: white;
+            max-width: 400px;
         `;
         
         document.body.appendChild(notification);
         
+        // Auto-remover después de 3 segundos
         setTimeout(() => {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100px)';
@@ -4126,43 +4366,111 @@ document.addEventListener('click', function(e) {
         }, 3000);
     },
     
-    // Agregar botones a productos existentes
+    // FUNCIÓN QUE FALTABA: Agregar botones a productos
     addTemplateButtons: () => {
+        console.log('Agregando botones de templates...');
+        
         document.querySelectorAll('.product-opportunity').forEach((card, index) => {
             // Verificar si ya existen los botones
             if (card.querySelector('.template-buttons')) return;
             
             const producto = AppState.productosDetectados[index];
+            if (!producto) {
+                console.log(`No hay producto en índice ${index}`);
+                return;
+            }
+            
             const nicho = document.getElementById('nicho')?.value || 'marketing';
             
             // Crear contenedor de botones
             const templateContainer = document.createElement('div');
             templateContainer.className = 'template-buttons';
+            templateContainer.style.cssText = `
+                background: rgba(59, 130, 246, 0.08);
+                border: 1px solid #3b82f6;
+                border-radius: 10px;
+                padding: 15px;
+                margin: 15px 0;
+            `;
+            
             templateContainer.innerHTML = `
-                <h4 style="color: #3b82f6; margin: 15px 0 10px 0; font-size: 1rem;">
+                <h4 style="color: #3b82f6; margin: 0 0 10px 0; font-size: 1rem;">
                     📋 Copy Templates Instantáneos:
                 </h4>
-                <div class="template-buttons-grid">
-                    <button class="btn-template facebook" onclick="CopyTemplateSystem.copyTemplate('facebook', AppState.productosDetectados[${index}], '${nicho}')">
+                <div class="template-buttons-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                    <button class="btn-template facebook" 
+                            style="background: linear-gradient(135deg, #1877f2 0%, #0e5fc0 100%); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem;"
+                            onclick="CopyTemplateSystem.copyTemplate('facebook', AppState.productosDetectados[${index}], '${nicho.replace(/'/g, "\\'")}')">
                         📘 Facebook Ad
                     </button>
-                    <button class="btn-template google" onclick="CopyTemplateSystem.copyTemplate('google', AppState.productosDetectados[${index}], '${nicho}')">
+                    <button class="btn-template google" 
+                            style="background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem;"
+                            onclick="CopyTemplateSystem.copyTemplate('google', AppState.productosDetectados[${index}], '${nicho.replace(/'/g, "\\'")}')">
                         🔍 Google Ad
                     </button>
-                    <button class="btn-template email" onclick="CopyTemplateSystem.copyTemplate('email', AppState.productosDetectados[${index}], '${nicho}')">
+                    <button class="btn-template email" 
+                            style="background: linear-gradient(135deg, #ea4335 0%, #d33b27 100%); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem;"
+                            onclick="CopyTemplateSystem.copyTemplate('email', AppState.productosDetectados[${index}], '${nicho.replace(/'/g, "\\'")}')">
                         📧 Email Sequence
                     </button>
                 </div>
             `;
             
-            // Insertar antes de los botones de validación
+            // Encontrar dónde insertar
             const actionsDiv = card.querySelector('.product-actions');
-            if (actionsDiv) {
+            const validationDiv = card.querySelector('.offer-validation');
+            const spyDiv = card.querySelector('.spy-results');
+            
+            if (validationDiv) {
+                // Si hay validación, insertar antes
+                validationDiv.parentNode.insertBefore(templateContainer, validationDiv);
+            } else if (spyDiv) {
+                // Si hay spy, insertar antes
+                spyDiv.parentNode.insertBefore(templateContainer, spyDiv);
+            } else if (actionsDiv) {
+                // Si hay acciones, insertar antes
                 card.insertBefore(templateContainer, actionsDiv);
             } else {
+                // Si no hay nada, agregar al final
                 card.appendChild(templateContainer);
             }
         });
+        
+        console.log('Botones de templates agregados exitosamente');
+    },
+
+    // NUEVA FUNCIÓN: Generar copy con IA
+    generateAICopy: async (producto, nicho, tipo) => {
+        const prompt = `
+Actúa como COPYWRITER EXPERTO en marketing de afiliados. Basándote en este análisis de producto:
+
+PRODUCTO: ${producto.nombre}
+NICHO: ${nicho}
+PRECIO: ${producto.precio}
+COMISIÓN: ${producto.comision}
+PAIN POINTS: ${producto.painPoints}
+EMOCIONES: ${producto.emociones}
+TRIGGERS: ${producto.triggers}
+DESCRIPCIÓN: ${producto.descripcion}
+
+Genera un copy de ${tipo} LISTO PARA COPIAR Y PEGAR que:
+- Use los pain points y emociones EXACTOS detectados
+- Sea 100% congruente con el análisis
+- Maximice conversiones
+- Tenga la longitud correcta para ${tipo}
+- Use emojis estratégicamente
+- Incluya urgencia y escasez
+
+IMPORTANTE: Devuelve SOLO el copy, sin explicaciones ni introducciones.`;
+
+        try {
+            const response = await APIManager.callGemini(prompt);
+            return response;
+        } catch (error) {
+            console.error('Error generando copy con IA:', error);
+            // Fallback a generador local
+            return CopyTemplateSystem.generators[tipo](producto, nicho);
+        }
     }
 };
 
@@ -4174,3 +4482,15 @@ UIManager.displayResults = function(analysisData) {
         CopyTemplateSystem.addTemplateButtons();
     }, 500);
 };
+
+// Backup: Verificar cada 2 segundos si hay productos sin botones
+setInterval(() => {
+    const productos = document.querySelectorAll('.product-opportunity');
+    if (productos.length > 0 && AppState.productosDetectados.length > 0) {
+        const sinBotones = Array.from(productos).some(p => !p.querySelector('.template-buttons'));
+        if (sinBotones) {
+            CopyTemplateSystem.addTemplateButtons();
+        }
+    }
+}, 2000);
+
