@@ -3986,3 +3986,191 @@ document.addEventListener('click', function(e) {
     }
 });
 // ===================== TREND PREDICTOR INTEGRATION =====================
+// ===================== COPY TEMPLATES SYSTEM v2.2 =====================
+            const CopyTemplateSystem = {
+                // Generadores de templates por plataforma
+                generators: {
+                    facebook: (producto, nicho) => {
+                        const hooks = [
+                            `🔥 ${producto.nombre} está revolucionando ${nicho}`,
+                            `⚡ Descubre por qué miles están eligiendo ${producto.nombre}`,
+                            `💥 ALERTA: ${producto.nombre} con precio especial limitado`,
+                            `🎯 La solución definitiva para ${producto.painPoints?.split('.')[0] || nicho}`,
+                            `⏰ Últimas horas: ${producto.nombre} al mejor precio`
+                        ];
+                        
+                        const randomHook = hooks[Math.floor(Math.random() * hooks.length)];
+                        
+                        const template = `${randomHook}
+
+            ${producto.descripcion?.substring(0, 150) || `Descubre la mejor solución en ${nicho}`}...
+
+            ✅ ${producto.beneficio1 || 'Resultados comprobados'}
+            ✅ ${producto.beneficio2 || 'Garantía de satisfacción'}
+            ✅ ${producto.beneficio3 || 'Miles de clientes satisfechos'}
+
+            💰 Precio especial: ${producto.precio || 'Consultar'}
+            ${producto.comision ? `📊 Comisión: ${producto.comision}` : ''}
+
+            👉 Haz clic en "Más información" y transforma tu vida hoy
+
+            #${nicho.replace(/\s+/g, '')} #Oferta #Descuento`;
+                        
+                        return template;
+                    },
+                    
+                    google: (producto, nicho) => {
+                        const headline1 = `${producto.nombre} - Oferta Especial`;
+                        const headline2 = `${producto.comision ? `Hasta ${producto.comision} Descuento` : 'Mejor Precio Garantizado'}`;
+                        const description = `${producto.descripcion?.substring(0, 80) || `La mejor solución en ${nicho}`}. Compra ahora y ahorra. Envío gratis. Garantía total.`;
+                        
+                        return `Headline 1: ${headline1}
+            Headline 2: ${headline2}
+            Description: ${description}
+            Display URL: www.example.com/${nicho.toLowerCase().replace(/\s+/g, '-')}`;
+                    },
+                    
+                    email: (producto, nicho) => {
+                        const subjects = [
+                            `[URGENTE] ${producto.nombre} con descuento exclusivo para ti`,
+                            `${nombre}, no te pierdas esta oportunidad única`,
+                            `⏰ Últimas horas: ${producto.nombre} al mejor precio`,
+                            `Tu solución para ${producto.painPoints?.split('.')[0] || nicho} está aquí`,
+                            `[REGALO] Descuento especial en ${producto.nombre}`
+                        ];
+                        
+                        const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
+                        
+                        const template = `Subject: ${randomSubject}
+            Preview: No dejes pasar esta oportunidad exclusiva...
+
+            Hola [Nombre],
+
+            ¿Sabías que ${producto.painPoints?.split('.')[0] || `miles de personas luchan con ${nicho}`}?
+
+            Durante mucho tiempo, esto ha sido un problema sin solución... hasta ahora.
+
+            Te presento ${producto.nombre}, la solución definitiva que está cambiando vidas.
+
+            ${producto.descripcion || `La mejor inversión que puedes hacer en ${nicho}`}
+
+            🎯 Beneficios principales:
+            - ${producto.beneficio1 || 'Resultados desde el primer día'}
+            - ${producto.beneficio2 || 'Método probado y garantizado'}
+            - ${producto.beneficio3 || 'Soporte completo incluido'}
+
+            💰 Precio especial por tiempo limitado: ${producto.precio || 'Ver precio'}
+            ${producto.comision ? `✨ Incluye bonos valorados en más de $200` : ''}
+
+            [CLICK AQUÍ PARA APROVECHAR LA OFERTA]
+
+            No dejes que esta oportunidad se escape. Esta oferta especial termina pronto.
+
+            Un abrazo,
+            [Tu nombre]
+
+            P.D. Recuerda que tienes garantía de satisfacción total. Si no estás 100% satisfecho, te devolvemos tu dinero.`;
+            
+            return template;
+        }
+    },
+    
+    // Función para copiar template
+    copyTemplate: async (type, producto, nicho) => {
+        try {
+            const template = CopyTemplateSystem.generators[type](producto, nicho);
+            
+            await navigator.clipboard.writeText(template);
+            
+            // Notificación visual mejorada
+            CopyTemplateSystem.showNotification(`✅ Template de ${type} copiado al portapapeles`);
+            
+            // Analytics (para futuro)
+            if (window.Analytics) {
+                Analytics.track('template_copied', { type, producto: producto.nombre });
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error copiando template:', error);
+            CopyTemplateSystem.showNotification('❌ Error al copiar. Intenta de nuevo.', 'error');
+            return false;
+        }
+    },
+    
+    // Notificación mejorada
+    showNotification: (message, type = 'success') => {
+        const notification = document.createElement('div');
+        notification.className = `template-notification ${type}`;
+        notification.innerHTML = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: ${type === 'success' ? '#48bb78' : '#f56565'};
+            color: white;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    },
+    
+    // Agregar botones a productos existentes
+    addTemplateButtons: () => {
+        document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+            // Verificar si ya existen los botones
+            if (card.querySelector('.template-buttons')) return;
+            
+            const producto = AppState.productosDetectados[index];
+            const nicho = document.getElementById('nicho')?.value || 'marketing';
+            
+            // Crear contenedor de botones
+            const templateContainer = document.createElement('div');
+            templateContainer.className = 'template-buttons';
+            templateContainer.innerHTML = `
+                <h4 style="color: #3b82f6; margin: 15px 0 10px 0; font-size: 1rem;">
+                    📋 Copy Templates Instantáneos:
+                </h4>
+                <div class="template-buttons-grid">
+                    <button class="btn-template facebook" onclick="CopyTemplateSystem.copyTemplate('facebook', AppState.productosDetectados[${index}], '${nicho}')">
+                        📘 Facebook Ad
+                    </button>
+                    <button class="btn-template google" onclick="CopyTemplateSystem.copyTemplate('google', AppState.productosDetectados[${index}], '${nicho}')">
+                        🔍 Google Ad
+                    </button>
+                    <button class="btn-template email" onclick="CopyTemplateSystem.copyTemplate('email', AppState.productosDetectados[${index}], '${nicho}')">
+                        📧 Email Sequence
+                    </button>
+                </div>
+            `;
+            
+            // Insertar antes de los botones de validación
+            const actionsDiv = card.querySelector('.product-actions');
+            if (actionsDiv) {
+                card.insertBefore(templateContainer, actionsDiv);
+            } else {
+                card.appendChild(templateContainer);
+            }
+        });
+    }
+};
+
+// Auto-activar cuando se muestren productos
+const originalDisplayResultsCopy = UIManager.displayResults;
+UIManager.displayResults = function(analysisData) {
+    originalDisplayResultsCopy.call(this, analysisData);
+    setTimeout(() => {
+        CopyTemplateSystem.addTemplateButtons();
+    }, 500);
+};
