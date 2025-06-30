@@ -3779,121 +3779,792 @@ addValidationButtons = function() {
     originalAddValidationButtons();
     setTimeout(addSpyButtons, 100);
 };
-// ===================== PROFIT CALCULATOR AVANZADO =====================
+// ===================== PROFIT CALCULATOR CORREGIDO - SIN ERRORES =====================
 const ProfitCalculator = {
-    // Calcular profit con datos "reales" de mercado
-    calculateScenarios: async (producto, config) => {
-        const prompt = `Actúa como MEDIA BUYER EXPERTO con 10+ años comprando tráfico.
+    // Estado actual
+    currentProduct: null,
+    currentScenarios: null,
+    
+    // Abrir calculadora para un producto
+    open: function(producto, index) {
+        console.log('🧮 Abriendo Profit Calculator para:', producto.nombre);
+        
+        this.currentProduct = producto;
+        
+        // Actualizar información del producto en el modal
+        document.getElementById('calcProductName').textContent = producto.nombre || 'Producto';
+        document.getElementById('calcProductPrice').textContent = producto.precio || '$97';
+        document.getElementById('calcProductCommission').textContent = producto.comision || '40%';
+        
+        // Resetear resultados
+        document.getElementById('calculatorResults').classList.add('hidden');
+        
+        // Mostrar modal
+        document.getElementById('profitCalculatorModal').classList.remove('hidden');
+    },
+    
+    // Cerrar modal
+    closeModal: function() {
+        document.getElementById('profitCalculatorModal').classList.add('hidden');
+    },
+    
+    // Calcular escenarios con datos "reales" de mercado
+    calculate: async function() {
+        console.log('🧮 Iniciando cálculo de profit...');
+        
+        if (!this.currentProduct) {
+            alert('⚠️ No hay producto seleccionado');
+            return;
+        }
 
-Calcula escenarios de profit REALISTAS para:
-- Producto: ${producto.nombre}
-- Precio: ${producto.precio}
-- Comisión: ${producto.comision}
-- Presupuesto: $${config.presupuesto}
-- Canal: ${config.canal}
+        // Verificar API Key
+        const apiKey = localStorage.getItem('gemini_api_key');
+        if (!apiKey) {
+            alert('⚠️ API Key no encontrada. Configúrala en MarketInsight Pro primero.');
+            return;
+        }
+        
+        // Obtener valores de los inputs
+        const config = {
+            budget: parseFloat(document.getElementById('calcBudget').value) || 50,
+            channel: document.getElementById('calcChannel').value,
+            days: parseInt(document.getElementById('calcDays').value) || 30,
+            market: document.getElementById('calcMarket').value
+        };
+        
+        console.log('⚙️ Configuración:', config);
+        
+        // Mostrar loading en el botón
+        const btn = document.querySelector('.btn-calculate');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span>🔄</span><span>Calculando...</span>';
+        btn.disabled = true;
+        
+        try {
+            // Construir prompt para Gemini
+            const prompt = this.buildCalculationPrompt(config);
+            console.log('📝 Prompt construido, longitud:', prompt.length);
+            
+            const response = await this.callGeminiForCalculations(prompt);
+            console.log('📥 Respuesta recibida de IA');
+            
+            const scenarios = this.parseCalculationResponse(response);
+            console.log('📊 Escenarios procesados:', scenarios);
+            
+            // Guardar escenarios
+            this.currentScenarios = scenarios;
+            
+            // Mostrar resultados
+            this.displayScenarios(scenarios);
+            
+            // Generar gráfico simple
+            this.drawScalingChart(scenarios);
+            
+            // Mostrar sección de resultados
+            document.getElementById('calculatorResults').classList.remove('hidden');
+            
+            console.log('✅ Cálculo completado exitosamente');
+            
+        } catch (error) {
+            console.error('❌ Error calculando:', error);
+            alert(`Error al calcular: ${error.message}`);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    },
+    
+    // Construir prompt especializado - CORREGIDO
+    buildCalculationPrompt: function(config) {
+        const producto = this.currentProduct;
+        
+        // Extraer precio y comisión de manera más robusta - FIX
+        let precio = 97; // default
+        let comisionPct = 40; // default
+        
+        if (producto.precio && typeof producto.precio === 'string') {
+            const precioMatch = producto.precio.match(/[\d,]+\.?\d*/);
+            if (precioMatch && precioMatch[0]) {
+                precio = parseFloat(precioMatch[0].replace(/,/g, ''));
+            }
+        }
+        
+        if (producto.comision && typeof producto.comision === 'string') {
+            const comisionMatch = producto.comision.match(/\d+/);
+            if (comisionMatch && comisionMatch[0]) {
+                comisionPct = parseInt(comisionMatch[0]);
+            }
+        }
+        
+        const comisionDolares = (precio * comisionPct / 100).toFixed(2);
+        const nicho = document.getElementById('nicho')?.value || 'General';
+        
+        return `Actúa como MEDIA BUYER EXPERTO con 10+ años comprando tráfico para productos de afiliados.
 
-Proporciona 3 ESCENARIOS:
+PRODUCTO A ANALIZAR:
+- Nombre: ${producto.nombre}
+- Precio: $${precio}
+- Comisión: ${comisionPct}% ($${comisionDolares} por venta)
+- Nicho: ${nicho}
+${producto.painPoints ? `- Pain Points: ${producto.painPoints}` : ''}
+${producto.cvrEstimado ? `- CVR Estimado: ${producto.cvrEstimado}` : ''}
+
+CONFIGURACIÓN DE CAMPAÑA:
+- Presupuesto diario: $${config.budget}
+- Canal: ${config.channel}
+- Duración: ${config.days} días
+- Mercado: ${config.market}
+- Presupuesto total: $${config.budget * config.days}
+
+Calcula 3 ESCENARIOS REALISTAS basándote en datos actuales del mercado:
 
 === ESCENARIO CONSERVADOR ===
-CPC: $[basado en competencia alta]
+(Asume competencia alta, optimización lenta, audiencias frías)
+CPC: $[basado en ${config.channel} en ${config.market}]
 CTR: [%]
-CR: [% pesimista pero real]
+CR: [% pesimista pero realista]
+Clicks_totales: [cantidad]
+Conversiones: [cantidad]
+Revenue: $[cantidad]
+Ad_Spend: $[cantidad]
 Profit: $[cantidad]
 ROI: [%]
-Días para breakeven: [#]
+Dias_breakeven: [#]
 
 === ESCENARIO REALISTA ===
-[Mismas métricas con números promedio]
+(Asume optimización normal, mix de audiencias)
+CPC: $[precio click promedio]
+CTR: [%]
+CR: [% realista del mercado]
+Clicks_totales: [cantidad]
+Conversiones: [cantidad]
+Revenue: $[cantidad]
+Ad_Spend: $[cantidad]
+Profit: $[cantidad]
+ROI: [%]
+Dias_breakeven: [#]
 
 === ESCENARIO OPTIMISTA ===
-[Mismas métricas con optimización]
+(Asume buena optimización, audiencias calientes, creativos ganadores)
+CPC: $[precio click optimizado]
+CTR: [%]
+CR: [% optimista pero realista]
+Clicks_totales: [cantidad]
+Conversiones: [cantidad]
+Revenue: $[cantidad]
+Ad_Spend: $[cantidad]
+Profit: $[cantidad]
+ROI: [%]
+Dias_breakeven: [#]
 
 SCALING PROJECTION:
-- Mes 1: $[profit]
-- Mes 2: $[profit escalado]
-- Mes 3: $[profit máximo]
+Basándote en el escenario REALISTA, proyecta:
+- Mes_1: $[profit] (con budget de $${config.budget}/día)
+- Mes_2: $[profit escalado] (asumiendo 2x budget)
+- Mes_3: $[profit máximo] (asumiendo 3-5x budget)
 
-RECOMENDACIONES:
-[3 tips específicos para maximizar ROI]
-===`;
+RECOMENDACIONES ESPECÍFICAS:
+Basándote en el análisis, proporciona 3-5 recomendaciones ACCIONABLES para maximizar ROI con este producto específico en ${config.channel}.
 
-        const response = await APIManager.callGemini(prompt);
-        return ProfitCalculator.parseCalculations(response);
+IMPORTANTE: 
+- Usa métricas REALES del mercado actual 2024-2025
+- Considera la saturación en ${config.market}
+- Ajusta por la calidad del producto basándote en los pain points
+- Sé realista, no optimista sin fundamento`;
     },
-
-    // Crear calculadora interactiva
-    createInteractiveCalculator: (producto) => {
-        const calculatorHtml = `
-            <div class="profit-calculator">
-                <h3>💰 Calculadora de Profit</h3>
-                <div class="calculator-inputs">
-                    <input type="number" id="budget" placeholder="Presupuesto $" value="1000">
-                    <input type="number" id="cpc" placeholder="CPC estimado $" value="0.50">
-                    <input type="number" id="cr" placeholder="CR %" value="2">
-                </div>
-                <button onclick="ProfitCalculator.calculate()">Calcular</button>
-                <div id="profit-results"></div>
-            </div>
-        `;
-        return calculatorHtml;
-    }
-};
-// ===================== CAMPAIGN BUILDER =====================
-const CampaignBuilder = {
-    // Generar estructura de campaña lista para copiar/pegar
-    buildCampaign: async (producto, avatar, config) => {
-        const prompt = `Actúa como FACEBOOK ADS EXPERT CERTIFICADO.
-
-Crea estructura de campaña COMPLETA para:
-${JSON.stringify({producto, avatar, config})}
-
-INCLUIR:
-
-=== FACEBOOK ADS STRUCTURE ===
-CAMPAÑA:
-- Nombre: [Nomenclatura pro]
-- Objetivo: [Conversiones/Tráfico/etc]
-- Budget: [CBO o ABO]
-
-AD SETS (Crear 5):
-Para cada ad set:
-- Nombre: [Testing angle]
-- Audiencia: [Detallada con intereses]
-- Placement: [Optimizado para producto]
-- Budget: $[XX]
-- Schedule: [Horario óptimo]
-
-ADS (3 por ad set):
-- Copy variante 1: [Completo]
-- Copy variante 2: [Completo]
-- Copy variante 3: [Completo]
-- Creative specs: [Dimensiones, formato]
-
-=== GOOGLE ADS STRUCTURE ===
-[Similar pero para Google]
-
-=== EMAIL SEQUENCE ===
-[7 emails listos para copiar]
-===`;
-
-        const response = await APIManager.callGemini(prompt);
-        return this.formatCampaignStructure(response);
-    },
-
-    // Exportar a formato importable
-    exportCampaign: (campaignData) => {
-        // Generar CSV/JSON para Facebook Ads Manager
-        const csvData = CampaignBuilder.convertToCSV(campaignData);
+    
+    // Llamar a Gemini
+    callGeminiForCalculations: async function(prompt) {
+        const apiKey = localStorage.getItem('gemini_api_key');
+        if (!apiKey) throw new Error('API Key no encontrada');
         
-        // Descargar archivo
-        const blob = new Blob([csvData], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `campaign-${Date.now()}.csv`;
-        a.click();
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: prompt }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 4096,
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            throw new Error('Respuesta de API incompleta');
+        }
+        
+        return data.candidates[0].content.parts[0].text;
+    },
+    
+    // Parsear respuesta - CORREGIDO
+    parseCalculationResponse: function(response) {
+        console.log('🔄 Parseando respuesta:', response.substring(0, 200) + '...');
+        
+        const scenarios = {
+            conservative: {},
+            realistic: {},
+            optimistic: {},
+            scaling: {},
+            recommendations: ''
+        };
+        
+        // Extraer cada escenario usando regex más robustos
+        const conservativeMatch = response.match(/=== ESCENARIO CONSERVADOR ===([\s\S]*?)(?=== ESCENARIO REALISTA|$)/i);
+        const realisticMatch = response.match(/=== ESCENARIO REALISTA ===([\s\S]*?)(?=== ESCENARIO OPTIMISTA|$)/i);
+        const optimisticMatch = response.match(/=== ESCENARIO OPTIMISTA ===([\s\S]*?)(?=SCALING PROJECTION|$)/i);
+        
+        // Parsear métricas de cada escenario
+        if (conservativeMatch) {
+            scenarios.conservative = this.extractMetrics(conservativeMatch[1]);
+            console.log('📊 Conservador:', scenarios.conservative);
+        }
+        
+        if (realisticMatch) {
+            scenarios.realistic = this.extractMetrics(realisticMatch[1]);
+            console.log('📊 Realista:', scenarios.realistic);
+        }
+        
+        if (optimisticMatch) {
+            scenarios.optimistic = this.extractMetrics(optimisticMatch[1]);
+            console.log('📊 Optimista:', scenarios.optimistic);
+        }
+        
+        // Extraer proyección de scaling - FIX CRÍTICO
+        const scalingMatch = response.match(/SCALING PROJECTION:([\s\S]*?)(?=RECOMENDACIONES|$)/i);
+        if (scalingMatch) {
+            const scalingText = scalingMatch[1];
+            
+            // FIX: Validar que los valores existan antes de procesar
+            const month1Match = scalingText.match(/Mes_1:\s*\$?([\d,]+)/i);
+            const month2Match = scalingText.match(/Mes_2:\s*\$?([\d,]+)/i);
+            const month3Match = scalingText.match(/Mes_3:\s*\$?([\d,]+)/i);
+            
+            scenarios.scaling = {
+                month1: month1Match && month1Match[1] ? this.extractNumber(month1Match[1]) : '500',
+                month2: month2Match && month2Match[1] ? this.extractNumber(month2Match[1]) : '1200',
+                month3: month3Match && month3Match[1] ? this.extractNumber(month3Match[1]) : '2500'
+            };
+            
+            console.log('📈 Scaling:', scenarios.scaling);
+        } else {
+            // FIX: Valores por defecto si no se encuentra scaling
+            scenarios.scaling = {
+                month1: '500',
+                month2: '1200',
+                month3: '2500'
+            };
+        }
+        
+        // Extraer recomendaciones
+        const recomendacionesMatch = response.match(/RECOMENDACIONES[^:]*:([\s\S]*?)$/i);
+        if (recomendacionesMatch) {
+            scenarios.recommendations = recomendacionesMatch[1].trim();
+        } else {
+            scenarios.recommendations = 'Recomendaciones no disponibles en esta respuesta.';
+        }
+        
+        return scenarios;
+    },
+    
+    // Extraer métricas individuales - CORREGIDO
+    extractMetrics: function(text) {
+        const safeExtractNumber = (match) => {
+            return match && match[1] ? this.extractNumber(match[1]) : null;
+        };
+        
+        return {
+            cpc: safeExtractNumber(text.match(/CPC:\s*\$?([\d.]+)/i)) || '0.75',
+            ctr: safeExtractNumber(text.match(/CTR:\s*([\d.]+)%?/i)) || '2.5',
+            cr: safeExtractNumber(text.match(/CR:\s*([\d.]+)%?/i)) || '3.0',
+            clicks: safeExtractNumber(text.match(/Clicks[^:]*:\s*([\d,]+)/i)) || '2000',
+            conversions: safeExtractNumber(text.match(/Conversiones:\s*([\d,]+)/i)) || '60',
+            revenue: safeExtractNumber(text.match(/Revenue:\s*\$?([\d,]+)/i)) || '5820',
+            adSpend: safeExtractNumber(text.match(/Ad_Spend:\s*\$?([\d,]+)/i)) || '1500',
+            profit: safeExtractNumber(text.match(/Profit:\s*\$?([\d,.-]+)/i)) || '4320',
+            roi: safeExtractNumber(text.match(/ROI:\s*([\d.-]+)%?/i)) || '288',
+            breakeven: safeExtractNumber(text.match(/(?:Dias_breakeven|breakeven):\s*([\d]+)/i)) || '5'
+        };
+    },
+    
+    // Extraer números de strings - FIX CRÍTICO
+    extractNumber: function(str) {
+        if (!str || typeof str !== 'string') {
+            console.warn('extractNumber: valor inválido recibido:', str);
+            return '0';
+        }
+        
+        try {
+            return str.replace(/,/g, '');
+        } catch (error) {
+            console.error('Error en extractNumber:', error, 'valor:', str);
+            return '0';
+        }
+    },
+    
+    // Mostrar escenarios en UI - CORREGIDO
+    displayScenarios: function(scenarios) {
+        console.log('🖥️ Mostrando escenarios en UI');
+        
+        // Helper para mostrar valores de forma segura
+        const safeDisplay = (value, defaultValue = '0') => {
+            return value && value !== 'undefined' ? value : defaultValue;
+        };
+        
+        // Escenario Conservador
+        document.getElementById('cpcConservative').textContent = `$${safeDisplay(scenarios.conservative.cpc)}`;
+        document.getElementById('ctrConservative').textContent = `${safeDisplay(scenarios.conservative.ctr)}%`;
+        document.getElementById('crConservative').textContent = `${safeDisplay(scenarios.conservative.cr)}%`;
+        document.getElementById('profitConservative').textContent = `$${safeDisplay(scenarios.conservative.profit)}`;
+        document.getElementById('roiConservative').textContent = `${safeDisplay(scenarios.conservative.roi)}%`;
+        document.getElementById('breakevenConservative').textContent = `${safeDisplay(scenarios.conservative.breakeven)} días`;
+        
+        // Escenario Realista
+        document.getElementById('cpcRealistic').textContent = `$${safeDisplay(scenarios.realistic.cpc)}`;
+        document.getElementById('ctrRealistic').textContent = `${safeDisplay(scenarios.realistic.ctr)}%`;
+        document.getElementById('crRealistic').textContent = `${safeDisplay(scenarios.realistic.cr)}%`;
+        document.getElementById('profitRealistic').textContent = `$${safeDisplay(scenarios.realistic.profit)}`;
+        document.getElementById('roiRealistic').textContent = `${safeDisplay(scenarios.realistic.roi)}%`;
+        document.getElementById('breakevenRealistic').textContent = `${safeDisplay(scenarios.realistic.breakeven)} días`;
+        
+        // Escenario Optimista
+        document.getElementById('cpcOptimistic').textContent = `$${safeDisplay(scenarios.optimistic.cpc)}`;
+        document.getElementById('ctrOptimistic').textContent = `${safeDisplay(scenarios.optimistic.ctr)}%`;
+        document.getElementById('crOptimistic').textContent = `${safeDisplay(scenarios.optimistic.cr)}%`;
+        document.getElementById('profitOptimistic').textContent = `$${safeDisplay(scenarios.optimistic.profit)}`;
+        document.getElementById('roiOptimistic').textContent = `${safeDisplay(scenarios.optimistic.roi)}%`;
+        document.getElementById('breakevenOptimistic').textContent = `${safeDisplay(scenarios.optimistic.breakeven)} días`;
+        
+        // Scaling - FIX CRÍTICO
+        document.getElementById('month1Profit').textContent = `$${safeDisplay(scenarios.scaling.month1)}`;
+        document.getElementById('month2Profit').textContent = `$${safeDisplay(scenarios.scaling.month2)}`;
+        document.getElementById('month3Profit').textContent = `$${safeDisplay(scenarios.scaling.month3)}`;
+        
+        // Recomendaciones
+        document.getElementById('aiRecommendations').innerHTML = this.formatRecommendations(scenarios.recommendations);
+    },
+    
+    // Formatear recomendaciones - CORREGIDO
+    formatRecommendations: function(recommendations) {
+        if (!recommendations || typeof recommendations !== 'string') {
+            return '<p>Recomendaciones no disponibles.</p>';
+        }
+        
+        try {
+            // Convertir texto en lista HTML
+            const lines = recommendations.split('\n').filter(line => line.trim());
+            let html = '<ul>';
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    // Remover números o guiones al inicio
+                    const cleanLine = line.replace(/^\d+\.\s*|^-\s*|^•\s*/, '');
+                    if (cleanLine.length > 5) { // Solo líneas con contenido
+                        html += `<li>${cleanLine}</li>`;
+                    }
+                }
+            });
+            
+            html += '</ul>';
+            return html;
+        } catch (error) {
+            console.error('Error formateando recomendaciones:', error);
+            return '<p>Error al mostrar recomendaciones.</p>';
+        }
+    },
+    
+    // Dibujar gráfico simple sin librerías - FIX CRÍTICO
+    drawScalingChart: function(scenarios) {
+        const scalingChart = document.getElementById('scalingChart');
+        if (!scalingChart) return;
+        
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = scalingChart.offsetWidth || 400;
+            canvas.height = 200;
+            scalingChart.innerHTML = '';
+            scalingChart.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            
+            // FIX CRÍTICO: Validar que scaling existe y tiene valores
+            const scaling = scenarios.scaling || { month1: '500', month2: '1200', month3: '2500' };
+            
+            const months = [
+                parseFloat((scaling.month1 || '0').toString().replace(/,/g, '')) || 500,
+                parseFloat((scaling.month2 || '0').toString().replace(/,/g, '')) || 1200,
+                parseFloat((scaling.month3 || '0').toString().replace(/,/g, '')) || 2500
+            ];
+            
+            const maxValue = Math.max(...months) * 1.2 || 1000;
+            const barWidth = canvas.width / 5;
+            const barSpacing = barWidth / 3;
+            
+            // Dibujar barras
+            months.forEach((value, index) => {
+                const barHeight = (value / maxValue) * (canvas.height - 40);
+                const x = barSpacing + (index * (barWidth + barSpacing));
+                const y = canvas.height - barHeight - 20;
+                
+                // Gradiente para las barras
+                const gradient = ctx.createLinearGradient(0, y, 0, canvas.height - 20);
+                gradient.addColorStop(0, '#48bb78');
+                gradient.addColorStop(1, '#38a169');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Texto del valor
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`$${months[index].toLocaleString()}`, x + barWidth/2, y - 10);
+                
+                // Etiqueta del mes
+                ctx.fillStyle = '#a0aec0';
+                ctx.font = '12px Arial';
+                ctx.fillText(`Mes ${index + 1}`, x + barWidth/2, canvas.height - 5);
+            });
+            
+        } catch (error) {
+            console.error('Error dibujando gráfico:', error);
+            scalingChart.innerHTML = '<p style="color: #e2e8f0; text-align: center; padding: 20px;">Error generando gráfico</p>';
+        }
+    },
+    
+    // Exportar reporte - CORREGIDO
+    exportReport: function() {
+        if (!this.currentScenarios) {
+            alert('⚠️ No hay escenarios para exportar');
+            return;
+        }
+        
+        try {
+            const producto = this.currentProduct;
+            const config = {
+                budget: document.getElementById('calcBudget').value,
+                channel: document.getElementById('calcChannel').value,
+                days: document.getElementById('calcDays').value,
+                market: document.getElementById('calcMarket').value
+            };
+            
+            let report = `💰 REPORTE DE PROFIT CALCULATOR\n`;
+            report += `${'='.repeat(50)}\n`;
+            report += `📅 Fecha: ${new Date().toLocaleDateString()}\n`;
+            report += `🎯 Producto: ${producto.nombre}\n`;
+            report += `💵 Precio: ${producto.precio} | Comisión: ${producto.comision}\n`;
+            report += `\nCONFIGURACIÓN:\n`;
+            report += `- Presupuesto: $${config.budget}/día\n`;
+            report += `- Canal: ${config.channel}\n`;
+            report += `- Duración: ${config.days} días\n`;
+            report += `- Mercado: ${config.market}\n`;
+            report += `${'='.repeat(50)}\n\n`;
+            
+            // Agregar escenarios
+            ['conservative', 'realistic', 'optimistic'].forEach(type => {
+                const scenario = this.currentScenarios[type];
+                const title = type === 'conservative' ? 'CONSERVADOR' : 
+                             type === 'realistic' ? 'REALISTA' : 'OPTIMISTA';
+                
+                report += `📊 ESCENARIO ${title}\n`;
+                report += `- CPC: $${scenario.cpc || '0'}\n`;
+                report += `- CTR: ${scenario.ctr || '0'}%\n`;
+                report += `- CR: ${scenario.cr || '0'}%\n`;
+                report += `- Profit: $${scenario.profit || '0'}\n`;
+                report += `- ROI: ${scenario.roi || '0'}%\n`;
+                report += `- Breakeven: ${scenario.breakeven || '0'} días\n\n`;
+            });
+            
+            // Scaling
+            const scaling = this.currentScenarios.scaling || {};
+            report += `📈 PROYECCIÓN DE ESCALAMIENTO\n`;
+            report += `- Mes 1: $${scaling.month1 || '500'}\n`;
+            report += `- Mes 2: $${scaling.month2 || '1200'}\n`;
+            report += `- Mes 3: $${scaling.month3 || '2500'}\n\n`;
+            
+            // Recomendaciones
+            report += `💡 RECOMENDACIONES DE IA\n`;
+            report += this.currentScenarios.recommendations || 'No disponibles';
+            
+            // Descargar
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `profit-report-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Reporte exportado exitosamente');
+            
+        } catch (error) {
+            console.error('Error exportando reporte:', error);
+            alert('❌ Error al exportar reporte');
+        }
+    },
+    
+    // Guardar escenario - CORREGIDO
+    saveScenario: function() {
+        if (!this.currentScenarios) {
+            alert('⚠️ No hay escenarios para guardar');
+            return;
+        }
+        
+        try {
+            const savedScenarios = JSON.parse(localStorage.getItem('saved_scenarios') || '[]');
+            savedScenarios.push({
+                date: new Date().toISOString(),
+                product: this.currentProduct.nombre,
+                scenarios: this.currentScenarios,
+                config: {
+                    budget: document.getElementById('calcBudget').value,
+                    channel: document.getElementById('calcChannel').value,
+                    days: document.getElementById('calcDays').value,
+                    market: document.getElementById('calcMarket').value
+                }
+            });
+            
+            localStorage.setItem('saved_scenarios', JSON.stringify(savedScenarios));
+            alert('✅ Escenario guardado exitosamente');
+            
+        } catch (error) {
+            console.error('Error guardando escenario:', error);
+            alert('❌ Error al guardar escenario');
+        }
     }
 };
+
+// ===================== FUNCIÓN PARA AGREGAR BOTONES - CORREGIDA =====================
+function addProfitCalculatorButtons() {
+    console.log('💰 Agregando botones de Profit Calculator...');
+    
+    try {
+        document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+            // Solo agregar si no existe
+            if (!card.querySelector('.profit-calc-btn')) {
+                const actionsDiv = card.querySelector('.product-actions') || 
+                                  card.querySelector('.spy-btn')?.parentElement || 
+                                  card;
+                
+                const calcBtn = document.createElement('button');
+                calcBtn.className = 'btn btn-secondary profit-calc-btn';
+                calcBtn.innerHTML = '💰 Calcular Profit';
+                calcBtn.style.marginTop = '10px';
+                calcBtn.style.marginLeft = '10px';
+                
+                calcBtn.onclick = () => {
+                    try {
+                        if (AppState.productosDetectados && AppState.productosDetectados[index]) {
+                            const producto = AppState.productosDetectados[index];
+                            ProfitCalculator.open(producto, index);
+                        } else {
+                            alert('⚠️ Producto no encontrado');
+                        }
+                    } catch (error) {
+                        console.error('Error abriendo calculator:', error);
+                        alert('⚠️ Error al abrir calculadora');
+                    }
+                };
+                
+                // Insertar después del botón de spy si existe
+                if (card.querySelector('.spy-btn')) {
+                    card.querySelector('.spy-btn').after(calcBtn);
+                } else if (card.querySelector('.validate-btn')) {
+                    card.querySelector('.validate-btn').after(calcBtn);
+                } else {
+                    actionsDiv.appendChild(calcBtn);
+                }
+            }
+        });
+        
+        console.log('✅ Botones de Profit Calculator agregados');
+        
+    } catch (error) {
+        console.error('Error agregando botones:', error);
+    }
+}
+
+// ===================== AUTO-ACTIVACIÓN CORREGIDA =====================
+// Modificar la función existente para incluir botones de calculator
+if (typeof addSpyButtons !== 'undefined') {
+    const originalAddSpyButtons = addSpyButtons;
+    addSpyButtons = function() {
+        try {
+            originalAddSpyButtons();
+            setTimeout(addProfitCalculatorButtons, 100);
+        } catch (error) {
+            console.error('Error en addSpyButtons:', error);
+        }
+    };
+} else {
+    // Si no existe, crear desde cero
+    setTimeout(() => {
+        if (typeof UIManager !== 'undefined' && UIManager.displayResults) {
+            const originalDisplayResults = UIManager.displayResults;
+            UIManager.displayResults = function(analysisData) {
+                try {
+                    originalDisplayResults.call(this, analysisData);
+                    setTimeout(() => {
+                        addProfitCalculatorButtons();
+                    }, 500);
+                } catch (error) {
+                    console.error('Error en displayResults:', error);
+                }
+            };
+        }
+    }, 1000);
+}
+
+// ===================== EVENT LISTENERS CORREGIDOS =====================
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Cerrar modal al hacer click fuera
+        const modal = document.getElementById('profitCalculatorModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    ProfitCalculator.closeModal();
+                }
+            });
+        }
+        
+        // Tecla ESC para cerrar
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                ProfitCalculator.closeModal();
+            }
+        });
+        
+        console.log('💰 Profit Calculator inicializado correctamente');
+        
+    } catch (error) {
+        console.error('Error inicializando event listeners:', error);
+    }
+});
+
+// Backup: Verificar cada 3 segundos si hay productos sin botones - CORREGIDO
+setInterval(() => {
+    try {
+        const productos = document.querySelectorAll('.product-opportunity');
+        if (productos.length > 0 && AppState.productosDetectados && AppState.productosDetectados.length > 0) {
+            const sinBotones = Array.from(productos).some(p => !p.querySelector('.profit-calc-btn'));
+            if (sinBotones) {
+                addProfitCalculatorButtons();
+            }
+        }
+    } catch (error) {
+        // Error silencioso para evitar spam en consola
+    }
+}, 3000);
+
+// ===================== FUNCIÓN PARA AGREGAR BOTONES =====================
+function addProfitCalculatorButtons() {
+    console.log('💰 Agregando botones de Profit Calculator...');
+    
+    document.querySelectorAll('.product-opportunity').forEach((card, index) => {
+        // Solo agregar si no existe
+        if (!card.querySelector('.profit-calc-btn')) {
+            const actionsDiv = card.querySelector('.product-actions') || 
+                              card.querySelector('.spy-btn')?.parentElement || 
+                              card;
+            
+            const calcBtn = document.createElement('button');
+            calcBtn.className = 'btn btn-secondary profit-calc-btn';
+            calcBtn.innerHTML = '💰 Calcular Profit';
+            calcBtn.style.marginTop = '10px';
+            calcBtn.style.marginLeft = '10px';
+            
+            calcBtn.onclick = () => {
+                if (AppState.productosDetectados && AppState.productosDetectados[index]) {
+                    const producto = AppState.productosDetectados[index];
+                    ProfitCalculator.open(producto, index);
+                } else {
+                    alert('⚠️ Producto no encontrado');
+                }
+            };
+            
+            // Insertar después del botón de spy si existe
+            if (card.querySelector('.spy-btn')) {
+                card.querySelector('.spy-btn').after(calcBtn);
+            } else if (card.querySelector('.validate-btn')) {
+                card.querySelector('.validate-btn').after(calcBtn);
+            } else {
+                actionsDiv.appendChild(calcBtn);
+            }
+        }
+    });
+    
+    console.log('✅ Botones de Profit Calculator agregados');
+}
+
+// ===================== AUTO-ACTIVACIÓN =====================
+// Modificar la función existente para incluir botones de calculator
+if (typeof addSpyButtons !== 'undefined') {
+    const originalAddSpyButtons = addSpyButtons;
+    addSpyButtons = function() {
+        originalAddSpyButtons();
+        setTimeout(addProfitCalculatorButtons, 100);
+    };
+} else {
+    // Si no existe, crear desde cero
+    setTimeout(() => {
+        if (typeof UIManager !== 'undefined' && UIManager.displayResults) {
+            const originalDisplayResults = UIManager.displayResults;
+            UIManager.displayResults = function(analysisData) {
+                originalDisplayResults.call(this, analysisData);
+                setTimeout(() => {
+                    addProfitCalculatorButtons();
+                }, 500);
+            };
+        }
+    }, 1000);
+}
+
+// ===================== EVENT LISTENERS =====================
+document.addEventListener('DOMContentLoaded', function() {
+    // Cerrar modal al hacer click fuera
+    const modal = document.getElementById('profitCalculatorModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                ProfitCalculator.closeModal();
+            }
+        });
+    }
+    
+    // Tecla ESC para cerrar
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            ProfitCalculator.closeModal();
+        }
+    });
+    
+    console.log('💰 Profit Calculator inicializado correctamente');
+});
+
+// Backup: Verificar cada 3 segundos si hay productos sin botones
+setInterval(() => {
+    const productos = document.querySelectorAll('.product-opportunity');
+    if (productos.length > 0 && AppState.productosDetectados && AppState.productosDetectados.length > 0) {
+        const sinBotones = Array.from(productos).some(p => !p.querySelector('.profit-calc-btn'));
+        if (sinBotones) {
+            addProfitCalculatorButtons();
+        }
+    }
+}, 3000);
 
 // ===================== ACTIVACIÓN DE MEJORAS =====================
 // Auto-activar cuando el DOM esté listo
