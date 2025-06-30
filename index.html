@@ -419,6 +419,7 @@
                         <button class="btn btn-secondary" id="exportPersonasBtn">👥 Exportar Personas</button>
                     </div>
                 </div>
+                
 
                     <!-- ===== BUSCAR EN TU index.html DESPUÉS de los resultados de avatares múltiples ===== -->
                     <!-- ===== Y AGREGAR EXACTAMENTE ESTAS 5 LÍNEAS ===== -->
@@ -754,6 +755,215 @@
             </div>
         </div>
     </div>
+   <!-- PROFIT CALCULATOR MODAL CORREGIDO - Agregar antes del cierre de </body> en index.html -->
+<div id="profitCalculatorModal" class="modal-overlay hidden">
+    <div class="modal-container profit-calculator-modal">
+        <div class="modal-header">
+            <h2>💰 Calculadora de Profit Inteligente</h2>
+            <button class="modal-close" onclick="ProfitCalculator.closeModal()">×</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Información del Producto -->
+            <div class="product-info-calc">
+                <h3 id="calcProductName">Producto</h3>
+                <div class="product-stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Precio</span>
+                        <span class="stat-value" id="calcProductPrice">$0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Comisión</span>
+                        <span class="stat-value" id="calcProductCommission">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inputs de Configuración -->
+            <div class="calculator-config">
+                <h4>⚙️ Configuración de Campaña</h4>
+                <div class="calc-inputs-grid">
+                    <div class="calc-input-group">
+                        <label>💵 Presupuesto Diario</label>
+                        <input type="number" id="calcBudget" value="50" min="10" max="10000">
+                        <small>USD por día</small>
+                    </div>
+                    
+                    <div class="calc-input-group">
+                        <label>🎯 Canal Principal</label>
+                        <select id="calcChannel">
+                            <option value="facebook">Facebook Ads</option>
+                            <option value="google">Google Ads</option>
+                            <option value="tiktok">TikTok Ads</option>
+                            <option value="native">Native Ads</option>
+                        </select>
+                    </div>
+                    
+                    <div class="calc-input-group">
+                        <label>📅 Días de Campaña</label>
+                        <input type="number" id="calcDays" value="30" min="7" max="365">
+                        <small>Duración total</small>
+                    </div>
+                    
+                    <div class="calc-input-group">
+                        <label>🌍 Mercado</label>
+                        <select id="calcMarket">
+                            <option value="tier1">Tier 1 (US/UK/CA)</option>
+                            <option value="tier2">Tier 2 (EU/AU)</option>
+                            <option value="tier3">Tier 3 (LATAM/ASIA)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn btn-calculate" onclick="ProfitCalculator.calculate()">
+                    <span>🧮</span>
+                    <span>Calcular Escenarios</span>
+                </button>
+            </div>
+            
+            <!-- Resultados -->
+            <div id="calculatorResults" class="calculator-results hidden">
+                <h4>📊 Proyección de Resultados</h4>
+                
+                <!-- Escenarios -->
+                <div class="scenarios-grid">
+                    <!-- Conservador -->
+                    <div class="scenario-card conservative">
+                        <h5>😰 Escenario Conservador</h5>
+                        <div class="scenario-metrics">
+                            <div class="metric-row">
+                                <span>CPC:</span>
+                                <span id="cpcConservative">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CTR:</span>
+                                <span id="ctrConservative">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CR:</span>
+                                <span id="crConservative">0%</span>
+                            </div>
+                            <div class="metric-row highlight">
+                                <span>Profit:</span>
+                                <span id="profitConservative">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>ROI:</span>
+                                <span id="roiConservative">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Breakeven:</span>
+                                <span id="breakevenConservative">0 días</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Realista -->
+                    <div class="scenario-card realistic">
+                        <h5>😊 Escenario Realista</h5>
+                        <div class="scenario-metrics">
+                            <div class="metric-row">
+                                <span>CPC:</span>
+                                <span id="cpcRealistic">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CTR:</span>
+                                <span id="ctrRealistic">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CR:</span>
+                                <span id="crRealistic">0%</span>
+                            </div>
+                            <div class="metric-row highlight">
+                                <span>Profit:</span>
+                                <span id="profitRealistic">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>ROI:</span>
+                                <span id="roiRealistic">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Breakeven:</span>
+                                <span id="breakevenRealistic">0 días</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Optimista -->
+                    <div class="scenario-card optimistic">
+                        <h5>🚀 Escenario Optimista</h5>
+                        <div class="scenario-metrics">
+                            <div class="metric-row">
+                                <span>CPC:</span>
+                                <span id="cpcOptimistic">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CTR:</span>
+                                <span id="ctrOptimistic">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>CR:</span>
+                                <span id="crOptimistic">0%</span>
+                            </div>
+                            <div class="metric-row highlight">
+                                <span>Profit:</span>
+                                <span id="profitOptimistic">$0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>ROI:</span>
+                                <span id="roiOptimistic">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Breakeven:</span>
+                                <span id="breakevenOptimistic">0 días</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Proyección de Escalamiento -->
+                <div class="scaling-projection">
+                    <h5>📈 Proyección de Escalamiento</h5>
+                    <div class="scaling-chart" id="scalingChart">
+                        <!-- Gráfico simple sin librerías -->
+                    </div>
+                    <div class="scaling-summary">
+                        <div class="scaling-item">
+                            <span>Mes 1:</span>
+                            <span id="month1Profit">$0</span>
+                        </div>
+                        <div class="scaling-item">
+                            <span>Mes 2:</span>
+                            <span id="month2Profit">$0</span>
+                        </div>
+                        <div class="scaling-item">
+                            <span>Mes 3:</span>
+                            <span id="month3Profit">$0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recomendaciones IA -->
+                <div class="ai-recommendations">
+                    <h5>🤖 Recomendaciones de IA</h5>
+                    <div id="aiRecommendations" class="recommendations-content">
+                        <!-- Recomendaciones dinámicas -->
+                    </div>
+                </div>
+                
+                <!-- Acciones -->
+                <div class="calculator-actions">
+                    <button class="btn btn-secondary" onclick="ProfitCalculator.exportReport()">
+                        📊 Exportar Reporte
+                    </button>
+                    <button class="btn btn-secondary" onclick="ProfitCalculator.saveScenario()">
+                        💾 Guardar Escenario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="script.js"></script>
 </body>
