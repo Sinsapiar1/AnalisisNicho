@@ -4407,7 +4407,27 @@ validateCalculationLogic: function(scenarios) {
         // Recalcular TODO con estos valores forzados
         const clicks = Math.round(totalBudget / parseFloat(predefined.cpc));
         const conversions = Math.round(clicks * parseFloat(predefined.ctr) * parseFloat(predefined.cr) / 10000);
-        const revenue = Math.round(conversions * 38.80); // Comisión promedio
+        
+        // OBTENER COMISIÓN REAL DEL PRODUCTO
+        let comisionDolares = 38.80; // fallback
+        if (this.currentProduct && this.currentProduct.comision) {
+            const comisionText = this.currentProduct.comision.toString();
+            const porcentajeMatch = comisionText.match(/(\d+)%/);
+            const dolaresMatch = comisionText.match(/\$?([\d,]+\.?\d*)/);
+            
+            if (dolaresMatch) {
+                // Si ya está en dólares: "($48.50 por venta)"
+                comisionDolares = parseFloat(dolaresMatch[1].replace(/,/g, ''));
+            } else if (porcentajeMatch) {
+                // Si está en porcentaje: "50%"
+                const porcentaje = parseInt(porcentajeMatch[1]);
+                const precioMatch = this.currentProduct.precio ? this.currentProduct.precio.match(/\$?(\d+)/) : null;
+                const precio = precioMatch ? parseInt(precioMatch[1]) : 97;
+                comisionDolares = (precio * porcentaje / 100);
+            }
+        }
+        
+        const revenue = Math.round(conversions * comisionDolares);
         const profit = revenue - totalBudget;
         const roi = totalBudget > 0 ? Math.round((profit / totalBudget) * 100) : 0;
         
@@ -4418,7 +4438,20 @@ validateCalculationLogic: function(scenarios) {
         scenarios[type].profit = profit.toString();
         scenarios[type].roi = roi.toString();
         scenarios[type].adSpend = totalBudget.toString();
-        scenarios[type].breakeven = profit > 0 ? Math.max(5, Math.round(totalBudget / revenue * 30)).toString() : '45';
+        // BREAKEVEN ESPECÍFICO POR ESCENARIO
+        let breakeven;
+        if (profit > 0) {
+            breakeven = Math.max(3, Math.round(totalBudget / revenue * 25));
+        } else {
+            // Breakeven diferente según el escenario
+            const breakevenDays = {
+                conservative: 60, // Más días para recuperar
+                realistic: 35,    // Días moderados
+                optimistic: 15    // Menos días
+            };
+            breakeven = breakevenDays[type] || 45;
+        }
+        scenarios[type].breakeven = breakeven.toString();
         
         console.log(`🚀 ${type} FORZADO:`, {
             cpc: scenarios[type].cpc,
