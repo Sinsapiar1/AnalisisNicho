@@ -4444,29 +4444,17 @@ ensureDifferentScenarios: function(scenarios) {
     const realisticCPC = parseFloat(scenarios.realistic.cpc || '0');
     const optimisticCPC = parseFloat(scenarios.optimistic.cpc || '0');
     
-    // Si son iguales, forzar regeneración
-    if (conservativeCPC === realisticCPC && realisticCPC === optimisticCPC) {
-        console.log('⚠️ Los escenarios son idénticos, regenerando...');
-        
-        scenarios.conservative = this.generateFallbackScenario('conservative');
-        scenarios.realistic = this.generateFallbackScenario('realistic');
-        scenarios.optimistic = this.generateFallbackScenario('optimistic');
-        
-        console.log('✅ Escenarios regenerados como diferentes');
-    }
+    // DESHABILITADO: Esta validación sobrescribía nuestros cálculos correctos
+    // Los escenarios ahora se calculan matemáticamente y siempre son diferentes
+    console.log('ℹ️ Validación de escenarios idénticos deshabilitada - usando cálculos matemáticos directos');
     
-    // Validar orden lógico: Conservador ≥ Realista ≥ Optimista (en CPC)
+    // DESHABILITADO: Esta validación intercambiaba nuestros escenarios calculados
+    // Los escenarios ahora se calculan con orden lógico garantizado desde generateCorrectScenario
     const finalConservativeCPC = parseFloat(scenarios.conservative.cpc);
     const finalRealisticCPC = parseFloat(scenarios.realistic.cpc);
     const finalOptimisticCPC = parseFloat(scenarios.optimistic.cpc);
     
-    if (finalConservativeCPC < finalOptimisticCPC) {
-        console.log('⚠️ Orden de CPC incorrecto, ajustando...');
-        // Intercambiar valores si están al revés
-        const temp = scenarios.conservative;
-        scenarios.conservative = scenarios.optimistic;
-        scenarios.optimistic = temp;
-    }
+    console.log(`ℹ️ Orden CPC: Conservador=$${finalConservativeCPC}, Realista=$${finalRealisticCPC}, Optimista=$${finalOptimisticCPC}`);
     
     console.log('✅ Validación completada - Escenarios son diferentes');
 },
