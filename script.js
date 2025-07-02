@@ -4381,100 +4381,123 @@ ensureDifferentScenarios: function(scenarios) {
     console.log('✅ Validación completada - Escenarios son diferentes');
 },
 
-// ✅ FUNCIÓN DEFINITIVA: Forzar escenarios REALMENTE DIFERENTES
+// ✅ FUNCIÓN ULTRA-ROBUSTA: Forzar escenarios TOTALMENTE DIFERENTES
 validateCalculationLogic: function(scenarios) {
-    console.log('🔍 FORZANDO escenarios DIFERENTES (Versión definitiva)...');
+    console.log('🔍 FORZANDO escenarios ULTRA-DIFERENTES...');
     
     const budget = parseFloat(document.getElementById('calcBudget').value) || 50;
     const days = parseInt(document.getElementById('calcDays').value) || 30;
     const totalBudget = budget * days;
     
-    // OBTENER COMISIÓN REAL DEL PRODUCTO
-    let comisionDolares = 38.80;
+    // DETECCIÓN INTELIGENTE DE COMISIÓN
+    let comisionDolares = 5.00; // Default muy bajo
     try {
         if (this.currentProduct && this.currentProduct.comision) {
             const comisionText = this.currentProduct.comision.toString();
+            console.log('🔍 Detectando comisión:', comisionText);
+            
+            // Buscar dólares: ($5 por venta) o ($48.50 por venta)
             const dolaresMatch = comisionText.match(/\$?([\d,]+\.?\d*)/);
             if (dolaresMatch) {
                 comisionDolares = parseFloat(dolaresMatch[1].replace(/,/g, ''));
+                console.log('💰 Comisión en dólares detectada:', comisionDolares);
+            } else {
+                // Buscar porcentaje: 25% 
+                const porcentajeMatch = comisionText.match(/(\d+)%/);
+                if (porcentajeMatch) {
+                    const porcentaje = parseInt(porcentajeMatch[1]);
+                    const precioText = this.currentProduct.precio || '$19.99';
+                    const precio = parseFloat(precioText.replace(/[^0-9.]/g, '')) || 19.99;
+                    comisionDolares = (precio * porcentaje / 100);
+                    console.log(`💰 Comisión calculada: ${porcentaje}% de $${precio} = $${comisionDolares}`);
+                }
             }
         }
     } catch (e) {
-        console.log('Usando comisión por defecto:', comisionDolares);
+        console.log('⚠️ Error detectando comisión, usando default:', comisionDolares);
     }
     
-    // ESCENARIOS PREDEFINIDOS CON VALORES GARANTIZADOS DIFERENTES
-    const escenarios = {
+    // ESCENARIOS CON DIFERENCIAS GARANTIZADAS
+    const baseScenarios = {
         conservative: {
-            cpc: 2.40, ctr: 1.1, cr: 0.9, breakeven: 60
+            cpc: 2.80, ctr: 1.0, cr: 0.8, // Muy pesimista
+            multiplier: 0.3 // Solo 30% del potencial
         },
         realistic: {
-            cpc: 1.50, ctr: 2.1, cr: 1.8, breakeven: 35
+            cpc: 1.60, ctr: 2.2, cr: 1.9, // Moderado
+            multiplier: 1.0 // 100% del potencial base
         },
         optimistic: {
-            cpc: 0.85, ctr: 3.2, cr: 2.8, breakeven: 15
+            cpc: 0.75, ctr: 3.5, cr: 3.0, // Muy optimista
+            multiplier: 2.8 // 280% del potencial
         }
     };
     
-    // APLICAR CÁLCULOS A CADA ESCENARIO
-    Object.keys(escenarios).forEach(type => {
-        const data = escenarios[type];
+    // CALCULAR CADA ESCENARIO INDEPENDIENTEMENTE
+    Object.keys(baseScenarios).forEach(type => {
+        const data = baseScenarios[type];
         
-        // Asegurar que el escenario existe
-        if (!scenarios[type]) scenarios[type] = {};
+        // Recrear el escenario desde cero
+        scenarios[type] = {};
         
-        // FORZAR valores únicos
+        // Valores base ÚNICOS
         scenarios[type].cpc = data.cpc.toFixed(2);
         scenarios[type].ctr = data.ctr.toFixed(1);
         scenarios[type].cr = data.cr.toFixed(1);
         
-        // CALCULAR métricas derivadas con precisión
+        // Cálculos independientes
         const clicks = Math.round(totalBudget / data.cpc);
-        const conversions = Math.round(clicks * (data.ctr/100) * (data.cr/100));
+        const conversions = Math.round(clicks * (data.ctr/100) * (data.cr/100) * data.multiplier);
         const revenue = Math.round(conversions * comisionDolares);
         const profit = revenue - totalBudget;
         const roi = totalBudget > 0 ? Math.round((profit / totalBudget) * 100) : 0;
         
-        // APLICAR valores calculados
+        // Breakeven específico
+        const breakevenDays = {
+            conservative: 60,
+            realistic: 35, 
+            optimistic: 15
+        };
+        
+        // Asignar valores finales
         scenarios[type].clicks = clicks.toString();
         scenarios[type].conversions = conversions.toString();
         scenarios[type].revenue = revenue.toString();
         scenarios[type].profit = profit.toString();
         scenarios[type].roi = roi.toString();
         scenarios[type].adSpend = totalBudget.toString();
-        scenarios[type].breakeven = data.breakeven.toString();
+        scenarios[type].breakeven = breakevenDays[type].toString();
         
-        console.log(`🚀 ${type}:`, {
-            cpc: scenarios[type].cpc,
-            profit: scenarios[type].profit,
-            roi: scenarios[type].roi + '%',
-            breakeven: scenarios[type].breakeven + ' días'
+        console.log(`🚀 ${type.toUpperCase()}:`, {
+            cpc: `$${scenarios[type].cpc}`,
+            conversions: scenarios[type].conversions,
+            profit: `$${scenarios[type].profit}`,
+            roi: `${scenarios[type].roi}%`
         });
     });
     
-    console.log('✅ ESCENARIOS COMPLETAMENTE DIFERENTES APLICADOS');
-    
-    // ✅ AGREGAR SCALING LÓGICO
+    // SCALING LÓGICO MEJORADO
     const realisticProfit = parseFloat(scenarios.realistic.profit || '0');
     
     if (realisticProfit < 0) {
-        // Pérdida inicial mejora gradualmente
+        // Mejora gradual de pérdidas
         const perdidaBase = Math.abs(realisticProfit);
         scenarios.scaling = {
-            month1: Math.round(realisticProfit).toString(), // Pérdida inicial
-            month2: Math.round(realisticProfit * 0.4).toString(), // 60% menos pérdida  
-            month3: Math.round(perdidaBase * 0.5).toString() // Finalmente profit positivo
+            month1: realisticProfit.toString(),
+            month2: Math.round(realisticProfit * 0.3).toString(), // 70% menos pérdida
+            month3: Math.round(perdidaBase * 0.4).toString() // Profit positivo
         };
     } else {
-        // Si ya es positivo, crece normalmente
+        // Crecimiento de profits
         scenarios.scaling = {
-            month1: Math.round(realisticProfit).toString(),
-            month2: Math.round(realisticProfit * 1.8).toString(),
-            month3: Math.round(realisticProfit * 2.5).toString()
+            month1: realisticProfit.toString(),
+            month2: Math.round(realisticProfit * 1.6).toString(),
+            month3: Math.round(realisticProfit * 2.2).toString()
         };
     }
     
-    console.log('📈 Scaling lógico aplicado:', scenarios.scaling);
+    console.log('📈 Scaling aplicado:', scenarios.scaling);
+    console.log('✅ ESCENARIOS ULTRA-DIFERENTES COMPLETADOS');
 },
 
 // 6. RECOMENDACIONES POR DEFECTO
