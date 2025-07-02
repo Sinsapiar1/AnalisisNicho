@@ -2051,9 +2051,108 @@ function initContentCards() {
     });
 }
 
-// Función para generar contenido viral (simplificada)
+// ===== CONTENT VIRAL ENHANCED SYSTEM v2.0 - INTEGRADO =====
+// Función para generar contenido viral MEJORADA con integración de productos
+
+// Sistema de integración con productos detectados
+const ContentViralEnhanced = {
+    integrarConProductos: function() {
+        console.log('🔗 Integrando con productos detectados...');
+        const productos = AppState.productosDetectados || [];
+        
+        if (productos.length === 0) {
+            console.log('⚠️ No hay productos detectados, usando datos base');
+            return this.generarContextoBase();
+        }
+        
+        const producto = productos[0];
+        return {
+            nombre: producto.nombre || 'Producto',
+            precio: producto.precio || '$97',
+            comision: producto.comision || '40%',
+            descripcion: producto.descripcion || '',
+            painPoints: this.extraerPainPoints(producto),
+            emociones: this.extraerEmociones(producto),
+            triggers: this.extraerTriggers(producto),
+            nicho: producto.nicho || document.getElementById('nicho')?.value || ''
+        };
+    },
+    
+    extraerPainPoints: function(producto) {
+        const painPoints = [];
+        if (producto.painPoints) {
+            painPoints.push(...producto.painPoints.split(',').map(p => p.trim()));
+        }
+        
+        // Defaults por nicho si no hay datos
+        if (painPoints.length === 0) {
+            const nicho = producto.nicho?.toLowerCase() || '';
+            if (nicho.includes('peso') || nicho.includes('fitness')) {
+                painPoints.push('No lograr bajar de peso', 'Falta de energía', 'No tener tiempo para ejercicio');
+            } else if (nicho.includes('dinero') || nicho.includes('financiero')) {
+                painPoints.push('Falta de dinero extra', 'Miedo a las inversiones', 'No saber por dónde empezar');
+            } else {
+                painPoints.push('Falta de resultados', 'Pérdida de tiempo', 'Frustración constante');
+            }
+        }
+        return painPoints.slice(0, 3);
+    },
+    
+    extraerEmociones: function(producto) {
+        const emociones = [];
+        if (producto.emociones) {
+            emociones.push(...producto.emociones.split(',').map(e => e.trim()));
+        }
+        
+        const nicho = producto.nicho?.toLowerCase() || '';
+        if (nicho.includes('salud') || nicho.includes('fitness')) {
+            emociones.push('inseguridad', 'esperanza', 'determinación');
+        } else if (nicho.includes('dinero') || nicho.includes('riqueza')) {
+            emociones.push('ansiedad financiera', 'ambición', 'miedo al fracaso');
+        } else {
+            emociones.push('frustración', 'esperanza', 'urgencia');
+        }
+        
+        return [...new Set(emociones)].slice(0, 3);
+    },
+    
+    extraerTriggers: function(producto) {
+        const triggers = [];
+        if (producto.triggers) {
+            triggers.push(...producto.triggers.split(',').map(t => t.trim()));
+        }
+        
+        const precio = parseFloat(producto.precio?.replace(/[^0-9.]/g, '') || '0');
+        if (precio < 50) {
+            triggers.push('precio accesible', 'riesgo bajo', 'prueba ahora');
+        } else if (precio > 200) {
+            triggers.push('inversión seria', 'exclusividad', 'resultados premium');
+        } else {
+            triggers.push('relación precio-valor', 'oportunidad', 'acción inmediata');
+        }
+        
+        return triggers.slice(0, 3);
+    },
+    
+    generarContextoBase: function() {
+        const nicho = document.getElementById('nicho')?.value || 'tu nicho';
+        const publico = document.getElementById('publico')?.value || 'tu audiencia';
+        
+        return {
+            nombre: 'Tu Producto',
+            precio: '$97',
+            comision: '40%',
+            descripcion: `Producto especializado en ${nicho}`,
+            painPoints: ['Falta de resultados', 'Pérdida de tiempo', 'Frustración constante'],
+            emociones: ['frustración', 'esperanza', 'urgencia'],
+            triggers: ['oportunidad', 'cambio', 'acción inmediata'],
+            nicho: nicho
+        };
+    }
+};
+
 async function generateViralContent() {
-    console.log('Generando contenido viral...');
+    console.log('🚀 Generando contenido viral MEJORADO...');
     
     if (selectedContentTypes.size === 0) {
         alert('⚠️ Selecciona al menos un tipo de contenido');
@@ -2065,101 +2164,153 @@ async function generateViralContent() {
         return;
     }
     
-    // Obtener datos del formulario
-    const nicho = document.getElementById('nicho').value.trim();
-    const publico = document.getElementById('publico').value.trim();
-    
-    if (!nicho || !publico) {
-        alert('⚠️ Completa el nicho y público objetivo');
-        return;
-    }
-    
     const btn = document.getElementById('generateContentBtn');
     const originalText = btn.innerHTML;
-    btn.innerHTML = '🔄 Generando...';
+    btn.innerHTML = '🤖 Generando contenido inteligente...';
     btn.disabled = true;
     
     try {
-        // Crear prompt simple
+        // 1. INTEGRAR DATOS DE PRODUCTOS
+        const contextoProducto = ContentViralEnhanced.integrarConProductos();
+        console.log('✅ Contexto del producto:', contextoProducto);
+        
+        // 2. OBTENER CONFIGURACIÓN
+        const configuracion = {
+            salesAngle: document.getElementById('salesAngle')?.value || 'problema-agitacion',
+            controversyLevel: document.getElementById('controversyLevel')?.value || 'medium',
+            powerWords: document.getElementById('powerWords')?.value || 'gratis, secreto, exclusivo, limitado'
+        };
+        
+        // 3. CREAR PROMPT MEJORADO
         const tiposSeleccionados = Array.from(selectedContentTypes);
-        const prompt = `Actúa como EXPERTO COPYWRITER VIRAL con +10 años creando contenido que genera $1M+ en ventas.
+        const painPoint = contextoProducto.painPoints[0] || 'este problema';
+        const emocion = contextoProducto.emociones[0] || 'frustración';
+        const trigger = contextoProducto.triggers[0] || 'urgencia';
+        
+        const prompt = `Actúa como EXPERTO COPYWRITER VIRAL especializado en marketing de afiliados con +15 años generando $10M+ en ventas.
 
-MISIÓN: Crear contenido de ALTA CONVERSIÓN para el nicho "${nicho}" dirigido a "${publico}".
+🎯 CONTEXTO ESPECÍFICO DEL PRODUCTO:
+- Producto: ${contextoProducto.nombre}
+- Precio: ${contextoProducto.precio}  
+- Comisión: ${contextoProducto.comision}
+- Nicho: ${contextoProducto.nicho}
+- Pain Point Principal: ${painPoint}
+- Emoción Target: ${emocion}
+- Trigger Principal: ${trigger}
+
+📋 CONFIGURACIÓN:
+- Ángulo de venta: ${configuracion.salesAngle}
+- Nivel controversia: ${configuracion.controversyLevel}
+- Palabras poder: ${configuracion.powerWords}
+
+🚀 MISIÓN: Crear contenido ULTRA-ESPECÍFICO para ${contextoProducto.nombre} que convierta ${contextoProducto.comision} por venta.
 
 TIPOS DE CONTENIDO REQUERIDOS: ${tiposSeleccionados.join(', ')}
 
-Para cada tipo seleccionado, genera contenido específico y optimizado:
-
 ${tiposSeleccionados.includes('tiktok') ? `
-=== TIKTOK/REELS ===
-HOOK (3 seg): [Frase que para el scroll]
-PROBLEMA: [Agitar el problema]
-SOLUCIÓN: [Revelar beneficio]
-CTA: [Llamada a acción urgente]
-HASHTAGS: [10 hashtags estratégicos]
-SCORE VIRAL: [80-95]/100
-` : ''}
-
-${tiposSeleccionados.includes('email') ? `
-=== EMAIL MARKETING ===
-SUBJECT LINE 1: [Urgencia]
-SUBJECT LINE 2: [Curiosidad]
-SUBJECT LINE 3: [Beneficio]
-EMAIL BODY: [150-200 palabras con gancho emocional]
-CTA: [Botón específico]
-OPEN RATE ESTIMADO: [25-40]%
-` : ''}
-
-${tiposSeleccionados.includes('facebook') ? `
-=== FACEBOOK ADS ===
-HEADLINE: [Titular que convierte]
-PRIMARY TEXT: [Texto principal 125 palabras max]
-CTA BUTTON: [Acción específica]
-TARGETING: [Audiencia ideal]
-CPC ESTIMADO: [$0.50-$2.00]
+📱 TIKTOK/REELS SCRIPT (60 SEGUNDOS):
+HOOK (0-3s): [POV específico sobre ${painPoint}]
+PROBLEMA (3-8s): [Agitar ${painPoint} con historia personal]
+PRODUCTO (8-35s): [Cómo ${contextoProducto.nombre} resolvió el problema] 
+PRUEBA SOCIAL (35-45s): [Testimonios específicos del nicho]
+CTA URGENTE (45-60s): [Acción inmediata con ${contextoProducto.comision}]
+HASHTAGS: [10 hashtags específicos del nicho + virales]
+MÚSICA: [Trending audio sugerido]
+EFECTOS: [Transiciones y zooms específicos con timestamps]
+VIRAL SCORE: [Predicción 8-10/10]
 ` : ''}
 
 ${tiposSeleccionados.includes('instagram') ? `
-=== INSTAGRAM ===
-CAPTION HOOK: [Primeras líneas irresistibles]
-CAPTION COMPLETA: [Post con emojis, 200 palabras max]
-HASHTAGS: [15 hashtags estratégicos]
-STORIES IDEAS: [3 ideas para stories]
-ENGAGEMENT ESTIMADO: [5-12]%
+📸 INSTAGRAM FEED + STORIES:
+CAPTION HOOK: [Primeras líneas sobre ${painPoint}]
+CAPTION COMPLETA: [Historia personal + ${contextoProducto.nombre} + CTA]
+HASHTAGS: [15 hashtags específicos del nicho]
+STORIES IDEAS:
+- Story 1: Antes/después usando ${contextoProducto.nombre}
+- Story 2: Los 3 errores que cometía con ${painPoint}
+- Story 3: Por qué ${contextoProducto.nombre} es diferente
+CARRUSEL: [7 slides sobre el problema y solución]
+REELS HOOK: [Versión Instagram del TikTok]
 ` : ''}
 
-${tiposSeleccionados.includes('blog') ? `
-=== BLOG/SEO ===
-TÍTULO SEO: [Optimizado con keyword]
-META DESCRIPCIÓN: [150-160 caracteres]
-INTRODUCCIÓN: [80 palabras gancho]
-H2 SUBTÍTULOS: [5 subtítulos principales]
-KEYWORDS: [3 palabras clave primarias]
+${tiposSeleccionados.includes('facebook') ? `
+📊 FACEBOOK ADS OPTIMIZADO:
+HEADLINE: [Titular específico sobre ${painPoint}]
+PRIMARY TEXT: [150 palabras con ${contextoProducto.nombre}]
+CTA BUTTON: "Más información" / "Comprar ahora"
+TARGETING SUGERIDO:
+- Audiencia: Personas con ${painPoint} en ${contextoProducto.nicho}
+- Intereses: [3-5 intereses específicos del nicho]
+- Edad: [Rango específico para el producto]
+- Dispositivos: [Mobile/Desktop preferido]
+PRESUPUESTO: $20-50/día
+CPC ESTIMADO: $0.80-$2.50
+` : ''}
+
+${tiposSeleccionados.includes('email') ? `
+📧 EMAIL MARKETING SEQUENCE:
+SUBJECT LINES (3 opciones):
+1. [Urgencia sobre ${painPoint}]
+2. [Curiosidad sobre ${contextoProducto.nombre}]
+3. [Beneficio específico]
+EMAIL BODY: [200 palabras con historia personal]
+SECUENCIA 5 EMAILS:
+- Email 1: Despertar conciencia sobre ${painPoint}
+- Email 2: Agitar el dolor + mi historia
+- Email 3: Presentar ${contextoProducto.nombre}
+- Email 4: Testimonios + urgencia
+- Email 5: Última oportunidad
+CTA: [Específico para ${contextoProducto.comision}]
 ` : ''}
 
 ${tiposSeleccionados.includes('youtube') ? `
-=== YOUTUBE ===
-TÍTULO 1: [Opción viral]
-TÍTULO 2: [Opción alternativa]
-THUMBNAIL: [Descripción del thumbnail ideal]
-SCRIPT INTRO: [Primeros 15 segundos]
-DESCRIPCIÓN: [Para la descripción del video]
-TAGS: [10 tags relevantes]
+🎥 YOUTUBE VIDEO COMPLETO:
+TÍTULOS (3 opciones):
+1. "Cómo resolví ${painPoint} con ${contextoProducto.nombre} (REAL)"
+2. "Por qué ${contextoProducto.nombre} funciona (${painPoint} SOLVED)"
+3. "${contextoProducto.nombre} REVIEW: ¿Vale la pena ${contextoProducto.precio}?"
+THUMBNAIL: [Descripción específica del diseño]
+SCRIPT COMPLETO:
+[0:00] Hook viral sobre ${painPoint}
+[0:30] Mi historia personal con ${painPoint}
+[2:00] Los errores que cometía
+[5:00] Cómo descubrí ${contextoProducto.nombre}
+[8:00] Resultados específicos
+[10:00] Cómo conseguirlo con ${contextoProducto.comision}
+TAGS: [15 tags específicos del nicho]
 ` : ''}
 
-IMPORTANTE:
-- Contenido ACCIONABLE inmediatamente
-- Lenguaje específico del "${publico}"
-- Balance perfecto entre viral y convertible
-- Métricas realistas incluidas`;
+${tiposSeleccionados.includes('blog') ? `
+✍️ BLOG POST SEO:
+TÍTULO SEO: "Cómo resolver ${painPoint}: ${contextoProducto.nombre} review"
+META DESCRIPCIÓN: [160 caracteres con keyword]
+ESTRUCTURA:
+H1: El problema con ${painPoint}
+H2: Mi experiencia personal
+H3: Por qué ${contextoProducto.nombre} es diferente
+H4: Resultados después de usar ${contextoProducto.nombre}
+H5: Cómo conseguir ${contextoProducto.nombre} con ${contextoProducto.comision}
+KEYWORDS: [5 palabras clave del nicho]
+LONGITUD: 1500-2000 palabras
+` : ''}
 
-        // Llamar a la API
+🎯 REQUIREMENTS CRÍTICOS:
+- Usar SIEMPRE el nombre específico "${contextoProducto.nombre}"
+- Mencionar el precio "${contextoProducto.precio}" y comisión "${contextoProducto.comision}"
+- Enfocar en el pain point "${painPoint}"
+- Apelar a la emoción "${emocion}"
+- Usar el trigger "${trigger}" para urgencia
+- Contenido ACCIONABLE para afiliados
+- Métricas REALISTAS incluidas
+- Lenguaje que convierte en ${contextoProducto.nicho}`;
+
+        // 4. LLAMAR A LA API
         const respuesta = await APIManager.callGemini(prompt);
         
-        // Mostrar resultados
-        mostrarResultadosContenido(respuesta, tiposSeleccionados);
+        // 5. MOSTRAR RESULTADOS MEJORADOS
+        mostrarResultadosContenidoMejorado(respuesta, tiposSeleccionados, contextoProducto);
         
-        Utils.showStatus(`✅ Contenido generado para ${tiposSeleccionados.length} tipos`, 'success');
+        Utils.showStatus(`✅ Contenido inteligente generado para ${tiposSeleccionados.length} tipos`, 'success');
         
     } catch (error) {
         console.error('Error:', error);
@@ -2248,9 +2399,8 @@ Haz este avatar TAN específico que cualquier marketer pueda hablarle directamen
     }
 }
 
-// Función para mostrar resultados de contenido
-function mostrarResultadosContenido(respuesta, tipos) {
-    // Crear o actualizar sección de resultados
+// Función MEJORADA para mostrar resultados de contenido con contexto de producto
+function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto) {
     let resultsSection = document.getElementById('contentResults');
     if (!resultsSection) {
         resultsSection = document.createElement('div');
@@ -2260,26 +2410,106 @@ function mostrarResultadosContenido(respuesta, tipos) {
     }
     
     resultsSection.innerHTML = `
-        <h2>🎯 Contenido Viral Generado</h2>
+        <h2>🎯 Contenido Viral Inteligente</h2>
+        
+        <div class="content-context" style="background: rgba(0,255,127,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #00ff7f;">
+            <h3>📊 Contexto del Producto Integrado</h3>
+            <div class="context-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                <div><strong>🎯 Producto:</strong> ${contextoProducto.nombre}</div>
+                <div><strong>💰 Precio:</strong> ${contextoProducto.precio}</div>
+                <div><strong>💎 Comisión:</strong> ${contextoProducto.comision}</div>
+                <div><strong>🎭 Nicho:</strong> ${contextoProducto.nicho}</div>
+                <div><strong>😰 Pain Point:</strong> ${contextoProducto.painPoints[0] || 'N/A'}</div>
+                <div><strong>💔 Emoción:</strong> ${contextoProducto.emociones[0] || 'N/A'}</div>
+            </div>
+        </div>
+        
         <div class="content-display">
             <div class="content-item">
-                <div class="content-title">Contenido para: ${tipos.join(', ')}</div>
+                <div class="content-title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    📱 Contenido Generado para: ${tipos.map(t => getContentTypeIcon(t) + ' ' + t.toUpperCase()).join(', ')}
+                </div>
                 <div class="content-text">
-                    <pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.6; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px;">${respuesta}</pre>
+                    <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6; background: rgba(0,0,0,0.8); color: #e2e8f0; padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); max-height: 600px; overflow-y: auto;">${respuesta}</pre>
                 </div>
             </div>
         </div>
-        <div class="export-buttons" style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-secondary" onclick="copiarContenido()">📋 Copiar</button>
-            <button class="btn btn-secondary" onclick="descargarContenido()">📄 Descargar</button>
+        
+        <div class="export-buttons" style="text-align: center; margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="copiarContenidoMejorado()" style="background: #4a90e2; border: none; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;">
+                📋 Copiar Todo
+            </button>
+            <button class="btn btn-secondary" onclick="descargarContenidoMejorado()" style="background: #50c878; border: none; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;">
+                📄 Descargar
+            </button>
+            <button class="btn btn-primary" onclick="exportarContenidoAFunnels()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none; padding: 12px 20px; border-radius: 8px; color: #1a202c; font-weight: 700;">
+                🏗️ Usar en Funnels
+            </button>
+            <button class="btn btn-accent" onclick="generarMasVariaciones()" style="background: #8b5cf6; border: none; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;">
+                🔄 Más Variaciones
+            </button>
+        </div>
+        
+        <div class="content-insights" style="margin-top: 20px; padding: 15px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8b5cf6;">
+            <h4>🧠 Insights del Contenido Generado</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 10px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px;">
+                    <strong>🎯 Enfoque Principal:</strong><br>
+                    Resolver "${contextoProducto.painPoints[0] || 'problemas'}" usando ${contextoProducto.nombre}
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px;">
+                    <strong>💰 Oportunidad de Ingresos:</strong><br>
+                    ${contextoProducto.comision} por cada venta de ${contextoProducto.precio}
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px;">
+                    <strong>📈 Potencial Viral:</strong><br>
+                    Alto (basado en ${contextoProducto.emociones[0] || 'emoción'} + urgencia)
+                </div>
+            </div>
         </div>
     `;
     
     resultsSection.classList.remove('hidden');
     resultsSection.scrollIntoView({ behavior: 'smooth' });
     
-    // Guardar para exportar
-    window.lastContentGenerated = respuesta;
+    // Guardar datos completos para exportar
+    window.lastContentGeneratedEnhanced = {
+        respuesta: respuesta,
+        tipos: tipos,
+        contextoProducto: contextoProducto,
+        timestamp: new Date().toISOString()
+    };
+    
+    window.lastContentGenerated = respuesta; // Mantener compatibilidad
+}
+
+// Función helper para obtener iconos de tipos de contenido
+function getContentTypeIcon(tipo) {
+    const iconos = {
+        'tiktok': '📱',
+        'instagram': '📸', 
+        'facebook': '📊',
+        'email': '📧',
+        'youtube': '🎥',
+        'blog': '✍️'
+    };
+    return iconos[tipo] || '📄';
+}
+
+// Función para mostrar resultados de contenido (mantener compatibilidad)
+function mostrarResultadosContenido(respuesta, tipos) {
+    // Si no hay contexto de producto, usar la función original mejorada
+    const contextoBase = {
+        nombre: 'Tu Producto',
+        precio: '$97',
+        comision: '40%', 
+        nicho: document.getElementById('nicho')?.value || 'tu nicho',
+        painPoints: ['este problema'],
+        emociones: ['frustración'],
+        triggers: ['urgencia']
+    };
+    
+    mostrarResultadosContenidoMejorado(respuesta, tipos, contextoBase);
 }
 
 // Función para mostrar resultados de avatar
@@ -2314,25 +2544,257 @@ function mostrarResultadosAvatar(respuesta) {
     window.lastAvatarGenerated = respuesta;
 }
 
-// Funciones de exportación
-function copiarContenido() {
-    if (window.lastContentGenerated) {
+// ===== FUNCIONES DE EXPORTACIÓN MEJORADAS =====
+
+// Función mejorada para copiar contenido con contexto
+function copiarContenidoMejorado() {
+    if (window.lastContentGeneratedEnhanced) {
+        const datos = window.lastContentGeneratedEnhanced;
+        const textoCompleto = formatearContenidoCompleto(datos);
+        navigator.clipboard.writeText(textoCompleto);
+        Utils.showStatus('✅ Contenido completo copiado con contexto', 'success');
+    } else if (window.lastContentGenerated) {
         navigator.clipboard.writeText(window.lastContentGenerated);
         Utils.showStatus('✅ Contenido copiado', 'success');
     }
 }
 
-function descargarContenido() {
-    if (window.lastContentGenerated) {
-        const blob = new Blob([window.lastContentGenerated], { type: 'text/plain' });
+// Función mejorada para descargar contenido con contexto
+function descargarContenidoMejorado() {
+    if (window.lastContentGeneratedEnhanced) {
+        const datos = window.lastContentGeneratedEnhanced;
+        const textoCompleto = formatearContenidoCompleto(datos);
+        const blob = new Blob([textoCompleto], { type: 'text/plain; charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'contenido-viral.txt';
+        a.download = `contenido-viral-${datos.contextoProducto.nombre.replace(/\s+/g, '-')}-${Date.now()}.txt`;
         a.click();
         URL.revokeObjectURL(url);
-        Utils.showStatus('✅ Contenido descargado', 'success');
+        Utils.showStatus('✅ Contenido completo descargado', 'success');
+    } else {
+        descargarContenido(); // Fallback
     }
+}
+
+// Formatear contenido completo con contexto
+function formatearContenidoCompleto(datos) {
+    const { respuesta, tipos, contextoProducto, timestamp } = datos;
+    
+    return `CONTENIDO VIRAL INTELIGENTE - MARKETINSIGHT
+${'='.repeat(60)}
+
+📊 CONTEXTO DEL PRODUCTO:
+- Producto: ${contextoProducto.nombre}
+- Precio: ${contextoProducto.precio}
+- Comisión: ${contextoProducto.comision}
+- Nicho: ${contextoProducto.nicho}
+- Pain Point Principal: ${contextoProducto.painPoints[0] || 'N/A'}
+- Emoción Target: ${contextoProducto.emociones[0] || 'N/A'}
+- Trigger Principal: ${contextoProducto.triggers ? contextoProducto.triggers[0] : 'N/A'}
+
+📱 TIPOS DE CONTENIDO GENERADOS:
+${tipos.map(t => `- ${getContentTypeIcon(t)} ${t.toUpperCase()}`).join('\n')}
+
+📅 GENERADO: ${new Date(timestamp).toLocaleString()}
+
+${'='.repeat(60)}
+
+📝 CONTENIDO GENERADO:
+
+${respuesta}
+
+${'='.repeat(60)}
+
+💡 INSTRUCCIONES DE USO:
+
+1. 🎯 PERSONALIZACIÓN:
+   - Reemplaza [TU NOMBRE] con tu nombre real
+   - Ajusta los links de afiliado
+   - Adapta el tono a tu audiencia
+
+2. 📱 IMPLEMENTACIÓN:
+   - TikTok/Reels: Usa los timestamps exactos
+   - Instagram: Adapta hashtags a tu región
+   - Facebook: Ajusta targeting según tu experiencia
+   - Email: Personaliza con tu historia
+
+3. 📈 OPTIMIZACIÓN:
+   - Testa diferentes versiones
+   - Mide engagement y conversiones
+   - Ajusta según resultados
+
+4. 💰 MONETIZACIÓN:
+   - Promociona ${contextoProducto.nombre}
+   - Destaca el precio ${contextoProducto.precio}
+   - Enfócate en resolver "${contextoProducto.painPoints[0] || 'el problema'}"
+   - Gana ${contextoProducto.comision} por cada venta
+
+${'='.repeat(60)}
+
+⚠️  DISCLAIMER: Este contenido fue generado por IA y debe ser revisado y personalizado antes de su uso. Siempre cumple con las políticas de cada plataforma.
+
+🚀 Generado por MarketInsight - Content Viral Enhanced System v2.0`;
+}
+
+// Exportar contenido a Funnel Architect
+function exportarContenidoAFunnels() {
+    if (window.lastContentGeneratedEnhanced) {
+        const datos = window.lastContentGeneratedEnhanced;
+        
+        // Guardar en localStorage para Funnel Architect
+        const contenidoParaFunnels = {
+            tipo: 'contenido-viral',
+            producto: datos.contextoProducto,
+            contenido: datos.respuesta,
+            tipos: datos.tipos,
+            timestamp: datos.timestamp,
+            formateado: formatearContenidoCompleto(datos)
+        };
+        
+        localStorage.setItem('funnel_contenido_viral', JSON.stringify(contenidoParaFunnels));
+        
+        Utils.showStatus('✅ Contenido exportado a Funnel Architect', 'success');
+        
+        // Abrir Funnel Architect en nueva pestaña
+        window.open('funnel-architect-standalone.html', '_blank');
+    } else {
+        Utils.showStatus('⚠️ No hay contenido para exportar', 'warning');
+    }
+}
+
+// Generar más variaciones del contenido
+async function generarMasVariaciones() {
+    if (!window.lastContentGeneratedEnhanced) {
+        Utils.showStatus('⚠️ No hay contenido base para generar variaciones', 'warning');
+        return;
+    }
+    
+    if (!AppState.apiKey) {
+        alert('⚠️ Configura tu API Key primero');
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '🔄 Generando variaciones...';
+    btn.disabled = true;
+    
+    try {
+        const datos = window.lastContentGeneratedEnhanced;
+        const contextoProducto = datos.contextoProducto;
+        
+        const prompt = `Basándote en el contenido previo para ${contextoProducto.nombre}, crea 3 VARIACIONES DIFERENTES para cada tipo de contenido.
+
+CONTEXTO DEL PRODUCTO:
+- Nombre: ${contextoProducto.nombre}
+- Precio: ${contextoProducto.precio}
+- Pain Point: ${contextoProducto.painPoints[0]}
+- Emoción: ${contextoProducto.emociones[0]}
+
+INSTRUCCIONES:
+- Mantén el mismo producto y contexto
+- Cambia el ángulo de venta (problema-solución, testimonial, comparación)
+- Usa diferentes hooks y CTAs
+- Varía el tono (urgente, educativo, aspiracional)
+
+Para cada tipo en ${datos.tipos.join(', ')}, genera:
+
+VARIACIÓN A: [Ángulo de problema-agitación-solución]
+VARIACIÓN B: [Ángulo de testimonial/historia personal]  
+VARIACIÓN C: [Ángulo de comparación/por qué es mejor]
+
+Mantén el mismo nivel de detalle que el contenido original.`;
+
+        const respuesta = await APIManager.callGemini(prompt);
+        
+        // Mostrar variaciones en nueva sección
+        mostrarVariacionesContenido(respuesta, datos);
+        
+        Utils.showStatus('✅ Variaciones generadas exitosamente', 'success');
+        
+    } catch (error) {
+        console.error('Error:', error);
+        Utils.showStatus(`❌ Error: ${error.message}`, 'error');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Mostrar variaciones en nueva sección
+function mostrarVariacionesContenido(respuesta, datosOriginales) {
+    let variationsSection = document.getElementById('contentVariations');
+    if (!variationsSection) {
+        variationsSection = document.createElement('div');
+        variationsSection.id = 'contentVariations';
+        variationsSection.className = 'content-variations';
+        document.querySelector('#contentResults').after(variationsSection);
+    }
+    
+    variationsSection.innerHTML = `
+        <h2>🔄 Variaciones de Contenido</h2>
+        <div class="variations-context" style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #8b5cf6;">
+            <h3>🎭 Diferentes Ángulos para ${datosOriginales.contextoProducto.nombre}</h3>
+            <p>Prueba estos diferentes enfoques para maximizar tu alcance y conversiones</p>
+        </div>
+        
+        <div class="variations-display">
+            <div class="variation-item">
+                <div class="variation-title" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    🔄 Variaciones de Contenido Viral
+                </div>
+                <div class="variation-text">
+                    <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6; background: rgba(139, 92, 246, 0.2); color: #1a202c; padding: 25px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3); max-height: 600px; overflow-y: auto;">${respuesta}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="variations-buttons" style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="copiarVariaciones()" style="background: #8b5cf6; border: none; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;">
+                📋 Copiar Variaciones
+            </button>
+            <button class="btn btn-secondary" onclick="descargarVariaciones()" style="background: #7c3aed; border: none; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;">
+                📄 Descargar Variaciones
+            </button>
+        </div>
+    `;
+    
+    variationsSection.classList.remove('hidden');
+    variationsSection.scrollIntoView({ behavior: 'smooth' });
+    
+    // Guardar variaciones
+    window.lastContentVariations = respuesta;
+}
+
+// Funciones para variaciones
+function copiarVariaciones() {
+    if (window.lastContentVariations) {
+        navigator.clipboard.writeText(window.lastContentVariations);
+        Utils.showStatus('✅ Variaciones copiadas', 'success');
+    }
+}
+
+function descargarVariaciones() {
+    if (window.lastContentVariations) {
+        const blob = new Blob([window.lastContentVariations], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `variaciones-contenido-${Date.now()}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        Utils.showStatus('✅ Variaciones descargadas', 'success');
+    }
+}
+
+// Funciones originales (mantener compatibilidad)
+function copiarContenido() {
+    copiarContenidoMejorado();
+}
+
+function descargarContenido() {
+    descargarContenidoMejorado();
 }
 
 function copiarAvatar() {
