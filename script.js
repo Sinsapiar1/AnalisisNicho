@@ -4094,13 +4094,26 @@ parseCalculationResponse: function(response) {
             month3: this.extractNumber(scalingText.match(/Mes_3:\s*\$?([\d,]+)/i)?.[1]) || '2500'
         };
     } else {
-        // ✅ SCALING CORREGIDO: Usar factores realistas  
+        // ✅ SCALING LÓGICO CORREGIDO: Progresión realista  
         const realisticProfit = parseFloat(scenarios.realistic.profit || '0');
-        scenarios.scaling = {
-            month1: Math.round(realisticProfit).toString(),
-            month2: Math.round(realisticProfit * 1.8).toString(), // 80% más
-            month3: Math.round(realisticProfit * 2.5).toString()  // 2.5x max
-        };
+        
+        // LÓGICA CORREGIDA: Si hay pérdida inicial, debe mejorar con optimización
+        if (realisticProfit < 0) {
+            // Pérdida inicial mejora gradualmente
+            const perdidaBase = Math.abs(realisticProfit);
+            scenarios.scaling = {
+                month1: Math.round(realisticProfit).toString(), // Pérdida inicial
+                month2: Math.round(realisticProfit * 0.4).toString(), // 60% menos pérdida  
+                month3: Math.round(perdidaBase * 0.5).toString() // Finalmente profit positivo
+            };
+        } else {
+            // Si ya es positivo, crece normalmente
+            scenarios.scaling = {
+                month1: Math.round(realisticProfit).toString(),
+                month2: Math.round(realisticProfit * 1.8).toString(),
+                month3: Math.round(realisticProfit * 2.5).toString()
+            };
+        }
     }
     
     // Extraer recomendaciones
@@ -4440,6 +4453,28 @@ validateCalculationLogic: function(scenarios) {
     });
     
     console.log('✅ ESCENARIOS COMPLETAMENTE DIFERENTES APLICADOS');
+    
+    // ✅ AGREGAR SCALING LÓGICO
+    const realisticProfit = parseFloat(scenarios.realistic.profit || '0');
+    
+    if (realisticProfit < 0) {
+        // Pérdida inicial mejora gradualmente
+        const perdidaBase = Math.abs(realisticProfit);
+        scenarios.scaling = {
+            month1: Math.round(realisticProfit).toString(), // Pérdida inicial
+            month2: Math.round(realisticProfit * 0.4).toString(), // 60% menos pérdida  
+            month3: Math.round(perdidaBase * 0.5).toString() // Finalmente profit positivo
+        };
+    } else {
+        // Si ya es positivo, crece normalmente
+        scenarios.scaling = {
+            month1: Math.round(realisticProfit).toString(),
+            month2: Math.round(realisticProfit * 1.8).toString(),
+            month3: Math.round(realisticProfit * 2.5).toString()
+        };
+    }
+    
+    console.log('📈 Scaling lógico aplicado:', scenarios.scaling);
 },
 
 // 6. RECOMENDACIONES POR DEFECTO
