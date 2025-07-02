@@ -4079,7 +4079,7 @@ parseCalculationResponse: function(response) {
     }
     
     // VALIDAR QUE LOS ESCENARIOS SEAN DIFERENTES
-    this.validateAndFixScenarios(scenarios);
+    this.ensureDifferentScenarios(scenarios);
     
     // Extraer scaling
     const scalingMatch = response.match(/SCALING PROJECTION:([\s\S]*?)(?=RECOMENDACIONES|$)/i);
@@ -4865,80 +4865,7 @@ calculateRealisticScaling: function(realisticScenario, month) {
 };
 
 
-// ===================== AUTO-ACTIVACIÓN CORREGIDA =====================
-// Modificar la función existente para incluir botones de calculator
-if (typeof addSpyButtons !== 'undefined') {
-    const originalAddSpyButtons = addSpyButtons;
-    addSpyButtons = function() {
-        try {
-            originalAddSpyButtons();
-            setTimeout(addProfitCalculatorButtons, 100);
-        } catch (error) {
-            console.error('Error en addSpyButtons:', error);
-        }
-    };
-} else {
-    // Si no existe, crear desde cero
-    setTimeout(() => {
-        if (typeof UIManager !== 'undefined' && UIManager.displayResults) {
-            const originalDisplayResults = UIManager.displayResults;
-            UIManager.displayResults = function(analysisData) {
-                try {
-                    originalDisplayResults.call(this, analysisData);
-                    setTimeout(() => {
-                        addProfitCalculatorButtons();
-                    }, 500);
-                } catch (error) {
-                    console.error('Error en displayResults:', error);
-                }
-            };
-        }
-    }, 1000);
-}
-
-// ===================== EVENT LISTENERS CORREGIDOS =====================
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        // Cerrar modal al hacer click fuera
-        const modal = document.getElementById('profitCalculatorModal');
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    ProfitCalculator.closeModal();
-                }
-            });
-        }
-        
-        // Tecla ESC para cerrar
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                ProfitCalculator.closeModal();
-            }
-        });
-        
-        console.log('💰 Profit Calculator inicializado correctamente');
-        
-    } catch (error) {
-        console.error('Error inicializando event listeners:', error);
-    }
-});
-
-// Backup: Verificar cada 3 segundos si hay productos sin botones - CORREGIDO
-setInterval(() => {
-    try {
-        const productos = document.querySelectorAll('.product-opportunity');
-        if (productos.length > 0 && AppState.productosDetectados && AppState.productosDetectados.length > 0) {
-            const sinBotones = Array.from(productos).some(p => !p.querySelector('.profit-calc-btn'));
-            if (sinBotones) {
-                addProfitCalculatorButtons();
-            }
-        }
-    } catch (error) {
-        // Error silencioso para evitar spam en consola
-    }
-}, 3000);
-
-// ===================== FUNCIÓN PARA AGREGAR BOTONES =====================
+// ===================== FUNCIÓN PARA AGREGAR BOTONES DE PROFIT CALCULATOR =====================
 function addProfitCalculatorButtons() {
     console.log('💰 Agregando botones de Profit Calculator...');
     
@@ -4978,152 +4905,19 @@ function addProfitCalculatorButtons() {
     console.log('✅ Botones de Profit Calculator agregados');
 }
 
-// ===================== AUTO-ACTIVACIÓN =====================
+// ===================== AUTO-ACTIVACIÓN LIMPIA =====================
 // Modificar la función existente para incluir botones de calculator
 if (typeof addSpyButtons !== 'undefined') {
     const originalAddSpyButtons = addSpyButtons;
     addSpyButtons = function() {
-        originalAddSpyButtons();
-        setTimeout(addProfitCalculatorButtons, 100);
+        try {
+            originalAddSpyButtons();
+            setTimeout(addProfitCalculatorButtons, 100);
+        } catch (error) {
+            console.error('Error en addSpyButtons:', error);
+        }
     };
-} else {
-    // Si no existe, crear desde cero
-    setTimeout(() => {
-        if (typeof UIManager !== 'undefined' && UIManager.displayResults) {
-            const originalDisplayResults = UIManager.displayResults;
-            UIManager.displayResults = function(analysisData) {
-                originalDisplayResults.call(this, analysisData);
-                setTimeout(() => {
-                    addProfitCalculatorButtons();
-                }, 500);
-            };
-        }
-    }, 1000);
 }
-
-// ===================== EVENT LISTENERS =====================
-document.addEventListener('DOMContentLoaded', function() {
-    // Cerrar modal al hacer click fuera
-    const modal = document.getElementById('profitCalculatorModal');
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                ProfitCalculator.closeModal();
-            }
-        });
-    }
-    
-    // Tecla ESC para cerrar
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            ProfitCalculator.closeModal();
-        }
-    });
-    
-    console.log('💰 Profit Calculator inicializado correctamente');
-});
-
-// Backup: Verificar cada 3 segundos si hay productos sin botones
-setInterval(() => {
-    const productos = document.querySelectorAll('.product-opportunity');
-    if (productos.length > 0 && AppState.productosDetectados && AppState.productosDetectados.length > 0) {
-        const sinBotones = Array.from(productos).some(p => !p.querySelector('.profit-calc-btn'));
-        if (sinBotones) {
-            addProfitCalculatorButtons();
-        }
-    }
-}, 3000);
-
-// ===================== ACTIVACIÓN DE MEJORAS =====================
-// Auto-activar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Activando mejoras premium...');
-    
-    // Verificar cada 2 segundos si hay productos para agregar botones
-    setInterval(() => {
-        const productos = document.querySelectorAll('.product-opportunity');
-        if (productos.length > 0 && !document.querySelector('.validate-btn')) {
-            addValidationButtons();
-            console.log('✅ Botones de validación agregados');
-        }
-    }, 2000);
-});
-
-// ===================== EVENT DELEGATION PARA SPY BUTTONS =====================
-document.addEventListener('click', function(e) {
-    // Copiar hooks, audiencias y framework
-    if (e.target.matches('.copy-hook, .copy-audience, .copy-framework-btn')) {
-        e.preventDefault();
-        const textToCopy = decodeURIComponent(e.target.dataset.textToCopy || '');
-        
-        if (textToCopy) {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Mostrar notificación
-                const notification = document.createElement('div');
-                notification.className = 'copy-notification';
-                notification.innerHTML = '✅ ¡Copiado al portapapeles!';
-                document.body.appendChild(notification);
-                
-                // Posicionar cerca del botón
-                const rect = e.target.getBoundingClientRect();
-                notification.style.position = 'fixed';
-                notification.style.top = (rect.top - 50) + 'px';
-                notification.style.left = (rect.left - 50) + 'px';
-                notification.style.zIndex = '10000';
-                
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    setTimeout(() => notification.remove(), 300);
-                }, 2000);
-            }).catch(err => {
-                console.error('Error al copiar:', err);
-                alert('Error al copiar. Intenta seleccionar y copiar manualmente.');
-            });
-        }
-    }
-    
-    // Generar variantes
-    if (e.target.matches('.generate-variants-btn')) {
-        e.preventDefault();
-        const productName = decodeURIComponent(e.target.dataset.productName || '');
-        alert('🎨 Función "Generar 10 Variantes" próximamente...\n\nPor ahora, usa los hooks y ángulos proporcionados para crear tus propias variantes.');
-    }
-    
-    // Descargar template
-    if (e.target.matches('.download-template-btn')) {
-        e.preventDefault();
-        const spyId = e.target.dataset.spyId;
-        const spyElement = document.getElementById(spyId);
-        
-        if (spyElement) {
-            const content = spyElement.innerText;
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ad-template-${Date.now()}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            // Notificación
-            const notification = document.createElement('div');
-            notification.className = 'copy-notification';
-            notification.innerHTML = '✅ ¡Template descargado!';
-            document.body.appendChild(notification);
-            
-            notification.style.position = 'fixed';
-            notification.style.top = '50%';
-            notification.style.left = '50%';
-            notification.style.transform = 'translate(-50%, -50%)';
-            notification.style.zIndex = '10000';
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 2000);
-        }
-    }
-});
 // ===================== COPY TEMPLATES SYSTEM v4.0 - IA DRIVEN =====================
 const CopyTemplateSystem = {
     // Generadores inteligentes basados en datos de IA
@@ -5613,23 +5407,140 @@ IMPORTANTE: Devuelve SOLO el copy, sin explicaciones ni introducciones.`;
     }
 };
 
-// Auto-activar cuando se muestren productos
-const originalDisplayResultsCopy = UIManager.displayResults;
+// Auto-activar templates cuando se muestren productos
+const originalDisplayResultsTemplate = UIManager.displayResults;
 UIManager.displayResults = function(analysisData) {
-    originalDisplayResultsCopy.call(this, analysisData);
+    originalDisplayResultsTemplate.call(this, analysisData);
     setTimeout(() => {
         CopyTemplateSystem.addTemplateButtons();
     }, 500);
 };
 
-// Backup: Verificar cada 2 segundos si hay productos sin botones
-setInterval(() => {
-    const productos = document.querySelectorAll('.product-opportunity');
-    if (productos.length > 0 && AppState.productosDetectados.length > 0) {
-        const sinBotones = Array.from(productos).some(p => !p.querySelector('.template-buttons'));
-        if (sinBotones) {
-            CopyTemplateSystem.addTemplateButtons();
+// ===================== EVENT LISTENERS ÚNICOS =====================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Inicializando MarketInsight Pro...');
+    
+    try {
+        // Event listener para modal de Profit Calculator
+        const modal = document.getElementById('profitCalculatorModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    ProfitCalculator.closeModal();
+                }
+            });
+        }
+        
+        // Tecla ESC para cerrar modales
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('profitCalculatorModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    ProfitCalculator.closeModal();
+                }
+            }
+        });
+        
+        console.log('💰 Profit Calculator inicializado');
+        
+    } catch (error) {
+        console.error('Error inicializando:', error);
+    }
+});
+
+// Event delegation para botones de copy y templates
+document.addEventListener('click', function(e) {
+    // Copiar hooks, audiencias y framework
+    if (e.target.matches('.copy-hook, .copy-audience, .copy-framework-btn')) {
+        e.preventDefault();
+        const textToCopy = decodeURIComponent(e.target.dataset.textToCopy || '');
+        
+        if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Mostrar notificación
+                const notification = document.createElement('div');
+                notification.className = 'copy-notification';
+                notification.innerHTML = '✅ ¡Copiado al portapapeles!';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: ${e.clientY - 50}px;
+                    left: ${e.clientX - 50}px;
+                    background: #48bb78;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    z-index: 10000;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar:', err);
+                alert('Error al copiar. Intenta seleccionar y copiar manualmente.');
+            });
         }
     }
-}, 2000);
+    
+    // Generar variantes
+    if (e.target.matches('.generate-variants-btn')) {
+        e.preventDefault();
+        alert('🎨 Función "Generar 10 Variantes" próximamente...\n\nPor ahora, usa los hooks y ángulos proporcionados para crear tus propias variantes.');
+    }
+    
+    // Descargar template
+    if (e.target.matches('.download-template-btn')) {
+        e.preventDefault();
+        const spyId = e.target.dataset.spyId;
+        const spyElement = document.getElementById(spyId);
+        
+        if (spyElement) {
+            const content = spyElement.innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ad-template-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Notificación
+            CopyTemplateSystem.showNotification('✅ ¡Template descargado!', 'success');
+        }
+    }
+});
+
+// ===================== VERIFICACIÓN DE BOTONES (UNA SOLA VEZ) =====================
+setInterval(() => {
+    try {
+        const productos = document.querySelectorAll('.product-opportunity');
+        if (productos.length > 0 && AppState.productosDetectados.length > 0) {
+            
+            // Verificar botones de profit calculator
+            const sinProfitBtn = Array.from(productos).some(p => !p.querySelector('.profit-calc-btn'));
+            if (sinProfitBtn) {
+                addProfitCalculatorButtons();
+            }
+            
+            // Verificar botones de templates
+            const sinTemplateBtn = Array.from(productos).some(p => !p.querySelector('.template-buttons'));
+            if (sinTemplateBtn) {
+                CopyTemplateSystem.addTemplateButtons();
+            }
+            
+            // Verificar botones de validación
+            const sinValidationBtn = Array.from(productos).some(p => !p.querySelector('.validate-btn'));
+            if (sinValidationBtn && typeof addValidationButtons !== 'undefined') {
+                addValidationButtons();
+            }
+        }
+    } catch (error) {
+        // Error silencioso para evitar spam
+    }
+}, 5000); // Cada 5 segundos para evitar sobrecarga
+
+console.log('✅ MarketInsight Pro cargado completamente');
 
