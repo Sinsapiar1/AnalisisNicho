@@ -4213,6 +4213,20 @@ generateCorrectScenario: function(scenarioType) {
     const profit = revenue - totalBudget;
     const roi = totalBudget > 0 ? ((profit / totalBudget) * 100) : 0;
     
+    // Calcular días para breakeven de forma simple
+    const dailyBudget = config.budget;
+    let breakevenDays;
+    
+    if (profit <= 0) {
+        // Si hay pérdidas, calcular cuántos días necesita para ser rentable
+        const conversionesNecesarias = Math.ceil(totalBudget / comisionDolares);
+        const conversionesPorDia = (conversions / config.days);
+        breakevenDays = conversionesPorDia > 0 ? Math.ceil(conversionesNecesarias / conversionesPorDia) : 60;
+    } else {
+        // Si ya es rentable, mostrar días hasta profit positivo
+        breakevenDays = Math.ceil(config.days * 0.5); // Aproximadamente la mitad del periodo
+    }
+    
     const scenario = {
         cpc: cpc.toFixed(2),
         ctr: ctrRate.toFixed(1),
@@ -4223,10 +4237,11 @@ generateCorrectScenario: function(scenarioType) {
         adSpend: totalBudget.toString(),
         profit: Math.round(profit).toString(),
         roi: Math.round(roi).toString(),
-        breakeven: profit > 0 ? breakevenGood : breakevenBad
+        breakeven: Math.min(Math.max(breakevenDays, 1), 90).toString()
     };
     
     console.log(`✅ ${scenarioType}: CPC=$${scenario.cpc}, CR=${scenario.cr}%, Conversions=${scenario.conversions}, Profit=$${scenario.profit}, ROI=${scenario.roi}%`);
+    console.log(`🔍 DEBUG ROI ${scenarioType}: revenue=${revenue}, totalBudget=${totalBudget}, profit=${profit}, roi=${roi}, roi_rounded=${Math.round(roi)}`);
     
     return scenario;
 },
@@ -4684,10 +4699,14 @@ calculateRealisticScaling: function(realisticScenario, month) {
         
         // Helper para mostrar valores de forma segura
         const safeDisplay = (value, defaultValue = '0') => {
-            return value && value !== 'undefined' ? value : defaultValue;
+            if (value === undefined || value === null || value === 'undefined' || value === '') {
+                return defaultValue;
+            }
+            return value.toString();
         };
         
         // Escenario Conservador
+        console.log(`🎯 DISPLAY Conservative ROI: ${scenarios.conservative.roi} → ${safeDisplay(scenarios.conservative.roi)}%`);
         document.getElementById('cpcConservative').textContent = `$${safeDisplay(scenarios.conservative.cpc)}`;
         document.getElementById('ctrConservative').textContent = `${safeDisplay(scenarios.conservative.ctr)}%`;
         document.getElementById('crConservative').textContent = `${safeDisplay(scenarios.conservative.cr)}%`;
@@ -4696,6 +4715,7 @@ calculateRealisticScaling: function(realisticScenario, month) {
         document.getElementById('breakevenConservative').textContent = `${safeDisplay(scenarios.conservative.breakeven)} días`;
         
         // Escenario Realista
+        console.log(`🎯 DISPLAY Realistic ROI: ${scenarios.realistic.roi} → ${safeDisplay(scenarios.realistic.roi)}%`);
         document.getElementById('cpcRealistic').textContent = `$${safeDisplay(scenarios.realistic.cpc)}`;
         document.getElementById('ctrRealistic').textContent = `${safeDisplay(scenarios.realistic.ctr)}%`;
         document.getElementById('crRealistic').textContent = `${safeDisplay(scenarios.realistic.cr)}%`;
@@ -4704,6 +4724,7 @@ calculateRealisticScaling: function(realisticScenario, month) {
         document.getElementById('breakevenRealistic').textContent = `${safeDisplay(scenarios.realistic.breakeven)} días`;
         
         // Escenario Optimista
+        console.log(`🎯 DISPLAY Optimistic ROI: ${scenarios.optimistic.roi} → ${safeDisplay(scenarios.optimistic.roi)}%`);
         document.getElementById('cpcOptimistic').textContent = `$${safeDisplay(scenarios.optimistic.cpc)}`;
         document.getElementById('ctrOptimistic').textContent = `${safeDisplay(scenarios.optimistic.ctr)}%`;
         document.getElementById('crOptimistic').textContent = `${safeDisplay(scenarios.optimistic.cr)}%`;
