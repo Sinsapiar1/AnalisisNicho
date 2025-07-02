@@ -4094,12 +4094,12 @@ parseCalculationResponse: function(response) {
             month3: this.extractNumber(scalingText.match(/Mes_3:\s*\$?([\d,]+)/i)?.[1]) || '2500'
         };
     } else {
-        // Generar scaling basado en escenario realista
+        // ✅ SCALING CORREGIDO: Usar factores realistas  
         const realisticProfit = parseFloat(scenarios.realistic.profit || '0');
         scenarios.scaling = {
             month1: Math.round(realisticProfit).toString(),
-            month2: Math.round(realisticProfit * 2.5).toString(),
-            month3: Math.round(realisticProfit * 4).toString()
+            month2: Math.round(realisticProfit * 1.8).toString(), // 80% más
+            month3: Math.round(realisticProfit * 2.5).toString()  // 2.5x max
         };
     }
     
@@ -4368,58 +4368,66 @@ ensureDifferentScenarios: function(scenarios) {
     console.log('✅ Validación completada - Escenarios son diferentes');
 },
 
-// ✅ NUEVA FUNCIÓN: Validar lógica de cálculos
+// ✅ FUNCIÓN CORREGIDA: Forzar escenarios DIFERENTES
 validateCalculationLogic: function(scenarios) {
-    console.log('🔍 Validando lógica de cálculos...');
+    console.log('🔍 FORZANDO escenarios DIFERENTES...');
     
-    ['conservative', 'realistic', 'optimistic'].forEach(type => {
-        const scenario = scenarios[type];
-        if (!scenario) return;
-        
-        // Validar CPC (debe estar entre $0.10 y $10.00)
-        let cpc = parseFloat(scenario.cpc);
-        if (isNaN(cpc) || cpc <= 0 || cpc > 10) {
-            scenario.cpc = type === 'conservative' ? '2.50' : 
-                          type === 'realistic' ? '1.50' : '0.85';
+    const budget = parseFloat(document.getElementById('calcBudget').value) || 50;
+    const days = parseInt(document.getElementById('calcDays').value) || 30;
+    const totalBudget = budget * days;
+    
+    // FORZAR valores únicos y diferentes para cada escenario
+    const predefinedScenarios = {
+        conservative: {
+            cpc: '2.40',
+            ctr: '1.1', 
+            cr: '0.9'
+        },
+        realistic: {
+            cpc: '1.50',
+            ctr: '2.1',
+            cr: '1.8'
+        },
+        optimistic: {
+            cpc: '0.85',
+            ctr: '3.2',
+            cr: '2.8'
         }
+    };
+    
+    // SOBRESCRIBIR con valores garantizados diferentes
+    Object.keys(predefinedScenarios).forEach(type => {
+        const predefined = predefinedScenarios[type];
         
-        // Validar CTR (debe estar entre 0.5% y 5%)
-        let ctr = parseFloat(scenario.ctr);
-        if (isNaN(ctr) || ctr <= 0 || ctr > 5) {
-            scenario.ctr = type === 'conservative' ? '1.2' : 
-                          type === 'realistic' ? '2.1' : '3.2';
-        }
+        // Forzar valores específicos
+        scenarios[type].cpc = predefined.cpc;
+        scenarios[type].ctr = predefined.ctr;
+        scenarios[type].cr = predefined.cr;
         
-        // Validar CR (debe estar entre 0.3% y 5%)
-        let cr = parseFloat(scenario.cr);
-        if (isNaN(cr) || cr <= 0 || cr > 5) {
-            scenario.cr = type === 'conservative' ? '0.8' : 
-                         type === 'realistic' ? '1.8' : '2.8';
-        }
-        
-        // Recalcular métricas derivadas con valores validados
-        const budget = parseFloat(document.getElementById('calcBudget').value) || 50;
-        const days = parseInt(document.getElementById('calcDays').value) || 30;
-        const totalBudget = budget * days;
-        
-        const clicks = Math.round(totalBudget / parseFloat(scenario.cpc));
-        const conversions = Math.round(clicks * parseFloat(scenario.ctr) * parseFloat(scenario.cr) / 10000);
+        // Recalcular TODO con estos valores forzados
+        const clicks = Math.round(totalBudget / parseFloat(predefined.cpc));
+        const conversions = Math.round(clicks * parseFloat(predefined.ctr) * parseFloat(predefined.cr) / 10000);
         const revenue = Math.round(conversions * 38.80); // Comisión promedio
         const profit = revenue - totalBudget;
         const roi = totalBudget > 0 ? Math.round((profit / totalBudget) * 100) : 0;
         
-        // Actualizar con valores recalculados
-        scenario.clicks = clicks.toString();
-        scenario.conversions = conversions.toString();
-        scenario.revenue = revenue.toString();
-        scenario.profit = profit.toString();
-        scenario.roi = roi.toString();
-        scenario.breakeven = profit > 0 ? Math.max(5, Math.round(15 * (totalBudget / revenue))).toString() : '30';
+        // Actualizar TODOS los valores
+        scenarios[type].clicks = clicks.toString();
+        scenarios[type].conversions = conversions.toString();
+        scenarios[type].revenue = revenue.toString();
+        scenarios[type].profit = profit.toString();
+        scenarios[type].roi = roi.toString();
+        scenarios[type].adSpend = totalBudget.toString();
+        scenarios[type].breakeven = profit > 0 ? Math.max(5, Math.round(totalBudget / revenue * 30)).toString() : '45';
         
-        console.log(`✅ ${type} validado:`, scenario);
+        console.log(`🚀 ${type} FORZADO:`, {
+            cpc: scenarios[type].cpc,
+            profit: scenarios[type].profit,
+            roi: scenarios[type].roi
+        });
     });
     
-    console.log('✅ Validación de lógica completada');
+    console.log('✅ ESCENARIOS FORZADOS COMO DIFERENTES');
 },
 
 // 6. RECOMENDACIONES POR DEFECTO
@@ -4477,19 +4485,7 @@ getTypicalCPC: function(channel, market) {
     return cpcRanges[channel]?.[market] || 1.00;
 },
 
-calculateRealisticScaling: function(realisticScenario, month) {
-    if (!realisticScenario || !realisticScenario.profit) return (500 * month).toString();
-    
-    const baseProfit = parseFloat(realisticScenario.profit.replace(/,/g, '')) || 500;
-    const scalingFactors = {
-        1: 1.0,     // Mes 1: profit base
-        2: 2.2,     // Mes 2: 2.2x por mayor budget y optimización
-        3: 3.8      // Mes 3: 3.8x por escalamiento completo
-    };
-    
-    const scaledProfit = Math.round(baseProfit * scalingFactors[month] || 1);
-    return scaledProfit.toString();
-},
+// ✅ FUNCIÓN ELIMINADA: Duplicada con valores incorrectos
 // 4. EXTRACCIÓN MEJORADA CON VALIDACIONES
 extractMetricsImproved: function(text) {
     const safeExtractNumber = (match, defaultValue = '0') => {
