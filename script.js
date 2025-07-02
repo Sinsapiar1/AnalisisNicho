@@ -4003,9 +4003,9 @@ getTypicalCPC: function(channel, market) {
             tier3: 0.60
         },
         tiktok: {
-            tier1: 1.80,
-            tier2: 1.00,
-            tier3: 0.50
+            tier1: 1.20,  // TikTok generalmente más barato que Facebook
+            tier2: 0.70,
+            tier3: 0.35
         },
         native: {
             tier1: 0.90,
@@ -4014,7 +4014,9 @@ getTypicalCPC: function(channel, market) {
         }
     };
     
-    return cpcRanges[channel]?.[market] || 1.00;
+    const baseCPC = cpcRanges[channel]?.[market] || 1.00;
+    console.log(`💰 CPC base para ${channel} ${market}: $${baseCPC}`);
+    return baseCPC;
 },
 
 getNicheCompetition: function(nicho) {
@@ -4078,8 +4080,8 @@ parseCalculationResponse: function(response) {
         scenarios.optimistic = this.generateFallbackScenario('optimistic');
     }
     
-    // VALIDAR QUE LOS ESCENARIOS SEAN DIFERENTES
-    this.ensureDifferentScenarios(scenarios);
+    // VALIDAR Y CORREGIR CÁLCULOS MATEMÁTICOS
+    this.validateAndFixScenarios(scenarios);
     
     // Extraer scaling
     const scalingMatch = response.match(/SCALING PROJECTION:([\s\S]*?)(?=RECOMENDACIONES|$)/i);
@@ -4091,13 +4093,24 @@ parseCalculationResponse: function(response) {
             month3: this.extractNumber(scalingText.match(/Mes_3:\s*\$?([\d,]+)/i)?.[1]) || '2500'
         };
     } else {
-        // Generar scaling basado en escenario realista
+        // Generar scaling basado en escenario realista (CORREGIDO)
         const realisticProfit = parseFloat(scenarios.realistic.profit || '0');
-        scenarios.scaling = {
-            month1: Math.round(realisticProfit).toString(),
-            month2: Math.round(realisticProfit * 2.5).toString(),
-            month3: Math.round(realisticProfit * 4).toString()
-        };
+        
+        if (realisticProfit <= 0) {
+            // Si hay pérdidas, mostrar escalamiento hacia profit positivo
+            scenarios.scaling = {
+                month1: Math.round(realisticProfit).toString(),
+                month2: '500',   // Mes 2: optimización lleva a profit positivo
+                month3: '1500'   // Mes 3: scaling real con profit
+            };
+        } else {
+            // Si hay profit, escalar normalmente
+            scenarios.scaling = {
+                month1: Math.round(realisticProfit).toString(),
+                month2: Math.round(realisticProfit * 2.5).toString(),
+                month3: Math.round(realisticProfit * 4).toString()
+            };
+        }
     }
     
     // Extraer recomendaciones
@@ -4128,73 +4141,102 @@ extractMetricsForScenario: function(text, scenarioType) {
     return metrics;
 },
 
-// NUEVA FUNCIÓN: Validar y corregir escenarios duplicados
+// NUEVA FUNCIÓN: Validar y corregir escenarios con matemática correcta
 validateAndFixScenarios: function(scenarios) {
-    console.log('🔍 Validando diferencias entre escenarios...');
+    console.log('🔍 Validando y corrigiendo cálculos matemáticos...');
     
-    // Verificar si todos los profits son iguales
-    const conservProfit = parseFloat(scenarios.conservative.profit || '0');
-    const realProfit = parseFloat(scenarios.realistic.profit || '0');
-    const optProfit = parseFloat(scenarios.optimistic.profit || '0');
+    // Obtener configuración actual
+    const config = {
+        budget: parseFloat(document.getElementById('calcBudget').value) || 50,
+        days: parseInt(document.getElementById('calcDays').value) || 30,
+        channel: document.getElementById('calcChannel').value,
+        market: document.getElementById('calcMarket').value
+    };
     
-    if (conservProfit === realProfit && realProfit === optProfit) {
-        console.log('⚠️ Escenarios idénticos detectados, regenerando...');
-        
-        // Obtener config actual
-        const config = {
-            budget: parseFloat(document.getElementById('calcBudget').value) || 50,
-            days: parseInt(document.getElementById('calcDays').value) || 30,
-            channel: document.getElementById('calcChannel').value,
-            market: document.getElementById('calcMarket').value
-        };
-        
-        const totalBudget = config.budget * config.days; // $1500 en tu caso
-        const comisionPorVenta = 38.80; // 40% de $97
-        
-        // ESCENARIO CONSERVADOR (Pérdida o mínimo profit)
-        scenarios.conservative = {
-            cpc: '2.50',
-            ctr: '1.2',
-            cr: '0.8',
-            clicks: Math.round(totalBudget / 2.50).toString(),
-            conversions: Math.round((totalBudget / 2.50) * 0.012 * 0.008).toString(), // ~7
-            revenue: Math.round(7 * comisionPorVenta).toString(), // ~$272
-            adSpend: totalBudget.toString(),
-            profit: (272 - totalBudget).toString(), // -$1228
-            roi: '-82',
-            breakeven: '45'
-        };
-        
-        // ESCENARIO REALISTA (Profit moderado)
-        scenarios.realistic = {
-            cpc: '1.50',
-            ctr: '2.0',
-            cr: '1.8',
-            clicks: Math.round(totalBudget / 1.50).toString(),
-            conversions: Math.round((totalBudget / 1.50) * 0.02 * 0.018).toString(), // ~36
-            revenue: Math.round(36 * comisionPorVenta).toString(), // ~$1397
-            adSpend: totalBudget.toString(),
-            profit: (1397 - totalBudget).toString(), // -$103
-            roi: '-7',
-            breakeven: '15'
-        };
-        
-        // ESCENARIO OPTIMISTA (Profit alto)
-        scenarios.optimistic = {
-            cpc: '0.75',
-            ctr: '3.0',
-            cr: '2.5',
-            clicks: Math.round(totalBudget / 0.75).toString(),
-            conversions: Math.round((totalBudget / 0.75) * 0.03 * 0.025).toString(), // ~150
-            revenue: Math.round(150 * comisionPorVenta).toString(), // ~$5820
-            adSpend: totalBudget.toString(),
-            profit: (5820 - totalBudget).toString(), // $4320
-            roi: '288',
-            breakeven: '5'
-        };
-        
-        console.log('✅ Escenarios regenerados con valores diferentes');
+    const totalBudget = config.budget * config.days;
+    
+    // Datos del producto actual
+    const producto = this.currentProduct;
+    let comisionDolares = 38.80; // default
+    
+    if (producto && producto.comision) {
+        const precioMatch = (producto.precio || '$97').match(/[\d.]+/);
+        const comisionMatch = producto.comision.match(/[\d.]+/);
+        if (precioMatch && comisionMatch) {
+            const precio = parseFloat(precioMatch[0]);
+            const comisionPct = parseFloat(comisionMatch[0]);
+            comisionDolares = (precio * comisionPct / 100);
+        }
     }
+    
+    console.log(`💰 Configuración: Budget=$${totalBudget}, Comisión=$${comisionDolares}/venta`);
+    
+    // REGENERAR ESCENARIOS CON MATEMÁTICA CORRECTA
+    
+    // CONSERVADOR: CPC alto, métricas bajas
+    const cpcCons = this.getTypicalCPC(config.channel, config.market) * 1.8;
+    const clicksCons = Math.floor(totalBudget / cpcCons);
+    const conversionsCons = Math.floor(clicksCons * 0.008); // 0.8% CR
+    const revenueCons = conversionsCons * comisionDolares;
+    const profitCons = revenueCons - totalBudget;
+    
+    scenarios.conservative = {
+        cpc: cpcCons.toFixed(2),
+        ctr: '1.2',
+        cr: '0.8',
+        clicks: clicksCons.toString(),
+        conversions: conversionsCons.toString(),
+        revenue: Math.round(revenueCons).toString(),
+        adSpend: totalBudget.toString(),
+        profit: Math.round(profitCons).toString(),
+        roi: Math.round((profitCons / totalBudget) * 100).toString(),
+        breakeven: profitCons > 0 ? '25' : '60'
+    };
+    
+    // REALISTA: Valores medios del mercado
+    const cpcReal = this.getTypicalCPC(config.channel, config.market) * 1.1;
+    const clicksReal = Math.floor(totalBudget / cpcReal);
+    const conversionsReal = Math.floor(clicksReal * 0.018); // 1.8% CR
+    const revenueReal = conversionsReal * comisionDolares;
+    const profitReal = revenueReal - totalBudget;
+    
+    scenarios.realistic = {
+        cpc: cpcReal.toFixed(2),
+        ctr: '2.1',
+        cr: '1.8',
+        clicks: clicksReal.toString(),
+        conversions: conversionsReal.toString(),
+        revenue: Math.round(revenueReal).toString(),
+        adSpend: totalBudget.toString(),
+        profit: Math.round(profitReal).toString(),
+        roi: Math.round((profitReal / totalBudget) * 100).toString(),
+        breakeven: profitReal > 0 ? '15' : '30'
+    };
+    
+    // OPTIMISTA: CPC bajo, métricas altas
+    const cpcOpt = this.getTypicalCPC(config.channel, config.market) * 0.6;
+    const clicksOpt = Math.floor(totalBudget / cpcOpt);
+    const conversionsOpt = Math.floor(clicksOpt * 0.035); // 3.5% CR
+    const revenueOpt = conversionsOpt * comisionDolares;
+    const profitOpt = revenueOpt - totalBudget;
+    
+    scenarios.optimistic = {
+        cpc: cpcOpt.toFixed(2),
+        ctr: '3.2',
+        cr: '3.5',
+        clicks: clicksOpt.toString(),
+        conversions: conversionsOpt.toString(),
+        revenue: Math.round(revenueOpt).toString(),
+        adSpend: totalBudget.toString(),
+        profit: Math.round(profitOpt).toString(),
+        roi: Math.round((profitOpt / totalBudget) * 100).toString(),
+        breakeven: profitOpt > 0 ? '8' : '20'
+    };
+    
+    console.log('✅ Escenarios corregidos:');
+    console.log(`Conservador: Profit=$${scenarios.conservative.profit}, ROI=${scenarios.conservative.roi}%`);
+    console.log(`Realista: Profit=$${scenarios.realistic.profit}, ROI=${scenarios.realistic.roi}%`);
+    console.log(`Optimista: Profit=$${scenarios.optimistic.profit}, ROI=${scenarios.optimistic.roi}%`);
 },
 // AGREGAR DESPUÉS DE generateFallbackScenario:
 
@@ -4480,14 +4522,26 @@ getTypicalCPC: function(channel, market) {
 calculateRealisticScaling: function(realisticScenario, month) {
     if (!realisticScenario || !realisticScenario.profit) return (500 * month).toString();
     
-    const baseProfit = parseFloat(realisticScenario.profit.replace(/,/g, '')) || 500;
+    const baseProfit = parseFloat(realisticScenario.profit.replace(/,/g, '')) || 0;
+    
+    // Si hay pérdidas, no escalar pérdidas sino mostrar path a profit
+    if (baseProfit <= 0) {
+        const recoveryPath = {
+            1: baseProfit,  // Mes 1: pérdida inicial
+            2: 500,         // Mes 2: optimización lleva a profit
+            3: 1500         // Mes 3: scaling real
+        };
+        return Math.round(recoveryPath[month] || 500).toString();
+    }
+    
+    // Si hay profit, escalar normalmente
     const scalingFactors = {
         1: 1.0,     // Mes 1: profit base
         2: 2.2,     // Mes 2: 2.2x por mayor budget y optimización
         3: 3.8      // Mes 3: 3.8x por escalamiento completo
     };
     
-    const scaledProfit = Math.round(baseProfit * scalingFactors[month] || 1);
+    const scaledProfit = Math.round(baseProfit * (scalingFactors[month] || 1));
     return scaledProfit.toString();
 },
 // 4. EXTRACCIÓN MEJORADA CON VALIDACIONES
