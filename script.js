@@ -4081,6 +4081,9 @@ parseCalculationResponse: function(response) {
     // VALIDAR QUE LOS ESCENARIOS SEAN DIFERENTES
     this.ensureDifferentScenarios(scenarios);
     
+    // ✅ VALIDAR LÓGICA DE CÁLCULOS
+    this.validateCalculationLogic(scenarios);
+    
     // Extraer scaling
     const scalingMatch = response.match(/SCALING PROJECTION:([\s\S]*?)(?=RECOMENDACIONES|$)/i);
     if (scalingMatch) {
@@ -4276,115 +4279,58 @@ extractSingleMetric: function(text, regex) {
     return null;
 },
 
-// 4. GENERADOR DE ESCENARIOS FALLBACK REALISTAS
+// ✅ CORREGIDO: GENERADOR DE ESCENARIOS FALLBACK REALISTAS
 generateFallbackScenario: function(type) {
-    console.log(`Generando escenario fallback: ${type}`);
+    console.log(`🛡️ Generando escenario fallback: ${type}`);
     
     const config = {
         budget: parseFloat(document.getElementById('calcBudget').value) || 50,
-        channel: document.getElementById('calcChannel').value,
-        days: parseInt(document.getElementById('calcDays').value) || 30,
-        market: document.getElementById('calcMarket').value
+        days: parseInt(document.getElementById('calcDays').value) || 30
     };
     
-    const baseCPC = this.getTypicalCPC(config.channel, config.market);
     const totalBudget = config.budget * config.days;
+    const avgCommission = 38.80; // Comisión promedio realista
     
-    // Datos base del producto
-    const producto = this.currentProduct;
-    let comisionDolares = 38.80; // default
-    
-    if (producto && producto.comision) {
-        const precioMatch = (producto.precio || '$97').match(/[\d.]+/);
-        const comisionMatch = producto.comision.match(/[\d.]+/);
-        if (precioMatch && comisionMatch) {
-            const precio = parseFloat(precioMatch[0]);
-            const comisionPct = parseFloat(comisionMatch[0]);
-            comisionDolares = (precio * comisionPct / 100);
+    // Valores base realistas por tipo de escenario
+    const scenarios = {
+        conservative: {
+            cpc: 2.20, ctr: 1.1, cr: 0.9,
+            expectedROI: -25 // Pérdida esperada
+        },
+        realistic: {
+            cpc: 1.50, ctr: 2.0, cr: 1.7,
+            expectedROI: 15 // ROI modesto
+        },
+        optimistic: {
+            cpc: 0.90, ctr: 3.1, cr: 2.6,
+            expectedROI: 85 // ROI bueno
         }
-    }
+    };
     
-    let scenario;
+    const scenarioData = scenarios[type] || scenarios.realistic;
     
-    switch(type) {
-        case 'conservative':
-            const cpcCons = (baseCPC * 1.6).toFixed(2); // CPC más alto
-            const ctrCons = '1.2'; // CTR más bajo
-            const crCons = '0.8'; // CR más bajo
-            const clicksCons = Math.round(totalBudget / parseFloat(cpcCons));
-            const conversionsCons = Math.round(clicksCons * parseFloat(ctrCons) * parseFloat(crCons) / 10000);
-            const revenueCons = Math.round(conversionsCons * comisionDolares);
-            const profitCons = revenueCons - totalBudget;
-            const roiCons = totalBudget > 0 ? ((profitCons / totalBudget) * 100).toFixed(0) : '0';
-            
-            scenario = {
-                cpc: cpcCons,
-                ctr: ctrCons,
-                cr: crCons,
-                clicks: clicksCons.toString(),
-                conversions: conversionsCons.toString(),
-                revenue: revenueCons.toString(),
-                adSpend: totalBudget.toString(),
-                profit: profitCons.toString(),
-                roi: roiCons,
-                breakeven: profitCons > 0 ? '12' : '25'
-            };
-            break;
-            
-        case 'realistic':
-            const cpcReal = (baseCPC * 1.1).toFixed(2); // CPC medio
-            const ctrReal = '2.1'; // CTR medio
-            const crReal = '1.8'; // CR medio
-            const clicksReal = Math.round(totalBudget / parseFloat(cpcReal));
-            const conversionsReal = Math.round(clicksReal * parseFloat(ctrReal) * parseFloat(crReal) / 10000);
-            const revenueReal = Math.round(conversionsReal * comisionDolares);
-            const profitReal = revenueReal - totalBudget;
-            const roiReal = totalBudget > 0 ? ((profitReal / totalBudget) * 100).toFixed(0) : '0';
-            
-            scenario = {
-                cpc: cpcReal,
-                ctr: ctrReal,
-                cr: crReal,
-                clicks: clicksReal.toString(),
-                conversions: conversionsReal.toString(),
-                revenue: revenueReal.toString(),
-                adSpend: totalBudget.toString(),
-                profit: profitReal.toString(),
-                roi: roiReal,
-                breakeven: profitReal > 0 ? '8' : '15'
-            };
-            break;
-            
-        case 'optimistic':
-            const cpcOpt = (baseCPC * 0.7).toFixed(2); // CPC más bajo
-            const ctrOpt = '3.2'; // CTR más alto
-            const crOpt = '2.8'; // CR más alto
-            const clicksOpt = Math.round(totalBudget / parseFloat(cpcOpt));
-            const conversionsOpt = Math.round(clicksOpt * parseFloat(ctrOpt) * parseFloat(crOpt) / 10000);
-            const revenueOpt = Math.round(conversionsOpt * comisionDolares);
-            const profitOpt = revenueOpt - totalBudget;
-            const roiOpt = totalBudget > 0 ? ((profitOpt / totalBudget) * 100).toFixed(0) : '0';
-            
-            scenario = {
-                cpc: cpcOpt,
-                ctr: ctrOpt,
-                cr: crOpt,
-                clicks: clicksOpt.toString(),
-                conversions: conversionsOpt.toString(),
-                revenue: revenueOpt.toString(),
-                adSpend: totalBudget.toString(),
-                profit: profitOpt.toString(),
-                roi: roiOpt,
-                breakeven: profitOpt > 0 ? '4' : '8'
-            };
-            break;
-            
-        default:
-            scenario = this.generateFallbackScenario('realistic');
-    }
+    // Calcular métricas derivadas
+    const clicks = Math.round(totalBudget / scenarioData.cpc);
+    const conversions = Math.round(clicks * (scenarioData.ctr/100) * (scenarioData.cr/100));
+    const revenue = Math.round(conversions * avgCommission);
+    const profit = revenue - totalBudget;
+    const roi = Math.round((profit / totalBudget) * 100);
     
-    console.log(`Escenario ${type} generado:`, scenario);
-    return scenario;
+    const result = {
+        cpc: scenarioData.cpc.toFixed(2),
+        ctr: scenarioData.ctr.toFixed(1),
+        cr: scenarioData.cr.toFixed(1),
+        clicks: clicks.toString(),
+        conversions: conversions.toString(),
+        revenue: revenue.toString(),
+        adSpend: totalBudget.toString(),
+        profit: profit.toString(),
+        roi: roi.toString(),
+        breakeven: profit > 0 ? Math.max(5, Math.round(20 * totalBudget / revenue)).toString() : '45'
+    };
+    
+    console.log(`✅ Escenario ${type} generado:`, result);
+    return result;
 },
 
 // 5. ASEGURAR QUE LOS ESCENARIOS SEAN DIFERENTES
@@ -4420,6 +4366,60 @@ ensureDifferentScenarios: function(scenarios) {
     }
     
     console.log('✅ Validación completada - Escenarios son diferentes');
+},
+
+// ✅ NUEVA FUNCIÓN: Validar lógica de cálculos
+validateCalculationLogic: function(scenarios) {
+    console.log('🔍 Validando lógica de cálculos...');
+    
+    ['conservative', 'realistic', 'optimistic'].forEach(type => {
+        const scenario = scenarios[type];
+        if (!scenario) return;
+        
+        // Validar CPC (debe estar entre $0.10 y $10.00)
+        let cpc = parseFloat(scenario.cpc);
+        if (isNaN(cpc) || cpc <= 0 || cpc > 10) {
+            scenario.cpc = type === 'conservative' ? '2.50' : 
+                          type === 'realistic' ? '1.50' : '0.85';
+        }
+        
+        // Validar CTR (debe estar entre 0.5% y 5%)
+        let ctr = parseFloat(scenario.ctr);
+        if (isNaN(ctr) || ctr <= 0 || ctr > 5) {
+            scenario.ctr = type === 'conservative' ? '1.2' : 
+                          type === 'realistic' ? '2.1' : '3.2';
+        }
+        
+        // Validar CR (debe estar entre 0.3% y 5%)
+        let cr = parseFloat(scenario.cr);
+        if (isNaN(cr) || cr <= 0 || cr > 5) {
+            scenario.cr = type === 'conservative' ? '0.8' : 
+                         type === 'realistic' ? '1.8' : '2.8';
+        }
+        
+        // Recalcular métricas derivadas con valores validados
+        const budget = parseFloat(document.getElementById('calcBudget').value) || 50;
+        const days = parseInt(document.getElementById('calcDays').value) || 30;
+        const totalBudget = budget * days;
+        
+        const clicks = Math.round(totalBudget / parseFloat(scenario.cpc));
+        const conversions = Math.round(clicks * parseFloat(scenario.ctr) * parseFloat(scenario.cr) / 10000);
+        const revenue = Math.round(conversions * 38.80); // Comisión promedio
+        const profit = revenue - totalBudget;
+        const roi = totalBudget > 0 ? Math.round((profit / totalBudget) * 100) : 0;
+        
+        // Actualizar con valores recalculados
+        scenario.clicks = clicks.toString();
+        scenario.conversions = conversions.toString();
+        scenario.revenue = revenue.toString();
+        scenario.profit = profit.toString();
+        scenario.roi = roi.toString();
+        scenario.breakeven = profit > 0 ? Math.max(5, Math.round(15 * (totalBudget / revenue))).toString() : '30';
+        
+        console.log(`✅ ${type} validado:`, scenario);
+    });
+    
+    console.log('✅ Validación de lógica completada');
 },
 
 // 6. RECOMENDACIONES POR DEFECTO
@@ -4546,18 +4546,27 @@ validateScenarioLogic: function(scenarios) {
 },
 
 // 6. CALCULADOR DE SCALING REALISTA
+// ✅ CORREGIDO: calculateRealisticScaling con factores realistas
 calculateRealisticScaling: function(realisticScenario, month) {
-    if (!realisticScenario || !realisticScenario.profit) return '500';
+    if (!realisticScenario || !realisticScenario.profit) {
+        // Fallback con valores realistas por mes
+        const fallbackValues = {1: 500, 2: 1200, 3: 2000};
+        return fallbackValues[month] || '500';
+    }
     
-    const baseProfit = parseFloat(realisticScenario.profit.replace(/,/g, '')) || 500;
+    const baseProfit = parseFloat(realisticScenario.profit.replace(/[^0-9.-]/g, '')) || 0;
+    
+    // Factores de scaling MÁS REALISTAS
     const scalingFactors = {
-        1: 1.0,     // Mes 1: profit base
-        2: 2.5,     // Mes 2: 2.5x por mayor budget y optimización
-        3: 4.0      // Mes 3: 4x por escalamiento completo
+        1: 1.0,     // Mes 1: profit base (sin scaling)
+        2: 1.8,     // Mes 2: 80% más (scaling gradual)
+        3: 2.5      // Mes 3: 2.5x (scaling maduro)
     };
     
-    const scaledProfit = Math.round(baseProfit * scalingFactors[month] || 1);
-    return scaledProfit.toString();
+    const scaledProfit = Math.round(baseProfit * (scalingFactors[month] || 1));
+    
+    // Validar que no sea negativo ni irreal
+    return Math.max(scaledProfit, 0).toString();
 },
     
     // Llamar a Gemini
@@ -4617,19 +4626,26 @@ calculateRealisticScaling: function(realisticScenario, month) {
         };
     },
     
-    // Extraer números de strings - FIX CRÍTICO
+    // ✅ CORREGIDO: Extraer números de strings - FIX CRÍTICO
     extractNumber: function(str) {
-        if (!str || typeof str !== 'string') {
-            console.warn('extractNumber: valor inválido recibido:', str);
+        if (!str) return '0';
+        
+        // Convertir a string si no lo es
+        const stringValue = String(str);
+        
+        // Remover todo excepto números, puntos y signos negativos
+        const cleaned = stringValue.replace(/[^0-9.-]/g, '');
+        
+        // Validar que sea un número válido
+        const number = parseFloat(cleaned);
+        
+        if (isNaN(number)) {
+            console.warn('extractNumber: No se pudo parsear:', str);
             return '0';
         }
         
-        try {
-            return str.replace(/,/g, '');
-        } catch (error) {
-            console.error('Error en extractNumber:', error, 'valor:', str);
-            return '0';
-        }
+        // Retornar como string sin decimales para mostrar
+        return Math.round(number).toString();
     },
     
     // Mostrar escenarios en UI - CORREGIDO
