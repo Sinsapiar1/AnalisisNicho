@@ -2307,10 +2307,25 @@ LONGITUD: 1500-2000 palabras
         // 4. LLAMAR A LA API
         const respuesta = await APIManager.callGemini(prompt);
         
-        // 5. MOSTRAR RESULTADOS MEJORADOS
-        mostrarResultadosContenidoMejorado(respuesta, tiposSeleccionados, contextoProducto);
+        // 5. GENERAR AVATAR ESPECÍFICO AUTOMÁTICAMENTE (NUEVO)
+        console.log('🎯 Generando avatar específico para el producto...');
+        let avatarEspecifico = null;
         
-        Utils.showStatus(`✅ Contenido inteligente generado para ${tiposSeleccionados.length} tipos`, 'success');
+        try {
+            if (window.AvatarSyncSystem) {
+                avatarEspecifico = await AvatarSyncSystem.generarAvatarEspecifico(contextoProducto, tiposSeleccionados);
+                console.log('✅ Avatar específico generado:', avatarEspecifico.nombre);
+            } else {
+                console.log('⚠️ AvatarSyncSystem no disponible, continuando sin avatar específico');
+            }
+        } catch (error) {
+            console.error('Error generando avatar específico:', error);
+        }
+        
+        // 6. MOSTRAR RESULTADOS MEJORADOS
+        mostrarResultadosContenidoMejorado(respuesta, tiposSeleccionados, contextoProducto, avatarEspecifico);
+        
+        Utils.showStatus(`✅ Contenido inteligente ${avatarEspecifico ? '+ avatar específico' : ''} generado para ${tiposSeleccionados.length} tipos`, 'success');
         
     } catch (error) {
         console.error('Error:', error);
@@ -2399,8 +2414,8 @@ Haz este avatar TAN específico que cualquier marketer pueda hablarle directamen
     }
 }
 
-// Función MEJORADA para mostrar resultados de contenido con contexto de producto
-function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto) {
+// Función MEJORADA para mostrar resultados de contenido con contexto de producto + avatar
+function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto, avatarEspecifico = null) {
     let resultsSection = document.getElementById('contentResults');
     if (!resultsSection) {
         resultsSection = document.createElement('div');
@@ -2413,7 +2428,7 @@ function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto) 
         <h2>🎯 Contenido Viral Inteligente</h2>
         
         <div class="content-context" style="background: rgba(0,255,127,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #00ff7f;">
-            <h3>📊 Contexto del Producto Integrado</h3>
+            <h3>📊 Contexto del Producto Integrado ${avatarEspecifico ? '+ Avatar Específico' : ''}</h3>
             <div class="context-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
                 <div><strong>🎯 Producto:</strong> ${contextoProducto.nombre}</div>
                 <div><strong>💰 Precio:</strong> ${contextoProducto.precio}</div>
@@ -2421,7 +2436,16 @@ function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto) 
                 <div><strong>🎭 Nicho:</strong> ${contextoProducto.nicho}</div>
                 <div><strong>😰 Pain Point:</strong> ${contextoProducto.painPoints[0] || 'N/A'}</div>
                 <div><strong>💔 Emoción:</strong> ${contextoProducto.emociones[0] || 'N/A'}</div>
+                ${avatarEspecifico ? `
+                    <div><strong>👤 Avatar:</strong> ${avatarEspecifico.nombre}</div>
+                    <div><strong>🎯 Target:</strong> ${avatarEspecifico.edad}, ${avatarEspecifico.ocupacion}</div>
+                ` : ''}
             </div>
+            ${avatarEspecifico ? `
+                <div style="margin-top: 15px; padding: 10px; background: rgba(139, 92, 246, 0.1); border-radius: 6px; border-left: 3px solid #8b5cf6;">
+                    <strong>🧠 Avatar Específico Generado:</strong> "${avatarEspecifico.nombre}" - ${avatarEspecifico.problemaPrincipal} (${avatarEspecifico.emocionDominante})
+                </div>
+            ` : ''}
         </div>
         
         <div class="content-display">
@@ -2477,8 +2501,23 @@ function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto) 
         respuesta: respuesta,
         tipos: tipos,
         contextoProducto: contextoProducto,
+        avatarEspecifico: avatarEspecifico,
         timestamp: new Date().toISOString()
     };
+    
+    // EXPORTACIÓN AUTOMÁTICA COHERENTE (NUEVO)
+    if (avatarEspecifico && window.AvatarSyncSystem) {
+        try {
+            AvatarSyncSystem.exportarConjuntoCoherente(
+                { respuesta, tipos, timestamp: new Date().toISOString() },
+                avatarEspecifico,
+                contextoProducto
+            );
+            console.log('✅ Conjunto coherente exportado automáticamente');
+        } catch (error) {
+            console.error('Error exportando conjunto coherente:', error);
+        }
+    }
     
     window.lastContentGenerated = respuesta; // Mantener compatibilidad
 }
