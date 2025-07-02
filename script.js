@@ -4135,7 +4135,7 @@ extractMetricsForScenario: function(text, scenarioType) {
         clicks: this.extractNumber(text.match(/Clicks[^:]*:\s*([\d,]+)/i)?.[1]) || '1000',
         conversions: this.extractNumber(text.match(/Conversiones:\s*([\d,]+)/i)?.[1]) || '30',
         revenue: this.extractNumber(text.match(/Revenue:\s*\$?([\d,]+)/i)?.[1]) || '1164',
-        adSpend: this.extractNumber(text.match(/Ad_Spend:\s*\$?([\d,]+)/i)?.[1]) || '1500',
+        adSpend: this.extractNumber(text.match(/Ad_Spend:\s*\$?([\d,]+)/i)?.[1]) || ((parseFloat(document.getElementById('calcBudget')?.value || '50') * parseInt(document.getElementById('calcDays')?.value || '30')).toString()),
         profit: this.extractNumber(text.match(/Profit:\s*\$?([\d,.-]+)/i)?.[1]) || '0',
         roi: this.extractNumber(text.match(/ROI:\s*([\d.-]+)%?/i)?.[1]) || '0',
         breakeven: this.extractNumber(text.match(/(?:Dias_breakeven|breakeven):\s*([\d]+)/i)?.[1]) || '30'
@@ -4164,7 +4164,7 @@ validateAndFixScenarios: function(scenarios) {
             market: document.getElementById('calcMarket').value
         };
         
-        const totalBudget = config.budget * config.days; // $1500 en tu caso
+        const totalBudget = config.budget * config.days; // Budget total dinámico
         const comisionPorVenta = 38.80; // 40% de $97
         
         // ESCENARIO CONSERVADOR (Pérdida o mínimo profit)
@@ -4685,7 +4685,7 @@ calculateRealisticScaling: function(realisticScenario, month) {
             clicks: safeExtractNumber(text.match(/Clicks[^:]*:\s*([\d,]+)/i)) || '2000',
             conversions: safeExtractNumber(text.match(/Conversiones:\s*([\d,]+)/i)) || '60',
             revenue: safeExtractNumber(text.match(/Revenue:\s*\$?([\d,]+)/i)) || '5820',
-            adSpend: safeExtractNumber(text.match(/Ad_Spend:\s*\$?([\d,]+)/i)) || '1500',
+            adSpend: safeExtractNumber(text.match(/Ad_Spend:\s*\$?([\d,]+)/i)) || ((parseFloat(document.getElementById('calcBudget')?.value || '50') * parseInt(document.getElementById('calcDays')?.value || '30')).toString()),
             profit: safeExtractNumber(text.match(/Profit:\s*\$?([\d,.-]+)/i)) || '4320',
             roi: safeExtractNumber(text.match(/ROI:\s*([\d.-]+)%?/i)) || '288',
             breakeven: safeExtractNumber(text.match(/(?:Dias_breakeven|breakeven):\s*([\d]+)/i)) || '5'
