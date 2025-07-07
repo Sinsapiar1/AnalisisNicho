@@ -198,7 +198,6 @@ const APIManager = {
         return responseText;
     }
 };
-
 // ===================== PROMPT GENERATOR =====================
 const PromptGenerator = {
     generateAffilatePrompt: (config) => {
@@ -392,7 +391,6 @@ const ResponseProcessor = {
             { field: 'estrategia', regex: /ESTRATEGIA(?:_CONVERSION)?:\s*([\s\S]*?)(?=PRODUCTOS_COMPLEMENTARIOS:|=== FIN PRODUCTO|$)/i },
             { field: 'productosComplementarios', regex: /PRODUCTOS_COMPLEMENTARIOS:\s*([\s\S]*?)(?==== FIN PRODUCTO|$)/i }
         ];
-        
         extractors.forEach(({ field, regex }) => {
             const match = texto.match(regex);
             if (match) {
@@ -762,7 +760,6 @@ const UIManager = {
         }
     }
 };
-
 // ===================== EXPORT MANAGER =====================
 const ExportManager = {
     copyToClipboard: () => {
@@ -1438,7 +1435,6 @@ OBJETIVO: Contenido que genere engagement masivo Y conversiones reales.`;
             displayContainer.appendChild(itemElement);
         });
     },
-
     // Crear elemento visual para cada item de contenido
     createContentItemElement: (tipo, item) => {
         const div = document.createElement('div');
@@ -1612,7 +1608,6 @@ OBJETIVO: Contenido que genere engagement masivo Y conversiones reales.`;
         return names[tipo] || tipo;
     }
 };
-
 // ===================== GENERADOR DE AVATAR ULTRA-ESPECÍFICO =====================
 const AvatarGenerator = {
     // Generar avatar completo
@@ -1778,7 +1773,6 @@ RUTINA_DIARIA:
 - 6:00 PM: [Fin del trabajo]
 - 9:00 PM: [Noche]
 - 11:00 PM: [Antes de dormir]
-
 GATILLOS_ACCION:
 - Qué lo hace clickear: [Específico]
 - Qué lo hace abrir emails: [Subject lines que funcionan]
@@ -1979,7 +1973,6 @@ const ContentExporter = {
         Utils.showStatus('Avatar descargado', 'success');
     }
 };
-
 // ===================== INICIALIZACIÓN DE NUEVAS FUNCIONALIDADES =====================
 // Agregar al final del App.init() existente:
 const originalAppInit = App.init;
@@ -2150,7 +2143,6 @@ const ContentViralEnhanced = {
         };
     }
 };
-
 async function generateViralContent() {
     console.log('🚀 Generando contenido viral MEJORADO...');
     
@@ -2335,7 +2327,6 @@ LONGITUD: 1500-2000 palabras
         btn.disabled = false;
     }
 }
-
 // Función para generar avatar
 async function generateAvatar() {
     console.log('Generando avatar...');
@@ -2534,7 +2525,6 @@ function getContentTypeIcon(tipo) {
     };
     return iconos[tipo] || '📄';
 }
-
 // Función para mostrar resultados de contenido (mantener compatibilidad)
 function mostrarResultadosContenido(respuesta, tipos) {
     // Si no hay contexto de producto, usar la función original mejorada
@@ -2724,7 +2714,6 @@ async function generarMasVariaciones() {
         const contextoProducto = datos.contextoProducto;
         
         const prompt = `Basándote en el contenido previo para ${contextoProducto.nombre}, crea 3 VARIACIONES DIFERENTES para cada tipo de contenido.
-
 CONTEXTO DEL PRODUCTO:
 - Nombre: ${contextoProducto.nombre}
 - Precio: ${contextoProducto.precio}
@@ -2886,7 +2875,6 @@ if (document.readyState === 'loading') {
 } else {
     initNewFeatures();
 }
-
 // También ejecutar después de un delay para asegurar que todo esté cargado
 setTimeout(initNewFeatures, 500);
 setTimeout(initNewFeatures, 1500);
@@ -3039,7 +3027,6 @@ Para cada avatar, incluir:
 - CANAL_PREFERIDO: [Mejor canal para este segmento]
 - TIPO_CONTENIDO: [Qué contenido consume]
 - INFLUENCERS_SIGUE: [Tipo de personas que admira]
-
 OBJETIVO: 5 avatares TAN específicos que puedas crear campañas ultra-dirigidas para cada uno con mensajes completamente diferentes.`;
 }
 
@@ -3240,7 +3227,6 @@ const multipleAvatarsCSS = `
     display: flex;
     gap: 10px;
 }
-
 .btn-small {
     padding: 6px 12px;
     font-size: 0.8rem;
@@ -3438,7 +3424,6 @@ const TrendPredictorIntegration = {
         
         return !!(apiKey && nicho);
     },
-    
     // Actualizar estado del botón dinámicamente
     updateTrendButton: () => {
         const btn = document.getElementById('openTrendPredictorBtn');
@@ -3633,7 +3618,6 @@ if (document.readyState === 'loading') {
     // Método 2: Si el DOM ya está cargado
     initTrendPredictorIntegration();
 }
-
 // Método 3: Timeout de respaldo para asegurar ejecución
 setTimeout(initTrendPredictorIntegration, 2000);
 
@@ -3831,7 +3815,6 @@ displayValidation: (validation, productName, productCard) => {
     // Crear elemento y agregarlo AL PRODUCTO, no al body
     const validationDiv = document.createElement('div');
     validationDiv.innerHTML = validationHtml;
-    
     // Buscar dónde insertar (después de productos complementarios o al final)
     const complementariosSection = productCard.querySelector('.product-section:last-child');
     if (complementariosSection) {
@@ -3981,7 +3964,6 @@ ELEMENTOS VISUALES CLAVE:
 - Colores que convierten: [Lista]
 - Fonts recomendadas: [Lista]
 - Elementos gráficos: [Iconos, badges, etc.]
-
 HORARIOS ÓPTIMOS:
 - Mejores días: [Días específicos]
 - Mejores horas: [Rangos horarios]
@@ -4181,7 +4163,6 @@ HORARIOS ÓPTIMOS:
             setTimeout(() => {
                 spyDiv.querySelector('.spy-results').classList.add('show');
             }, 100);
-
     },
 
     // Función para copiar texto
@@ -4376,7 +4357,6 @@ const ProfitCalculator = {
     },
     
    // ===================== PROFIT CALCULATOR - DATOS REALISTAS CORREGIDOS =====================
-
 // SOLO REEMPLAZA ESTAS DOS FUNCIONES EN TU SCRIPT.JS EXISTENTE:
 
 // 1. PROMPT MEJORADO CON DATOS MÁS ESPECÍFICOS
@@ -4535,7 +4515,6 @@ getPriceRange: function(precio) {
     if (precio < 200) return 'MEDIO';
     return 'ALTO';
 },
-
 // 3. PARSING MEJORADO CON VALIDACIONES LÓGICAS
 // ===================== PROFIT CALCULATOR - ESCENARIOS DIFERENTES CORREGIDOS =====================
 
@@ -4881,7 +4860,6 @@ ensureDifferentScenarios: function(scenarios) {
     
     console.log('✅ Validación completada - Escenarios son diferentes');
 },
-
 // ✅ FUNCIÓN ULTRA-ROBUSTA: Forzar escenarios TOTALMENTE DIFERENTES
 validateCalculationLogic: function(scenarios) {
     console.log('🔍 FORZANDO escenarios ULTRA-DIFERENTES...');
@@ -5256,7 +5234,6 @@ calculateRealisticScaling: function(realisticScenario, month) {
         // Recomendaciones
         document.getElementById('aiRecommendations').innerHTML = this.formatRecommendations(scenarios.recommendations);
     },
-    
     // Formatear recomendaciones - CORREGIDO
     formatRecommendations: function(recommendations) {
         if (!recommendations || typeof recommendations !== 'string') {
@@ -5446,8 +5423,6 @@ calculateRealisticScaling: function(realisticScenario, month) {
         }
     }
 };
-
-
 // ===================== FUNCIÓN PARA AGREGAR BOTONES DE PROFIT CALCULATOR =====================
 function addProfitCalculatorButtons() {
     console.log('💰 Agregando botones de Profit Calculator...');
@@ -5796,7 +5771,6 @@ Porque ${dolor}.
 Porque sientes ${emocion}.
 
 Porque ${trigger}.
-
 Esta es tu señal.
 
 [BOTÓN: SÍ, QUIERO CAMBIAR >>]
@@ -5998,7 +5972,6 @@ UIManager.displayResults = function(analysisData) {
         CopyTemplateSystem.addTemplateButtons();
     }, 500);
 };
-
 // ===================== EVENT LISTENERS ÚNICOS =====================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Inicializando MarketInsight Pro...');
@@ -6126,4 +6099,3 @@ setInterval(() => {
 }, 5000); // Cada 5 segundos para evitar sobrecarga
 
 console.log('✅ MarketInsight Pro cargado completamente');
-
