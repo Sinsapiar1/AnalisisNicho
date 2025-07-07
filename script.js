@@ -2319,9 +2319,10 @@ LONGITUD: 1500-2000 palabras
 - Lenguaje que convierte en ${contextoProducto.nicho}`;
 
         // 4. LLAMAR A LA API CON CACHÉ
+        const publico = document.getElementById('publico')?.value || 'tu audiencia';
         const respuesta = await callGeminiWithCache(prompt, {
             nicho: contextoProducto.nicho,
-            publico: publicoObjetivo,
+            publico: publico,
             tipoProducto: contextoProducto.tipoProducto || 'digital',
             cacheTTL: 12 * 60 * 60 * 1000 // Cache por 12 horas para contenido
         });
