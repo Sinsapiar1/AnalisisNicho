@@ -951,7 +951,14 @@ const App = {
             const prompt = PromptGenerator.generateAffilatePrompt(config);
             Utils.log('Prompt generado', { promptLength: prompt.length });
             
-            const respuesta = await APIManager.callGemini(prompt);
+            // Usar sistema de caché para ahorrar dinero
+            const respuesta = await callGeminiWithCache(prompt, {
+                nicho: config.nicho,
+                publico: config.publico,
+                rangoPrecios: config.rangoPrecios,
+                tipoProducto: config.tipoProducto,
+                cacheTTL: 24 * 60 * 60 * 1000 // Cache por 24 horas
+            });
             Utils.log('Respuesta recibida de API', { length: respuesta.length });
             
             const analysisData = ResponseProcessor.processAffilateResponse(respuesta);
@@ -1087,7 +1094,13 @@ const ContentGenerator = {
             Utils.log('Iniciando generación de contenido viral...', config);
             
             const prompt = ContentGenerator.buildContentPrompt(config);
-            const respuesta = await APIManager.callGemini(prompt);
+            // Usar caché para contenido viral también
+            const respuesta = await callGeminiWithCache(prompt, {
+                nicho: config.nicho,
+                publico: config.publico,
+                tipoProducto: config.tipoProducto,
+                cacheTTL: 12 * 60 * 60 * 1000 // Cache por 12 horas para contenido
+            });
             
             const contentData = ContentGenerator.processContentResponse(respuesta);
             ContentGenerator.displayContent(contentData);
@@ -2304,8 +2317,13 @@ LONGITUD: 1500-2000 palabras
 - Métricas REALISTAS incluidas
 - Lenguaje que convierte en ${contextoProducto.nicho}`;
 
-        // 4. LLAMAR A LA API
-        const respuesta = await APIManager.callGemini(prompt);
+        // 4. LLAMAR A LA API CON CACHÉ
+        const respuesta = await callGeminiWithCache(prompt, {
+            nicho: contextoProducto.nicho,
+            publico: publicoObjetivo,
+            tipoProducto: contextoProducto.tipoProducto || 'digital',
+            cacheTTL: 12 * 60 * 60 * 1000 // Cache por 12 horas para contenido
+        });
         
         // 5. GENERAR AVATAR ESPECÍFICO AUTOMÁTICAMENTE (NUEVO)
         console.log('🎯 Generando avatar específico para el producto...');
