@@ -222,74 +222,130 @@ const PromptGenerator = {
         const presupuestoTexto = presupuestoAds === '0' ? 'Sin presupuesto (Tráfico orgánico)' : `$${presupuestoAds}+ mensual`;
         const keywordsTexto = keywords ? `\nKEYWORDS ESPECÍFICOS: ${keywords}` : '';
 
-        return `Actúa como CONSULTOR EXPERTO en marketing de afiliados de élite con 10+ años detectando productos ganadores de $10K+ mensuales.
+        return `Actúa como ESTRATEGA DE MARKETING DIGITAL con IA avanzada que ha analizado +100,000 campañas de afiliados y conoce patrones de éxito específicos por nicho, audiencia y presupuesto.
 
-MISIÓN: Analizar el nicho "${nicho}" para "${publico}" y detectar 5-7 productos GANADORES REALES con análisis financiero completo.
+🎯 MISIÓN INTELIGENTE:
+Analizar el nicho "${nicho}" para "${publico}" con presupuesto ${presupuestoTexto} y detectar 5-7 oportunidades GANADORAS basadas en:
+- Tendencias de búsqueda actuales
+- Competencia actual del mercado  
+- Estacionalidad y timing
+- Psicología específica del público objetivo
+- Viabilidad económica real para el presupuesto
 
-PARÁMETROS DEL AFILIADO:
-- Rango de precio: ${rangoPrecioTexto}
-- Tipo producto: ${tipoProducto}
-- Canal principal: ${canalPrincipal}
+📊 PERFIL DEL AFILIADO ANALIZADO:
+- Nicho: ${nicho}
+- Audiencia: ${publico}
+- Budget: ${presupuestoTexto}
+- Canal: ${canalPrincipal}
 - Experiencia: ${experiencia}
-- Presupuesto ads: ${presupuestoTexto}
-- ROI objetivo: ${roiObjetivo}x mínimo
-- Break-even: ${breakEvenTime}
-- Tipo conversión: ${tipoConversion}
-- Dispositivo target: ${dispositivoTarget}
-- Mercado: ${mercadoGeo}${keywordsTexto}
+- ROI objetivo: ${roiObjetivo}x
+- Precio target: ${rangoPrecioTexto}
+- Mercado: ${mercadoGeo}
+- Device: ${dispositivoTarget}${keywordsTexto}
 
-FORMATO OBLIGATORIO para cada producto:
+🧠 ANÁLISIS INTELIGENTE REQUERIDO:
 
-=== PRODUCTO [N] ===
-NOMBRE: [Nombre específico del producto REAL]
-PRECIO: $[precio] 
-COMISION: [porcentaje]% ($[cantidad] por venta)
-SCORE: [0-100]
-GRAVITY: [Para ClickBank o similar] / POPULARIDAD: [Alta/Media/Baja]
+${analyzeTrends ? `
+🔍 ANÁLISIS DE TENDENCIAS:
+- Productos en crecimiento según búsquedas
+- Timing estacional óptimo
+- Saturación actual del mercado
+- Oportunidades blue ocean` : ''}
 
-DESCRIPCION:
-[Por qué es ganador, problema que resuelve, ventajas únicas]
+${analyzeCompetition ? `
+⚔️ INTELIGENCIA COMPETITIVA:
+- Nivel de competencia por precio
+- Gaps en el mercado actual
+- Estrategias ganadoras de competidores
+- Oportunidades no explotadas` : ''}
 
-PAIN_POINTS:
-[Problemas específicos que resuelve, frustraciones del público]
+${analyzeKeywords ? `
+🎯 RESEARCH DE KEYWORDS:
+- Keywords de baja competencia
+- Intención de compra alta
+- Long tail opportunities  
+- Keywords de competitor gap` : ''}
 
-EMOCIONES:
-[Emociones involucradas: miedo, deseo, ansiedad, aspiración, etc.]
+${analyzeCustomerJourney ? `
+🛒 CUSTOMER JOURNEY:
+- Puntos de fricción en compra
+- Triggers emocionales específicos
+- Objeciones más comunes
+- Momentos de máxima conversión` : ''}
 
-TRIGGERS:
-[Gatillos emocionales de compra: urgencia, escasez, estatus, etc.]
+FORMATO OBLIGATORIO para cada oportunidad:
 
-${analyzeConversion ? `METRICAS_CONVERSION:
-CVR_ESTIMADO: [1-5]% (Tasa de conversión estimada)
-EPC_ESTIMADO: $[0.50-5.00] (Earnings per click)
-AOV: $[XX] (Average order value)
-REFUND_RATE: [2-15]% (Tasa de devoluciones)
-LTV: $[XXX] (Customer lifetime value)` : ''}
+=== OPORTUNIDAD [N] ===
+NOMBRE: [Producto/Servicio específico]
+CATEGORIA: [Subcategoría específica dentro de ${nicho}]
+PRECIO_RANGE: [Rango específico dentro de ${rangoPrecioTexto}]
+COMISION_ESTIMADA: [%]% ($[XX]-$[XX] por venta)
+HOT_SCORE: [75-100] (Por qué es hot AHORA)
 
-${analyzeFinancial ? `ANALISIS_FINANCIERO:
-CPA_ESTIMADO: $[XX] (Costo por adquisición en ${canalPrincipal})
-ROI_REAL: [2-10]x (Considerando ad spend y comisiones)
-BREAK_EVEN: [1-30] días (Tiempo para recuperar inversión)
-PROFIT_MARGIN: [20-80]% (Margen después de costos publicitarios)
-ESCALABILIDAD: [1-10] (Qué tan fácil es escalar presupuesto)` : ''}
+🧠 INTELIGENCIA_PSICOLOGICA:
+PAIN_POINT_PRIMARIO: [El dolor #1 específico de ${publico}]
+EMOTIONAL_TRIGGER: [Emoción principal: miedo/deseo/estatus/urgencia]
+OBJECION_PRINCIPAL: [La objeción #1 y cómo superarla]
+MOMENTO_COMPRA: [Cuándo exactamente ${publico} está listo para comprar]
 
-PROGRAMAS_AFILIADOS:
-[Lista de programas ACTIVOS con comisiones REALES]
+📈 OPORTUNIDAD_MERCADO:
+COMPETENCIA_NIVEL: [Baja/Media/Alta] + Justificación
+TREND_DIRECTION: [📈Subiendo/📊Estable/📉Bajando] desde cuándo
+ESTACIONALIDAD: [Mejor época del año + por qué]
+MARKET_GAP: [Qué está faltando en el mercado]
 
-ESTRATEGIA_CONVERSION:
-[Mejor ángulo de venta emocional, creatividades que funcionan]
+💰 VIABILIDAD_ECONOMICA:
+CPC_ESTIMADO_${canalPrincipal.toUpperCase()}: $[X.XX] (basado en competencia)
+CTR_ESPERADO: [X.X]% (para ${publico} en ${dispositivoTarget})
+CVR_REALISTA: [X.X]% (considerando experiencia: ${experiencia})
+BUDGET_MINIMO: $[XXX] (para ver primeros resultados)
+ROI_TIMELINE: [X semanas] para alcanzar ${roiObjetivo}x ROI
+ESCALABILIDAD: [1-10] qué tan fácil escalar a $XXX/día
 
-PRODUCTOS_COMPLEMENTARIOS:
-[2-3 productos adicionales para cross-selling]
+🎯 ESTRATEGIA_GANADORA:
+HOOK_PRINCIPAL: [El gancho más fuerte para ${publico}]
+ANGLE_CONVERSION: [Ángulo de venta específico que funciona]
+CREATIVE_DIRECTION: [Tipo de creativos que convierten]
+LANDING_STRATEGY: [Qué debe tener la landing para convertir]
+AUDIENCE_TARGET: [Audiencia específica en ${canalPrincipal}]
 
-=== FIN PRODUCTO [N] ===
+🔗 ECOSISTEMA_PRODUCTOS:
+UPSELLS: [2-3 productos para aumentar AOV]
+BACKEND_OFFERS: [Ofertas de seguimiento]
+RECURRING_POTENTIAL: [Oportunidades de ingresos recurrentes]
 
-IMPORTANTE: 
-✅ Solo productos REALES con datos VERIFICABLES
-✅ Programas de afiliados ACTIVOS en 2024
-✅ Métricas basadas en datos de mercado actuales
+${findAffiliates ? `
+🤝 PROGRAMAS_AFILIADOS:
+PLATAFORMA_1: [Mejor opción] - Comisión: X% - Por qué
+PLATAFORMA_2: [Alternativa] - Comisión: X% - Ventajas
+DIRECT_PARTNERSHIPS: [Oportunidades de partnerships directos]` : ''}
 
-VEREDICTO FINAL: [EXCELENTE/BUENO/SATURADO/EVITAR] con justificación.`;
+${analyzeTrafficChannels ? `
+🚀 CANALES_TRAFICO:
+CANAL_PRIMARIO: ${canalPrincipal} - Por qué es óptimo para este producto
+CANALES_SECUNDARIOS: [2-3 canales complementarios]
+ORGANIC_OPPORTUNITIES: [Oportunidades de tráfico gratuito]` : ''}
+
+=== FIN OPORTUNIDAD [N] ===
+
+🏆 RANKING_INTELIGENTE:
+[Ordenar por: Hot Score × Viabilidad Económica × Match con perfil]
+
+🎯 RECOMENDACION_ESTRATEGICA:
+Basado en tu perfil (${experiencia}, ${presupuestoTexto}, ${canalPrincipal}), tu MEJOR oportunidad es [PRODUCTO X] porque [3 razones específicas].
+
+⚠️ ALERTAS_IMPORTANTES:
+- [Riesgos específicos a evitar]
+- [Timing crítico a considerar]  
+- [Cambios de mercado recientes]
+
+📊 VEREDICTO_NICHO: [EXCELENTE/BUENO/SATURADO/EVITAR] 
+JUSTIFICACION: [Por qué exactamente, basado en análisis completo]
+
+🚀 NEXT_STEPS:
+1. [Acción específica inmediata]
+2. [Segunda prioridad] 
+3. [Plan a 30 días]`;
     }
 };
 
@@ -305,23 +361,38 @@ const ResponseProcessor = {
         
         const productos = [];
         
-        // Extraer productos usando formato estructurado
-        const productMatches = respuesta.match(/=== PRODUCTO \d+ ===([\s\S]*?)=== FIN PRODUCTO \d+ ===/g);
+        // Extraer oportunidades usando nuevo formato inteligente
+        const opportunityMatches = respuesta.match(/=== OPORTUNIDAD \d+ ===([\s\S]*?)=== FIN OPORTUNIDAD \d+ ===/g);
         
-        if (productMatches && productMatches.length > 0) {
-            Utils.log(`Encontrados ${productMatches.length} productos con formato estructurado`);
+        if (opportunityMatches && opportunityMatches.length > 0) {
+            Utils.log(`🎯 Encontradas ${opportunityMatches.length} oportunidades con formato inteligente`);
             
-            productMatches.forEach((match, index) => {
-                const producto = ResponseProcessor.extractProductData(match, index + 1);
-                if (producto.nombre && producto.nombre.trim().length > 0) {
-                    productos.push(producto);
-                    Utils.log(`Producto ${index + 1} extraído: ${producto.nombre}`);
+            opportunityMatches.forEach((match, index) => {
+                const oportunidad = ResponseProcessor.extractOpportunityData(match, index + 1);
+                if (oportunidad.nombre && oportunidad.nombre.trim().length > 0) {
+                    productos.push(oportunidad);
+                    Utils.log(`✅ Oportunidad ${index + 1} extraída: ${oportunidad.nombre}`);
                 }
             });
         } else {
-            Utils.log('No se encontró formato estructurado, intentando extracción flexible...');
-            const productosFlexibles = ResponseProcessor.extractProductsFlexible(respuesta);
-            productos.push(...productosFlexibles);
+            // Fallback: buscar formato antiguo
+            const productMatches = respuesta.match(/=== PRODUCTO \d+ ===([\s\S]*?)=== FIN PRODUCTO \d+ ===/g);
+            
+            if (productMatches && productMatches.length > 0) {
+                Utils.log(`Encontrados ${productMatches.length} productos con formato estructurado antiguo`);
+                
+                productMatches.forEach((match, index) => {
+                    const producto = ResponseProcessor.extractProductData(match, index + 1);
+                    if (producto.nombre && producto.nombre.trim().length > 0) {
+                        productos.push(producto);
+                        Utils.log(`Producto ${index + 1} extraído: ${producto.nombre}`);
+                    }
+                });
+            } else {
+                Utils.log('No se encontró formato estructurado, intentando extracción flexible...');
+                const productosFlexibles = ResponseProcessor.extractProductsFlexible(respuesta);
+                productos.push(...productosFlexibles);
+            }
         }
         
         // Si aún no hay productos, mostrar la respuesta completa en debug
@@ -342,6 +413,124 @@ const ResponseProcessor = {
             respuestaCompleta: respuesta,
             ...additionalAnalysis
         };
+    },
+
+    // ✨ NUEVA FUNCIÓN: Extraer datos del formato inteligente
+    extractOpportunityData: (texto, numero) => {
+        const oportunidad = {
+            nombre: '',
+            categoria: '',
+            precio: '',
+            comision: '',
+            score: 0,
+            hotScore: 0,
+            painPoint: '',
+            emotionalTrigger: '',
+            objecion: '',
+            momentoCompra: '',
+            competencia: '',
+            trend: '',
+            estacionalidad: '',
+            marketGap: '',
+            cpcEstimado: '',
+            ctrEsperado: '',
+            cvrRealista: '',
+            budgetMinimo: '',
+            roiTimeline: '',
+            escalabilidad: '',
+            hookPrincipal: '',
+            angleConversion: '',
+            creativeDirection: '',
+            landingStrategy: '',
+            audienceTarget: '',
+            upsells: '',
+            backendOffers: '',
+            recurringPotential: '',
+            programas: '',
+            canalPrimario: '',
+            canalesSecundarios: '',
+            organicOpportunities: '',
+            descripcion: '', // Para compatibilidad
+            triggers: '', // Para compatibilidad
+            emociones: '', // Para compatibilidad
+            estrategia: '', // Para compatibilidad
+            productosComplementarios: '' // Para compatibilidad
+        };
+        
+        // Extractores optimizados para el nuevo formato
+        const extractors = [
+            { field: 'nombre', regex: /NOMBRE:\s*([^\n]+)/i },
+            { field: 'categoria', regex: /CATEGORIA:\s*([^\n]+)/i },
+            { field: 'precio', regex: /PRECIO_RANGE:\s*([^\n]+)/i },
+            { field: 'comision', regex: /COMISION_ESTIMADA:\s*([^\n]+)/i },
+            { field: 'hotScore', regex: /HOT_SCORE:\s*(\d+)/i },
+            
+            // Inteligencia Psicológica
+            { field: 'painPoint', regex: /PAIN_POINT_PRIMARIO:\s*([^\n]+)/i },
+            { field: 'emotionalTrigger', regex: /EMOTIONAL_TRIGGER:\s*([^\n]+)/i },
+            { field: 'objecion', regex: /OBJECION_PRINCIPAL:\s*([^\n]+)/i },
+            { field: 'momentoCompra', regex: /MOMENTO_COMPRA:\s*([^\n]+)/i },
+            
+            // Oportunidad de Mercado
+            { field: 'competencia', regex: /COMPETENCIA_NIVEL:\s*([^\n]+)/i },
+            { field: 'trend', regex: /TREND_DIRECTION:\s*([^\n]+)/i },
+            { field: 'estacionalidad', regex: /ESTACIONALIDAD:\s*([^\n]+)/i },
+            { field: 'marketGap', regex: /MARKET_GAP:\s*([^\n]+)/i },
+            
+            // Viabilidad Económica
+            { field: 'cpcEstimado', regex: /CPC_ESTIMADO_\w+:\s*([^\n]+)/i },
+            { field: 'ctrEsperado', regex: /CTR_ESPERADO:\s*([^\n]+)/i },
+            { field: 'cvrRealista', regex: /CVR_REALISTA:\s*([^\n]+)/i },
+            { field: 'budgetMinimo', regex: /BUDGET_MINIMO:\s*([^\n]+)/i },
+            { field: 'roiTimeline', regex: /ROI_TIMELINE:\s*([^\n]+)/i },
+            { field: 'escalabilidad', regex: /ESCALABILIDAD:\s*([^\n]+)/i },
+            
+            // Estrategia Ganadora
+            { field: 'hookPrincipal', regex: /HOOK_PRINCIPAL:\s*([^\n]+)/i },
+            { field: 'angleConversion', regex: /ANGLE_CONVERSION:\s*([^\n]+)/i },
+            { field: 'creativeDirection', regex: /CREATIVE_DIRECTION:\s*([^\n]+)/i },
+            { field: 'landingStrategy', regex: /LANDING_STRATEGY:\s*([^\n]+)/i },
+            { field: 'audienceTarget', regex: /AUDIENCE_TARGET:\s*([^\n]+)/i },
+            
+            // Ecosistema de Productos
+            { field: 'upsells', regex: /UPSELLS:\s*([\s\S]*?)(?=BACKEND_OFFERS:|RECURRING_POTENTIAL:|🤝|🚀|=== FIN OPORTUNIDAD|$)/i },
+            { field: 'backendOffers', regex: /BACKEND_OFFERS:\s*([\s\S]*?)(?=RECURRING_POTENTIAL:|🤝|🚀|=== FIN OPORTUNIDAD|$)/i },
+            { field: 'recurringPotential', regex: /RECURRING_POTENTIAL:\s*([\s\S]*?)(?=🤝|🚀|=== FIN OPORTUNIDAD|$)/i },
+            
+            // Programas de Afiliados
+            { field: 'programas', regex: /🤝 PROGRAMAS_AFILIADOS:([\s\S]*?)(?=🚀|=== FIN OPORTUNIDAD|$)/i },
+            
+            // Canales de Tráfico
+            { field: 'canalPrimario', regex: /CANAL_PRIMARIO:\s*([^\n]+)/i },
+            { field: 'canalesSecundarios', regex: /CANALES_SECUNDARIOS:\s*([\s\S]*?)(?=ORGANIC_OPPORTUNITIES:|=== FIN OPORTUNIDAD|$)/i },
+            { field: 'organicOpportunities', regex: /ORGANIC_OPPORTUNITIES:\s*([\s\S]*?)(?==== FIN OPORTUNIDAD|$)/i }
+        ];
+        
+        extractors.forEach(({ field, regex }) => {
+            const match = texto.match(regex);
+            if (match) {
+                if (field === 'hotScore') {
+                    oportunidad[field] = parseInt(match[1]) || 0;
+                    oportunidad.score = oportunidad[field]; // Para compatibilidad
+                } else {
+                    oportunidad[field] = match[1].trim();
+                }
+            }
+        });
+        
+        // Crear campos de compatibilidad combinando información nueva
+        oportunidad.descripcion = `${oportunidad.painPoint} ${oportunidad.marketGap}`.trim();
+        oportunidad.triggers = oportunidad.emotionalTrigger || '';
+        oportunidad.emociones = oportunidad.emotionalTrigger || '';
+        oportunidad.estrategia = `${oportunidad.hookPrincipal} ${oportunidad.angleConversion}`.trim();
+        oportunidad.productosComplementarios = `${oportunidad.upsells} ${oportunidad.backendOffers}`.trim();
+        
+        // Asignar precio para compatibilidad si no se extrajo
+        if (!oportunidad.precio && oportunidad.precio !== '') {
+            oportunidad.precio = oportunidad.precio || '$97'; // Default
+        }
+        
+        return oportunidad;
     },
 
     extractProductData: (texto, numero) => {
@@ -629,21 +818,129 @@ const UIManager = {
             html += UIManager.createProductSection('📝 Descripción', producto.descripcion, 'description-section');
         }
         
-        // Análisis psicológico
-        if (producto.painPoints) {
+        // ✨ NUEVA SECCIÓN: Inteligencia Psicológica Avanzada
+        if (producto.painPoint || producto.emotionalTrigger || producto.objecion || producto.momentoCompra) {
+            html += `<div class="product-section psychology-section">
+                <div class="section-title">🧠 Inteligencia Psicológica</div>
+                <div class="psychology-grid">`;
+            
+            if (producto.painPoint) html += `<div class="psychology-item">
+                <span class="psychology-label">😰 Pain Point Principal:</span>
+                <span class="psychology-value">${producto.painPoint}</span>
+            </div>`;
+            
+            if (producto.emotionalTrigger) html += `<div class="psychology-item">
+                <span class="psychology-label">⚡ Trigger Emocional:</span>
+                <span class="psychology-value">${producto.emotionalTrigger}</span>
+            </div>`;
+            
+            if (producto.objecion) html += `<div class="psychology-item">
+                <span class="psychology-label">❌ Objeción Principal:</span>
+                <span class="psychology-value">${producto.objecion}</span>
+            </div>`;
+            
+            if (producto.momentoCompra) html += `<div class="psychology-item">
+                <span class="psychology-label">🎯 Momento de Compra:</span>
+                <span class="psychology-value">${producto.momentoCompra}</span>
+            </div>`;
+            
+            html += `</div></div>`;
+        }
+        
+        // ✨ NUEVA SECCIÓN: Análisis de Mercado
+        if (producto.competencia || producto.trend || producto.estacionalidad || producto.marketGap) {
+            html += `<div class="product-section market-section">
+                <div class="section-title">📈 Análisis de Mercado</div>
+                <div class="market-grid">`;
+            
+            if (producto.competencia) html += `<div class="market-item">
+                <span class="market-label">⚔️ Competencia:</span>
+                <span class="market-value">${producto.competencia}</span>
+            </div>`;
+            
+            if (producto.trend) html += `<div class="market-item">
+                <span class="market-label">📊 Tendencia:</span>
+                <span class="market-value">${producto.trend}</span>
+            </div>`;
+            
+            if (producto.estacionalidad) html += `<div class="market-item">
+                <span class="market-label">📅 Estacionalidad:</span>
+                <span class="market-value">${producto.estacionalidad}</span>
+            </div>`;
+            
+            if (producto.marketGap) html += `<div class="market-item">
+                <span class="market-label">🔍 Gap de Mercado:</span>
+                <span class="market-value">${producto.marketGap}</span>
+            </div>`;
+            
+            html += `</div></div>`;
+        }
+        
+        // Análisis psicológico (Fallback para formato antiguo)
+        if (producto.painPoints && !producto.painPoint) {
             html += UIManager.createProductSection('😰 Pain Points', producto.painPoints, 'pain-points-section');
         }
         
-        if (producto.emociones) {
+        if (producto.emociones && !producto.emotionalTrigger) {
             html += UIManager.createProductSection('💭 Emociones', producto.emociones, 'emotions-section');
         }
         
-        if (producto.triggers) {
+        if (producto.triggers && !producto.emotionalTrigger) {
             html += UIManager.createProductSection('🎯 Triggers', producto.triggers, 'triggers-section');
         }
         
-        // Métricas de conversión
-        if (producto.cvrEstimado || producto.epcEstimado || producto.aov) {
+        // ✨ NUEVA SECCIÓN: Viabilidad Económica Inteligente
+        if (producto.cpcEstimado || producto.ctrEsperado || producto.cvrRealista || producto.budgetMinimo || producto.roiTimeline) {
+            html += `<div class="product-section economic-section">
+                <div class="section-title">💰 Viabilidad Económica</div>
+                <div class="economic-grid">`;
+            
+            if (producto.cpcEstimado) html += UIManager.createMetricItem(producto.cpcEstimado, 'CPC', 'Costo por clic estimado');
+            if (producto.ctrEsperado) html += UIManager.createMetricItem(producto.ctrEsperado, 'CTR', 'Click-through rate esperado');
+            if (producto.cvrRealista) html += UIManager.createMetricItem(producto.cvrRealista, 'CVR', 'Conversión realista');
+            if (producto.budgetMinimo) html += UIManager.createMetricItem(producto.budgetMinimo, 'Budget Min', 'Presupuesto mínimo');
+            if (producto.roiTimeline) html += UIManager.createMetricItem(producto.roiTimeline, 'ROI Time', 'Tiempo para ROI');
+            if (producto.escalabilidad) html += UIManager.createMetricItem(producto.escalabilidad + '/10', 'Escalabilidad', 'Facilidad para escalar');
+            
+            html += `</div></div>`;
+        }
+        
+        // ✨ NUEVA SECCIÓN: Estrategia Ganadora
+        if (producto.hookPrincipal || producto.angleConversion || producto.creativeDirection || producto.landingStrategy || producto.audienceTarget) {
+            html += `<div class="product-section strategy-section">
+                <div class="section-title">🎯 Estrategia Ganadora</div>
+                <div class="strategy-content">`;
+            
+            if (producto.hookPrincipal) html += `<div class="strategy-item">
+                <span class="strategy-label">🎣 Hook Principal:</span>
+                <span class="strategy-value">${producto.hookPrincipal}</span>
+            </div>`;
+            
+            if (producto.angleConversion) html += `<div class="strategy-item">
+                <span class="strategy-label">📐 Ángulo de Conversión:</span>
+                <span class="strategy-value">${producto.angleConversion}</span>
+            </div>`;
+            
+            if (producto.creativeDirection) html += `<div class="strategy-item">
+                <span class="strategy-label">🎨 Dirección Creativa:</span>
+                <span class="strategy-value">${producto.creativeDirection}</span>
+            </div>`;
+            
+            if (producto.landingStrategy) html += `<div class="strategy-item">
+                <span class="strategy-label">🏁 Estrategia Landing:</span>
+                <span class="strategy-value">${producto.landingStrategy}</span>
+            </div>`;
+            
+            if (producto.audienceTarget) html += `<div class="strategy-item">
+                <span class="strategy-label">👥 Audiencia Target:</span>
+                <span class="strategy-value">${producto.audienceTarget}</span>
+            </div>`;
+            
+            html += `</div></div>`;
+        }
+        
+        // Métricas de conversión (Fallback para formato antiguo)
+        if ((producto.cvrEstimado || producto.epcEstimado || producto.aov) && !producto.cpcEstimado) {
             html += `<div class="product-section financial-section">
                 <div class="section-title">📊 Métricas de Conversión</div>
                 <div class="metrics-grid">`;
@@ -670,16 +967,64 @@ const UIManager = {
             html += `</div></div>`;
         }
         
-        // Información comercial
-        if (producto.programas) {
+        // ✨ NUEVA SECCIÓN: Ecosistema de Productos
+        if (producto.upsells || producto.backendOffers || producto.recurringPotential) {
+            html += `<div class="product-section ecosystem-section">
+                <div class="section-title">🔗 Ecosistema de Productos</div>
+                <div class="ecosystem-content">`;
+            
+            if (producto.upsells) html += `<div class="ecosystem-item">
+                <span class="ecosystem-label">⬆️ Upsells:</span>
+                <span class="ecosystem-value">${producto.upsells}</span>
+            </div>`;
+            
+            if (producto.backendOffers) html += `<div class="ecosystem-item">
+                <span class="ecosystem-label">🔄 Backend Offers:</span>
+                <span class="ecosystem-value">${producto.backendOffers}</span>
+            </div>`;
+            
+            if (producto.recurringPotential) html += `<div class="ecosystem-item">
+                <span class="ecosystem-label">🔁 Potencial Recurrente:</span>
+                <span class="ecosystem-value">${producto.recurringPotential}</span>
+            </div>`;
+            
+            html += `</div></div>`;
+        }
+        
+        // ✨ NUEVA SECCIÓN: Canales de Tráfico
+        if (producto.canalPrimario || producto.canalesSecundarios || producto.organicOpportunities) {
+            html += `<div class="product-section traffic-section">
+                <div class="section-title">🚀 Canales de Tráfico</div>
+                <div class="traffic-content">`;
+            
+            if (producto.canalPrimario) html += `<div class="traffic-item">
+                <span class="traffic-label">🎯 Canal Primario:</span>
+                <span class="traffic-value">${producto.canalPrimario}</span>
+            </div>`;
+            
+            if (producto.canalesSecundarios) html += `<div class="traffic-item">
+                <span class="traffic-label">📈 Canales Secundarios:</span>
+                <span class="traffic-value">${producto.canalesSecundarios}</span>
+            </div>`;
+            
+            if (producto.organicOpportunities) html += `<div class="traffic-item">
+                <span class="traffic-label">🌱 Oportunidades Orgánicas:</span>
+                <span class="traffic-value">${producto.organicOpportunities}</span>
+            </div>`;
+            
+            html += `</div></div>`;
+        }
+        
+        // Información comercial (Fallback para formato antiguo)
+        if (producto.programas && !producto.upsells) {
             html += UIManager.createProductSection('🤝 Programas de Afiliados', producto.programas, 'competitive-section');
         }
         
-        if (producto.estrategia) {
+        if (producto.estrategia && !producto.hookPrincipal) {
             html += UIManager.createProductSection('🚀 Estrategia', producto.estrategia, 'traffic-section');
         }
         
-        if (producto.productosComplementarios) {
+        if (producto.productosComplementarios && !producto.upsells) {
             html += UIManager.createProductSection('🔗 Productos Complementarios', producto.productosComplementarios, 'description-section');
         }
         

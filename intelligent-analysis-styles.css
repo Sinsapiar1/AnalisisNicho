@@ -1,0 +1,333 @@
+/* 🧠 ESTILOS PARA ANÁLISIS INTELIGENTE */
+
+/* Sección de Inteligencia Psicológica */
+.psychology-section {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, rgba(160, 82, 45, 0.05) 100%);
+    border-left: 4px solid #8B4513;
+}
+
+.psychology-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.psychology-item {
+    background: rgba(139, 69, 19, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(139, 69, 19, 0.2);
+}
+
+.psychology-label {
+    display: block;
+    font-weight: 600;
+    color: #D2691E;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.psychology-value {
+    display: block;
+    color: #E6E6FA;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Sección de Análisis de Mercado */
+.market-section {
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.1) 0%, rgba(50, 205, 50, 0.05) 100%);
+    border-left: 4px solid #228B22;
+}
+
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.market-item {
+    background: rgba(34, 139, 34, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(34, 139, 34, 0.2);
+}
+
+.market-label {
+    display: block;
+    font-weight: 600;
+    color: #32CD32;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.market-value {
+    display: block;
+    color: #E6E6FA;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Sección de Viabilidad Económica */
+.economic-section {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 223, 0, 0.05) 100%);
+    border-left: 4px solid #FFD700;
+}
+
+.economic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* Sección de Estrategia Ganadora */
+.strategy-section {
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.1) 0%, rgba(138, 43, 226, 0.05) 100%);
+    border-left: 4px solid #4B0082;
+}
+
+.strategy-content {
+    margin-top: 15px;
+}
+
+.strategy-item {
+    background: rgba(75, 0, 130, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(75, 0, 130, 0.2);
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.strategy-label {
+    font-weight: 600;
+    color: #8A2BE2;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.strategy-value {
+    color: #E6E6FA;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Sección de Ecosistema de Productos */
+.ecosystem-section {
+    background: linear-gradient(135deg, rgba(0, 128, 128, 0.1) 0%, rgba(32, 178, 170, 0.05) 100%);
+    border-left: 4px solid #008080;
+}
+
+.ecosystem-content {
+    margin-top: 15px;
+}
+
+.ecosystem-item {
+    background: rgba(0, 128, 128, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 128, 128, 0.2);
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ecosystem-label {
+    font-weight: 600;
+    color: #20B2AA;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.ecosystem-value {
+    color: #E6E6FA;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Sección de Canales de Tráfico Mejorada */
+.traffic-section {
+    background: linear-gradient(135deg, rgba(255, 69, 0, 0.1) 0%, rgba(255, 99, 71, 0.05) 100%);
+    border-left: 4px solid #FF4500;
+}
+
+.traffic-content {
+    margin-top: 15px;
+}
+
+.traffic-item {
+    background: rgba(255, 69, 0, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.traffic-label {
+    font-weight: 600;
+    color: #FF6347;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.traffic-value {
+    color: #E6E6FA;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Mejoras Generales */
+.product-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Efectos de animación */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-section {
+    animation: fadeInUp 0.6s ease;
+}
+
+.psychology-item,
+.market-item,
+.strategy-item,
+.ecosystem-item,
+.traffic-item {
+    transition: all 0.3s ease;
+}
+
+.psychology-item:hover,
+.market-item:hover,
+.strategy-item:hover,
+.ecosystem-item:hover,
+.traffic-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Score mejorado */
+.opportunity-score {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-hot {
+    background: linear-gradient(135deg, #FF4500 0%, #FF6347 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(255, 69, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .psychology-grid,
+    .market-grid,
+    .economic-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .psychology-item,
+    .market-item,
+    .strategy-item,
+    .ecosystem-item,
+    .traffic-item {
+        padding: 10px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .psychology-label,
+    .market-label,
+    .strategy-label,
+    .ecosystem-label,
+    .traffic-label {
+        font-size: 0.8rem;
+    }
+    
+    .psychology-value,
+    .market-value,
+    .strategy-value,
+    .ecosystem-value,
+    .traffic-value {
+        font-size: 0.9rem;
+    }
+}
+
+/* Indicadores visuales para diferentes tipos de datos */
+.trend-positive {
+    color: #32CD32;
+    font-weight: 600;
+}
+
+.trend-negative {
+    color: #FF6347;
+    font-weight: 600;
+}
+
+.trend-stable {
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.competition-low {
+    color: #32CD32;
+    background: rgba(50, 205, 50, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.competition-medium {
+    color: #FFD700;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.competition-high {
+    color: #FF6347;
+    background: rgba(255, 99, 71, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
