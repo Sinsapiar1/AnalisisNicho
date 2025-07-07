@@ -967,25 +967,40 @@
     </div>
 </div>
 
-    <!-- Cache Manager para ahorrar costos de API -->
-    <script src="cache-manager.js"></script>
-    
-    <!-- Dashboard Analítico para métricas de afiliado -->
-    <script src="dashboard-analytics.js"></script>
-    
-    <!-- Script principal -->
+    <!-- Scripts principales (orden optimizado) -->
     <script src="script.js"></script>
+    <script src="cache-manager.js"></script>
+    <script src="dashboard-analytics.js"></script>
+    <script src="profit-calculator-clean.js"></script>
+    <script src="hot-products-detector.js"></script>
+    <script src="avatar-sync-system.js"></script>
     
-    <!-- Fix para el botón de contenido viral (Versión V2.0 Mejorada) -->
+    <!-- Fix automático para errores de consola (V2.1) -->
     <script src="fix-contenido-viral-v2.js"></script>
     
-    <!-- Calculadora de Profit Clean (Nueva versión sin conflictos) -->
-    <script src="profit-calculator-clean.js"></script>
+    <!-- Monitor de estado de fixes -->
+    <script src="fix-status-monitor.js"></script>
     
-    <!-- Detector de Productos HOT (Gratuito & Inteligente) -->
-    <script src="hot-products-detector.js"></script>
-    
-    <!-- Sistema de sincronización de avatares -->
-    <script src="avatar-sync-system.js"></script>
+    <!-- Script de inicialización automática -->
+    <script>
+        // Auto-ejecutar fix cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando fix automático...');
+            
+            // Esperar a que todos los scripts estén cargados
+            setTimeout(function() {
+                if (typeof window.repararTodoSafe === 'function') {
+                    const exito = window.repararTodoSafe();
+                    if (exito) {
+                        console.log('✅ Fix automático ejecutado exitosamente');
+                    } else {
+                        console.log('⚠️ Fix automático tuvo problemas');
+                    }
+                } else {
+                    console.log('⚠️ Función de fix no disponible');
+                }
+            }, 1500);
+        });
+    </script>
 </body>
 </html>
