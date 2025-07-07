@@ -4602,7 +4602,7 @@ parseCalculationResponse: function(response) {
     // VALIDAR QUE LOS ESCENARIOS SEAN DIFERENTES
     this.ensureDifferentScenarios(scenarios);
     
-    // ✅ VALIDAR LÓGICA DE CÁLCULOS
+    // ✅ VALIDAR LÓGICA DE CÁLCULOS (NUEVA FUNCIÓN)
     this.validateCalculationLogic(scenarios);
     
     // Extraer scaling
