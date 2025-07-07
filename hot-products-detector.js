@@ -19,18 +19,43 @@ const HotProductsDetector = {
     
     // Agregar botón detector
     addDetectorButton: function() {
-        // Buscar el menú principal o área de herramientas
-        const menuArea = document.querySelector('.menu-bar, .toolbar, .main-menu') || 
-                         document.querySelector('.container').firstElementChild;
-        
         // Verificar si ya existe
         if (document.getElementById('hotProductsDetectorBtn')) return;
+        
+        // Buscar múltiples lugares donde agregar el botón
+        const possibleLocations = [
+            document.querySelector('.menu-bar'),
+            document.querySelector('.toolbar'),  
+            document.querySelector('.main-menu'),
+            document.querySelector('.container'),
+            document.querySelector('body > div:first-child'),
+            document.querySelector('header'),
+            document.querySelector('.app-header'),
+            document.querySelector('#app'),
+            document.body
+        ];
+        
+        let menuArea = null;
+        for (const location of possibleLocations) {
+            if (location) {
+                menuArea = location;
+                break;
+            }
+        }
+        
+        if (!menuArea) {
+            console.warn('⚠️ No se pudo encontrar área para agregar botón HOT');
+            return;
+        }
         
         const hotBtn = document.createElement('button');
         hotBtn.id = 'hotProductsDetectorBtn';
         hotBtn.className = 'hot-products-btn';
         hotBtn.innerHTML = '🔥 Detector HOT';
         hotBtn.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
             border: none;
@@ -38,9 +63,10 @@ const HotProductsDetector = {
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            margin: 10px 5px;
+            z-index: 9999;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            font-size: 14px;
         `;
         
         // Hover effect
@@ -58,8 +84,9 @@ const HotProductsDetector = {
             this.openDetector();
         });
         
-        menuArea.appendChild(hotBtn);
-        console.log('✅ Botón detector agregado');
+        // Agregar al body como botón flotante
+        document.body.appendChild(hotBtn);
+        console.log('✅ Botón detector HOT agregado como botón flotante');
     },
     
     // Abrir detector

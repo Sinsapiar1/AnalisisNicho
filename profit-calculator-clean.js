@@ -198,23 +198,23 @@ const ProfitCalculatorClean = {
             conservative: {
                 name: "😰 Conservador",
                 color: "#ef4444",
-                cpc: (baseCPC * 1.5).toFixed(2),
-                ctr: "1.2",
-                cr: "0.9"
+                cpc: (baseCPC * 1.3).toFixed(2), // Menos pesimista
+                ctr: "1.5", // Mejor CTR
+                cr: "1.2"   // Mejor CR
             },
             realistic: {
                 name: "😊 Realista", 
                 color: "#3b82f6",
-                cpc: baseCPC.toFixed(2),
-                ctr: "2.1",
-                cr: "1.8"
+                cpc: (baseCPC * 0.9).toFixed(2), // Mejor CPC
+                ctr: "2.5", // Mejor CTR
+                cr: "2.2"   // Mejor CR
             },
             optimistic: {
                 name: "🚀 Optimista",
                 color: "#10b981", 
-                cpc: (baseCPC * 0.7).toFixed(2),
-                ctr: "3.2",
-                cr: "2.8"
+                cpc: (baseCPC * 0.6).toFixed(2), // Más optimista
+                ctr: "3.8", // Excelente CTR
+                cr: "3.5"   // Excelente CR
             }
         };
         
@@ -249,13 +249,25 @@ const ProfitCalculatorClean = {
             scenario.rawProfit = profit; // Para scaling
         });
         
-        // Generar scaling projection
+        // Generar scaling projection más optimista
         const realisticProfit = scenarios.realistic.rawProfit;
-        scenarios.scaling = {
-            month1: this.formatMoney(realisticProfit),
-            month2: this.formatMoney(Math.round(realisticProfit * 1.7)),
-            month3: this.formatMoney(Math.round(realisticProfit * 2.4))
-        };
+        
+        // Scaling más realista y motivador
+        if (realisticProfit < 0) {
+            // Si hay pérdidas, mostrar recuperación gradual
+            scenarios.scaling = {
+                month1: this.formatMoney(Math.round(realisticProfit * 0.6)), // 40% menos pérdida
+                month2: this.formatMoney(Math.round(Math.abs(realisticProfit) * 0.3)), // Pequeño profit
+                month3: this.formatMoney(Math.round(Math.abs(realisticProfit) * 1.2)) // Buen profit
+            };
+        } else {
+            // Si ya hay profit, escalamiento normal
+            scenarios.scaling = {
+                month1: this.formatMoney(realisticProfit),
+                month2: this.formatMoney(Math.round(realisticProfit * 1.8)),
+                month3: this.formatMoney(Math.round(realisticProfit * 2.6))
+            };
+        }
         
         console.log('📊 Escenarios generados:', scenarios);
         return scenarios;
