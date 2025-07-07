@@ -2164,7 +2164,8 @@ const ContentViralEnhanced = {
     }
 };
 
-async function generateViralContent() {
+// Definir función globalmente para asegurar acceso
+window.generateViralContent = async function() {
     console.log('🚀 Generando contenido viral MEJORADO...');
     
     if (selectedContentTypes.size === 0) {
@@ -2352,10 +2353,10 @@ LONGITUD: 1500-2000 palabras
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
-}
+}; // Cierre correcto de window.generateViralContent
 
-// Función para generar avatar
-async function generateAvatar() {
+// También definir globalmente para compatibilidad
+window.generateAvatar = async function generateAvatar() {
     console.log('Generando avatar...');
     
     if (!AppState.apiKey) {
@@ -2430,7 +2431,7 @@ Haz este avatar TAN específico que cualquier marketer pueda hablarle directamen
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
-}
+}; // Cierre correcto de window.generateAvatar
 
 // Función MEJORADA para mostrar resultados de contenido con contexto de producto + avatar
 function mostrarResultadosContenidoMejorado(respuesta, tipos, contextoProducto, avatarEspecifico = null) {
