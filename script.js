@@ -2003,7 +2003,7 @@ App.init = () => {
     ContentGenerator.initTypeSelector();
     
     // Event listeners para contenido viral
-    document.getElementById('generateContentBtn').addEventListener('click', ContentGenerator.generateContent);
+    document.getElementById('generateContentBtn').addEventListener('click', generateViralContent);
     document.getElementById('copyContentBtn').addEventListener('click', ContentExporter.copyContent);
     document.getElementById('downloadContentBtn').addEventListener('click', ContentExporter.downloadContent);
     
